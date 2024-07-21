@@ -1,22 +1,14 @@
-import React, {Component} from "react";
-import { Link } from "react-router-dom";
-import { IHomepageState, IHomepageProps } from "./Homepage.interface";
+import React, { Component } from 'react';
+import { IHomepageState, IHomepageProps } from './Homepage.interface';
 
-class Homepage extends Component<IHomepageProps, IHomepageState>{
-    constructor(props: IHomepageProps) {
-        super(props);
-        this.state = {
-            
-        }
-    }
-
-    render(){
-        return(
-            <>
-            hellow
-            </>
-        )
-    }
+class Homepage extends Component<IHomepageProps, IHomepageState> {
+  constructor(props: IHomepageProps) {
+    super(props);
+    this.state = {};
+  }
+  render() {
+    return <div className='bg-cyan-500 h-screen'>kiyoweoo</div>;
+  }
 }
 
 export default Homepage;
