@@ -1,19 +1,31 @@
-import React, {useRef} from 'react';
+import React, { useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import Homepage from './views/homepage/Homepage';
+import Skeleton from './views/skeleton/Skeleton';
+import PageNotFound from './views/page-not-found/PageNotFound';
 
 function App() {
   return (
     <BrowserRouter>
+      <Skeleton />
       <Routes>
-          <Route path="/"
-              element={<Homepage />} />
+        <Route
+          path='*'
+          element={<PageNotFound />}
+        />
+        {['/home', '/'].map((path, index) => (
+          // if link is /home or /, it will lead to homepage
+          <Route
+            path={path}
+            element={<Homepage />}
+            key={index}
+          />
+        ))}
       </Routes>
     </BrowserRouter>
-
   );
 }
 
