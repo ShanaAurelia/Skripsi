@@ -26,8 +26,7 @@ export const DummyDialogue: IDialogueProps = {
       likes: 'Spicy Food',
       name: 'Female Player',
       role: 'Student',
-      picture:
-        '/characters/aset merch BINUS Support 4 - pusing copy.png',
+      picture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
     },
     {
       campusId: '1',
@@ -37,8 +36,7 @@ export const DummyDialogue: IDialogueProps = {
       likes: 'Spicy Food',
       name: 'Male Player',
       role: 'Student',
-      picture:
-        '/characters/aset merch BINUS Support 6 - pemberi info copy.png',
+      picture: '/characters/aset merch BINUS Support 6 - pemberi info copy.png',
     },
   ],
 };
@@ -49,8 +47,8 @@ export const DummyDialogueLine: IDialogue[] = [
     line: {
       characterExpression: 'Empty',
       characterId: '01',
-      speed: '2',
-      text: 'Hello, how are you',
+      speed: 2,
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi maximus porta ante, non efficitur magna ullamcorper et. Donec et dui in risus vehicula euismod eu et diam. Duis dignissim est ex, id hendrerit est fermentum ut. Sed pellentesque augue viverra mauris imperdiet interdum. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque ut malesuada urna. Proin.',
     },
   },
   {
@@ -58,7 +56,7 @@ export const DummyDialogueLine: IDialogue[] = [
     line: {
       characterExpression: 'Empty',
       characterId: '02',
-      speed: '2',
+      speed: 2,
       text: 'I am Good',
     },
   },
@@ -67,7 +65,7 @@ export const DummyDialogueLine: IDialogue[] = [
     line: {
       characterExpression: 'Empty',
       characterId: '01',
-      speed: '4',
+      speed: 4,
       text: 'is that true?',
     },
   },
@@ -76,7 +74,7 @@ export const DummyDialogueLine: IDialogue[] = [
     line: {
       characterExpression: 'Empty',
       characterId: '02',
-      speed: '2',
+      speed: 2,
       text: 'yeah',
     },
   },
@@ -85,7 +83,7 @@ export const DummyDialogueLine: IDialogue[] = [
     line: {
       characterExpression: 'Empty',
       characterId: '01',
-      speed: '4',
+      speed: 4,
       text: 'Truthfully true?',
     },
   },

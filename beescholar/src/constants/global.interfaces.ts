@@ -1,3 +1,5 @@
+import { Speed } from "react-type-animation";
+
 export interface IStudent {
   id: string;
   name: string;
@@ -30,7 +32,7 @@ export interface IDialogue {
 
 export interface ISpeech {
   text: string;
-  speed: string;
+  speed: number;
   characterId: string;
   characterExpression: string;
 }

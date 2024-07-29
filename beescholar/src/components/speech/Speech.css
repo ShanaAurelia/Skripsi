@@ -1,0 +1,32 @@
+.text span {
+    opacity: 0;
+ }
+ .text span.revealed {
+    opacity: 1;
+ }
+ .text span.green {
+    color: #27ae60;
+ }
+ .text span.red {
+    color: #ff0000;
+ }
+ 
+ 
+ /* Demo styles */
+
+ .text {
+   z-index: 30;
+    font-size: 1em;
+    word-spacing: 0.2em;
+    margin: 0 auto;
+    padding: 1em;
+    position:relative;
+    line-height: 1.2em;
+ }
+ .corner {
+    position:absolute;
+    width: 10vw;
+    right:2vw;
+    bottom:0;
+    transform: translateY(80%); 
+ }
