@@ -7,7 +7,7 @@ class Navbar extends Component<INavbarProps, INavbarState> {
     this.state = {};
   }
 
-  NavbarUserLogin() {
+  NavbarUserLogin = () => {
     const { isLoading, student, isShown } = this.props;
 
     return (
@@ -45,7 +45,7 @@ class Navbar extends Component<INavbarProps, INavbarState> {
     );
   }
 
-  NavbarNoUser() {
+  NavbarNoUser = () => {
     return (
       <div className='bg-cyan-800 h-20 content-center w-screen flex flex-wrap justify-between'>
         <div className='container h-14 w-1/6 flex flex-row'></div>
