@@ -9,6 +9,7 @@ import Crossword, {
 } from '@jaredreisinger/react-crossword';
 import { testCrossword } from '../../constants/crossword.constants';
 import { Button, Modal } from '@mui/material';
+import "./Crossword.css"
 
 class CrosswordPage extends Component<ICrosswordProps, ICrosswordState> {
   constructor(props: ICrosswordProps) {
@@ -30,7 +31,7 @@ class CrosswordPage extends Component<ICrosswordProps, ICrosswordState> {
     return (
       <div
         id='crossword-background'
-        className='bg-white h-screen flex flex-col justify-evenly'>
+        className='crossword-background'>
         {/* <Crossword data={testCrossword} acrossLabel={"Across Questions"} downLabel={"Down Questions"}/> */}
         <div
           id='crossword-details'
@@ -49,10 +50,10 @@ class CrosswordPage extends Component<ICrosswordProps, ICrosswordState> {
             <div
               id='clues'
               className='mt-10 flex flex-col justify-evenly'>
-              <div id='across-clues' className='mb-10 ml-3.5 mr-3.5 bg-slate-400 p-5 rounded'>
+              <div id='across-clues' className='clues-class'>
                 <DirectionClues direction='across' label={"Across Questions"}/>
               </div>
-              <div id='down-clues' className='mb-10 ml-3.5 mr-3.5 bg-slate-400 p-5 rounded'>
+              <div id='down-clues' className='clues-class'>
                 <DirectionClues direction='down' label={"Down Questions"}/>
               </div>
             </div>
@@ -92,7 +93,7 @@ class CrosswordPage extends Component<ICrosswordProps, ICrosswordState> {
               className='h-screen w-screen flex justify-center'>
               <div
                 id='modal-correct-crossword'
-                className='bg-white h-max w-max mt-auto mb-auto p-10 rounded-2xl flex flex-col'>
+                className='modal-background'>
                 <div id='modal-correct-details'>
                   Congratulations, all your answers are correct!
                 </div>
@@ -116,7 +117,7 @@ class CrosswordPage extends Component<ICrosswordProps, ICrosswordState> {
               className='h-screen w-screen flex justify-center'>
               <div
                 id='modal-incorrect-crossword'
-                className='bg-white h-max w-max mt-auto mb-auto p-10 rounded-2xl flex flex-col'>
+                className='modal-background'>
                 <div id='modal-incorrect-details'>
                   You have incorrect answers...
                 </div>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { INavbarProps, INavbarState } from './Navbar.interface';
+import './Navbar.css';
 
 class Navbar extends Component<INavbarProps, INavbarState> {
   constructor(props: INavbarProps) {
@@ -11,7 +12,7 @@ class Navbar extends Component<INavbarProps, INavbarState> {
     const { isLoading, student, isShown } = this.props;
 
     return student && (
-      <div id='navbar-background' className='bg-cyan-800 h-20 content-center flex flex-row justify-between pr-2 pl-2'>
+      <div id='navbar-background' className='nav-background'>
         <div id='user-profile-background' className='container h-5/6 w-max flex flex-row bg-slate-50 rounded-lg mt-auto mb-auto'>
           <div id='user-profile-picture-background' className='container flex w-1/2 rounded-lg grow'>
             <img
@@ -34,9 +35,9 @@ class Navbar extends Component<INavbarProps, INavbarState> {
           </div>
         </div>
 
-        <div id='logout-button-container' className='container h-4/6 w-max flex mt-auto mb-auto'>
-          <div id='logout-button-background' className='container bg-cyan-900 flex rounded-lg justify-center p-4'>
-            <h3 className='font-sans font-semibold text-base content-center text-white'>
+        <div id='logout-button-container' className='nav-log-container'>
+          <div id='logout-button-background' className='nav-log-button-background'>
+            <h3 className='nav-log-button-text'>
               Logout
             </h3>
           </div>
@@ -47,11 +48,11 @@ class Navbar extends Component<INavbarProps, INavbarState> {
 
   NavbarNoUser = () => {
     return (
-      <div className='bg-cyan-800 h-20 content-center flex flex-row justify-between pr-2 pl-2'>
+      <div className='nav-background'>
         <div className='container h-5/6 w-max flex flex-row  rounded-lg mt-auto mb-auto'></div>
-        <div className='container h-4/6 w-max flex mt-auto mb-auto'>
-          <div className='container bcontainer bg-cyan-900 flex rounded-lg justify-center p-4'>
-            <h3 className='font-sans font-semibold text-base content-center text-white'>
+        <div className='nav-log-container'>
+          <div className='nav-log-button-background'>
+            <h3 className='nav-log-button-text'>
               Login
             </h3>
           </div>
