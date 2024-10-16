@@ -7,6 +7,7 @@ import Homepage from './views/homepage/Homepage';
 import Skeleton from './views/skeleton/Skeleton';
 import PageNotFound from './views/page-not-found/PageNotFound';
 import Story from './views/story/Story';
+import CrosswordPage from './views/crossword/Crossword';
 
 function App() {
   return (
@@ -28,6 +29,10 @@ function App() {
         <Route
           path='/story'
           element={<Story />}
+        />
+        <Route
+          path='/crossword'
+          element={<CrosswordPage />}
         />
       </Routes>
     </BrowserRouter>

@@ -50,3 +50,22 @@ export interface ICampus {
   minimumSemester: number;
   description: string;
 }
+
+
+// FOR REACT-CROSSWORD
+export interface ICrosswordData {
+  across: ICrosswordCell[];
+  down: ICrosswordCell[];
+}
+
+export interface ICrosswordCell{
+  answerNumber: number;
+  data: ICrosswordCellData;
+}
+
+export interface ICrosswordCellData{
+  clue: string;
+  answer: string;
+  row: number;
+  col: number;
+}
