@@ -1,4 +1,4 @@
-import { IDialogueProps } from '../components/dialogue/Dialogue.interface';
+import { IDialogueProps } from '../components/dialogue/Scene.interface';
 import { IDialogue, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {

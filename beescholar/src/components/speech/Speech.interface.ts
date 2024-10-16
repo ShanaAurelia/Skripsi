@@ -9,4 +9,6 @@ export interface ISpeechProps{
     speed: number;
     class: string[];
     handleNext(): void;
+    character: string;
+    isLoading: boolean;
 }

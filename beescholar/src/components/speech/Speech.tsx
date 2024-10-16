@@ -4,24 +4,6 @@ import { TypeAnimation } from 'react-type-animation';
 import './Speech.css';
 import { Button } from '@mui/material';
 
-// class Speech extends Component<ISpeechProps, ISpeechState>{
-//     constructor(props: ISpeechProps){
-//         super(props);
-//     }
-
-//     render(){
-//         const {line, speed} = this.props
-//         return(
-//             <TypeAnimation
-//               sequence={[line]}
-//               wrapper='span'
-//               speed={speed}
-//               style={{ fontSize: '2em', display: 'inline-block' }}
-//             />
-//         )
-//     }
-// }
-
 const Speech = (dialogue: ISpeechProps) => {
   var container = document.querySelector('.text');
   useEffect(() => {
@@ -29,14 +11,6 @@ const Speech = (dialogue: ISpeechProps) => {
       revealOneCharacter(characters);
     }, 600);
   }, [dialogue]);
-
-  var speeds = {
-    pause: 500, //Higher number = longer delay
-    slow: 120,
-    normal: 90,
-    fast: 40,
-    superFast: 10,
-  };
 
   var characters: any = [];
 
@@ -63,15 +37,44 @@ const Speech = (dialogue: ISpeechProps) => {
     if (list.length > 0) {
       setTimeout(function () {
         revealOneCharacter(list);
-      }, delay*10);
+      }, delay * 10);
     }
   }
 
+  const isLoading = dialogue.isLoading;
+
   return (
-    <div className='container w-full h-full flex'>
-    <div className='text'>
-    </div>
-      <Button className="absolute h-3" onClick={dialogue.handleNext}>Next</Button>
+    <div
+      className='w-full h-full bg-white'
+      id='speech-background'>
+      {!isLoading && (
+        <div
+          id='speech-character-name'
+          className='absolute bg-orange-300 p-3 rounded-lg h-max -top-10 w-max'>
+          {dialogue.character}
+        </div>
+      )}
+      <div
+        id='speech-box'
+        className=' flex flex-row absolute h-full w-full justify-between'>
+        {!isLoading && (
+          <div
+            id='speech-text'
+            className='text w-5/6'></div>
+        )}
+        {isLoading && (
+          <div
+            id='speech-text'
+            className='w-5/6'></div>
+        )}
+        <Button
+          className='absolute h-1/6 top-4 right-2'
+          onClick={dialogue.handleNext}
+          variant='contained'
+          size='large'>
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .nav-background{
+        @apply bg-cyan-800 h-20 content-center flex flex-row justify-between pr-2 pl-2;
+    }
+
+    .nav-log-container{
+        @apply container h-4/6 w-max flex mt-auto mb-auto;
+    }
+
+    .nav-log-button-background{
+        @apply container bg-cyan-900 flex rounded-lg justify-center p-4;
+    }
+
+    .nav-log-button-text{
+        @apply font-sans font-semibold text-base content-center text-white;
+    }
+}

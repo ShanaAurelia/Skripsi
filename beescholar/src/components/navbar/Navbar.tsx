@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { INavbarProps, INavbarState } from './Navbar.interface';
+import './Navbar.css';
 
 class Navbar extends Component<INavbarProps, INavbarState> {
   constructor(props: INavbarProps) {
@@ -10,17 +11,17 @@ class Navbar extends Component<INavbarProps, INavbarState> {
   NavbarUserLogin = () => {
     const { isLoading, student, isShown } = this.props;
 
-    return (
-      <div className='bg-cyan-800 h-20 content-center flex flex-wrap justify-between pr-2 pl-2'>
-        <div className='container h-16 w-1/6 flex flex-row bg-slate-50 rounded-lg'>
-          <div className='container flex w-1/2 rounded-lg grow'>
+    return student && (
+      <div id='navbar-background' className='nav-background'>
+        <div id='user-profile-background' className='container h-5/6 w-max flex flex-row bg-slate-50 rounded-lg mt-auto mb-auto'>
+          <div id='user-profile-picture-background' className='container flex w-1/2 rounded-lg grow'>
             <img
               className='object-fill rounded-lg'
               src={student.userPictureUrl}
             />
           </div>
-          <div className='container flex flex-col flex-initial'>
-            <div className='container'>
+          <div id='user-information-background' className='container flex flex-col flex-initial'>
+            <div id='user-information' className='container'>
               <h4 className='font-sans font-semibold line-clamp-1'>
                 {student.name}
               </h4>
@@ -34,9 +35,9 @@ class Navbar extends Component<INavbarProps, INavbarState> {
           </div>
         </div>
 
-        <div className='container h-14 w-1/12 flex'>
-          <div className='container bg-cyan-900 flex rounded-lg justify-center'>
-            <h3 className='font-sans font-semibold text-base content-center text-white'>
+        <div id='logout-button-container' className='nav-log-container'>
+          <div id='logout-button-background' className='nav-log-button-background'>
+            <h3 className='nav-log-button-text'>
               Logout
             </h3>
           </div>
@@ -47,11 +48,11 @@ class Navbar extends Component<INavbarProps, INavbarState> {
 
   NavbarNoUser = () => {
     return (
-      <div className='bg-cyan-800 h-20 content-center w-screen flex flex-wrap justify-between'>
-        <div className='container h-14 w-1/6 flex flex-row'></div>
-        <div className='container h-14 w-1/12 flex mr-2'>
-          <div className='container bg-cyan-900 flex rounded-lg justify-center'>
-            <h3 className='font-sans font-semibold text-base content-center text-white'>
+      <div className='nav-background'>
+        <div className='container h-5/6 w-max flex flex-row  rounded-lg mt-auto mb-auto'></div>
+        <div className='nav-log-container'>
+          <div className='nav-log-button-background'>
+            <h3 className='nav-log-button-text'>
               Login
             </h3>
           </div>
@@ -63,7 +64,7 @@ class Navbar extends Component<INavbarProps, INavbarState> {
   render() {
     const { isLoading, student, isShown } = this.props;
 
-    if (isShown && student) {
+    if (isShown && student !== undefined) {
       return this.NavbarUserLogin();
       // tampilan navigation bar ketika user sudah login
     } else if (isShown) {

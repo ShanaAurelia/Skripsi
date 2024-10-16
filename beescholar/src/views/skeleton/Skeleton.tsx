@@ -14,7 +14,7 @@ class Skeleton extends Component<ISkeletonProps, ISkeletonState> {
   render() {
     const { student } = this.state;
     return (
-      <div className=' bg-cyan-500 z-0'>
+      <div className=' bg-cyan-500 z-50'>
         <div className='z-10'>
         <Navbar
           isLoading={false}
