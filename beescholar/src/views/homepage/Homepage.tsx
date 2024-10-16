@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { IHomepageState, IHomepageProps } from './Homepage.interface';
-import Dialogue from '../../components/dialogue/Dialogue';
-import { DummyDialogue } from '../../constants/dummy.constants';
+import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 class Homepage extends Component<IHomepageProps, IHomepageState> {
   constructor(props: IHomepageProps) {
@@ -10,11 +10,10 @@ class Homepage extends Component<IHomepageProps, IHomepageState> {
   }
   render() {
     return (
-      <div className='bg-cyan-500 h-screen justify-center flex'>
-        <Dialogue
-          background={DummyDialogue.background}
-          characters={DummyDialogue.characters}
-        />
+      <div className='flex flex-col m-4'>
+        <Link to={'/story'}>
+          <Button variant='contained'> Story</Button>
+        </Link>
       </div>
     );
   }

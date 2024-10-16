@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import Homepage from './views/homepage/Homepage';
 import Skeleton from './views/skeleton/Skeleton';
 import PageNotFound from './views/page-not-found/PageNotFound';
+import Story from './views/story/Story';
 
 function App() {
   return (
@@ -24,6 +25,10 @@ function App() {
             key={index}
           />
         ))}
+        <Route
+          path='/story'
+          element={<Story />}
+        />
       </Routes>
     </BrowserRouter>
   );
