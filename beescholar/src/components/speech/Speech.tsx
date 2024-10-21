@@ -5,8 +5,11 @@ import './Speech.css';
 import { Button } from '@mui/material';
 
 const Speech = (dialogue: ISpeechProps) => {
+
   var container = document.querySelector('.text');
+
   useEffect(() => {
+    init()
     setTimeout(() => {
       revealOneCharacter(characters);
     }, 600);
@@ -14,19 +17,21 @@ const Speech = (dialogue: ISpeechProps) => {
 
   var characters: any = [];
 
-  dialogue.line.split('').forEach((character) => {
-    var span = document.createElement('span');
-    span.textContent = character;
-    if (container !== null) container.appendChild(span);
-    characters.push({
-      span: span,
-      isSpace: character === ' ',
-      delayAfter: dialogue.speed,
-      classes: dialogue.class || [],
+  const init = () => {
+    dialogue.line.split('').forEach((character) => {
+      var span = document.createElement('span');
+      span.textContent = character;
+      if (container !== null) container.appendChild(span);
+      characters.push({
+        span: span,
+        isSpace: character === ' ',
+        delayAfter: dialogue.speed,
+        classes: dialogue.class || [],
+      });
     });
-  });
+  }
 
-  function revealOneCharacter(list: any) {
+  const revealOneCharacter = (list: any) => {
     var next = list.splice(0, 1)[0];
     next.span.classList.add('revealed');
     next.classes.forEach((c: any) => {
@@ -39,34 +44,24 @@ const Speech = (dialogue: ISpeechProps) => {
         revealOneCharacter(list);
       }, delay * 10);
     }
-  }
-
-  const isLoading = dialogue.isLoading;
+  };
 
   return (
     <div
       className='w-full h-full bg-white'
       id='speech-background'>
-      {!isLoading && (
-        <div
-          id='speech-character-name'
-          className='absolute bg-orange-300 p-3 rounded-lg h-max -top-10 w-max'>
-          {dialogue.character}
-        </div>
-      )}
+      <div
+        id='speech-character-name'
+        className='absolute bg-orange-300 p-3 rounded-lg h-max -top-10 w-max'>
+        {dialogue.character}
+      </div>
       <div
         id='speech-box'
         className=' flex flex-row absolute h-full w-full justify-between'>
-        {!isLoading && (
-          <div
-            id='speech-text'
-            className='text w-5/6'></div>
-        )}
-        {isLoading && (
-          <div
-            id='speech-text'
-            className='w-5/6'></div>
-        )}
+        <div
+          id='speech-text'
+          className='text w-5/6'>
+        </div>
         <Button
           className='absolute h-1/6 top-4 right-2'
           onClick={dialogue.handleNext}
