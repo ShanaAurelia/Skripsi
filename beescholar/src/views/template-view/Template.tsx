@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { ITemplateProps, ITemplateState } from "./Template.interface";
+import { ITemplateProps} from "./Template.interface";
 
 const TemplateComponent = (props: ITemplateProps) => {
 

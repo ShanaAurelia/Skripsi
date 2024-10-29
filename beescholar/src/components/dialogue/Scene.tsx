@@ -16,7 +16,7 @@ const initialDialogue:IDialogue = {
   },
 }
 
-const Dialogue = (props: IDialogueProps) =>  {
+const Scene = (props: IDialogueProps) =>  {
 
   const [activeCharacter, setActiveCharacter] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -83,4 +83,4 @@ const Dialogue = (props: IDialogueProps) =>  {
     );
   }
 
-export default Dialogue;
+export default Scene;

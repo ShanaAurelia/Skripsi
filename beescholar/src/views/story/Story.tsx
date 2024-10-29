@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { IStoryProps, IStoryState } from './Story.interface';
-import Dialogue from '../../components/dialogue/Scene';
+import Scene from '../../components/dialogue/Scene';
 import { DummyDialogue } from '../../constants/dummy.constants';
 
 const Story = (props: IStoryProps) => {
@@ -10,7 +10,7 @@ const Story = (props: IStoryProps) => {
 
   return (
     <div className='bg-black h-screen justify-center flex'>
-      <Dialogue
+      <Scene
         background={DummyDialogue.background}
         characters={DummyDialogue.characters}
         backToHomepage={() => BackToHomepage()}
