@@ -20,6 +20,11 @@ const Homepage = () => {
         onClick={() => redirect('crossword')}
         className='w-max h-max'>
         Crossword
+      </Button><Button
+        variant='contained'
+        onClick={() => redirect('followthedrum')}
+        className='w-max h-max'>
+        Follow the Drum
       </Button>
     </div>
   );

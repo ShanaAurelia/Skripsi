@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .drum-part-set {
+    @apply flex flex-row h-1/2 w-full justify-evenly;
+  }
+
+  .drum-part-name {
+    @apply font-mono mt-auto mb-auto text-wrap text-center;
+  }
+
+  .drum-part{
+    @apply w-min h-max rounded-full flex;
+  }
+}

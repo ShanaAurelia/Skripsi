@@ -16,6 +16,7 @@ const Speech = (dialogue: ISpeechProps) => {
   }, [dialogue]);
 
   var characters: any = [];
+  var revealedCharacterCount: number = 0;
 
   const init = () => {
     dialogue.line.split('').forEach((character) => {
@@ -44,6 +45,7 @@ const Speech = (dialogue: ISpeechProps) => {
         revealOneCharacter(list);
       }, delay * 10);
     }
+    revealedCharacterCount = revealedCharacterCount+1;
   };
 
   return (
@@ -52,12 +54,12 @@ const Speech = (dialogue: ISpeechProps) => {
       id='speech-background'>
       <div
         id='speech-character-name'
-        className='absolute bg-orange-300 p-3 rounded-lg h-max -top-10 w-max'>
+        className='bg-orange-300 p-3 rounded-lg h-max -top-10 w-max z-40 absolute'>
         {dialogue.character}
       </div>
       <div
         id='speech-box'
-        className=' flex flex-row absolute h-full w-full justify-between'>
+        className=' flex flex-row absolute h-full w-full justify-between overflow-auto'>
         <div
           id='speech-text'
           className='text w-5/6'>
