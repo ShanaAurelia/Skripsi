@@ -8,8 +8,13 @@ import Skeleton from './views/skeleton/Skeleton';
 import PageNotFound from './views/page-not-found/PageNotFound';
 import Story from './views/story/Story';
 import CrosswordPage from './views/crossword/Crossword';
+import { dummyStudent } from './views/skeleton/Skeleton.constants';
+import Mainpage from './views/main-page/Mainpage';
+import FollowTheDrum from './views/follow-the-drum/FollowTheDrum';
 
 function App() {
+  const student = dummyStudent;
+  // const student = undefined;
   return (
     <BrowserRouter>
       <Skeleton />
@@ -18,14 +23,33 @@ function App() {
           path='*'
           element={<PageNotFound />}
         />
-        {['/home', '/'].map((path, index) => (
-          // if link is /home or /, it will lead to homepage
-          <Route
-            path={path}
-            element={<Homepage />}
-            key={index}
-          />
-        ))}
+        {student
+          ? ['/home', '/'].map(
+              (
+                path,
+                index // user is authenticated
+              ) => (
+                // if link is /home or /, it will lead to homepage
+                <Route
+                  path={path}
+                  element={<Homepage />}
+                  key={index}
+                />
+              )
+            )
+          : ['/home', '/'].map(
+              (
+                path,
+                index // user is not authenticated
+              ) => (
+                // if link is /home or /, it will lead to mainpage
+                <Route
+                  path={path}
+                  element={<Mainpage />}
+                  key={index}
+                />
+              )
+            )}
         <Route
           path='/story'
           element={<Story />}
@@ -33,6 +57,10 @@ function App() {
         <Route
           path='/crossword'
           element={<CrosswordPage />}
+        />
+        <Route
+          path='/followthedrum'
+          element={<FollowTheDrum />}
         />
       </Routes>
     </BrowserRouter>

@@ -38,7 +38,7 @@ export const DummyDialogue: IDialogueProps = {
       role: 'Student',
       picture: '/characters/aset merch BINUS Support 6 - pemberi info copy.png',
     },
-  ],
+  ]
 };
 
 export const DummyDialogueLine: IDialogue[] = [

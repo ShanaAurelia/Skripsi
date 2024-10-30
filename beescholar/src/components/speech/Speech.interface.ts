@@ -10,5 +10,5 @@ export interface ISpeechProps{
     class: string[];
     handleNext(): void;
     character: string;
-    isLoading: boolean;
+    // isLoading: boolean;
 }
