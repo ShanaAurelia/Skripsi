@@ -4,7 +4,11 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./public/index.html",],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        'drum-hit': 'ping 1s'
+      }
+    },
   },
   plugins: [],
 }
