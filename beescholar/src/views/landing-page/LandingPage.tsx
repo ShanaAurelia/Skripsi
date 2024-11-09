@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { IMainpageProps } from './Mainpage.interface';
+import { IMainpageProps } from './LandingPage.interface';
 import { Button } from '@mui/material';
 
 const Mainpage = (props: IMainpageProps) => {

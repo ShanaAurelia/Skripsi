@@ -26,6 +26,12 @@ const Homepage = () => {
         className='w-max h-max'>
         Follow the Drum
       </Button>
+      <Button
+      variant='contained'
+      onClick={() => redirect('profiles')}
+      className='w-max h-max'>
+        Characters
+      </Button>
     </div>
   );
 };

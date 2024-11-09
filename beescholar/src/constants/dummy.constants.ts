@@ -38,7 +38,7 @@ export const DummyDialogue: IDialogueProps = {
       role: 'Student',
       picture: '/characters/aset merch BINUS Support 6 - pemberi info copy.png',
     },
-  ]
+  ],
 };
 
 export const DummyDialogueLine: IDialogue[] = [
@@ -85,6 +85,45 @@ export const DummyDialogueLine: IDialogue[] = [
       characterId: '01',
       speed: 4,
       text: 'Truthfully true?',
+    },
+  },
+];
+
+export const DummyIntroductionDialogue: IDialogue[] = [
+  {
+    index: 0,
+    line: {
+      characterExpression: 'Empty',
+      characterId: '01',
+      speed: 1,
+      text: 'Halo, siapa nama kamu?',
+    },
+  },
+  {
+    index: 1,
+    line: {
+      characterExpression: 'Empty',
+      characterId: '01',
+      speed: 1,
+      text: 'Hi {playerName}. Perkenalkan nama aku Diyan... Aku akan mendampingi mu agar kamu bisa berhasil menjadi Beescholar',
+    },
+  },
+  {
+    index: 2,
+    line: {
+      characterExpression: 'Empty',
+      characterId: '01',
+      speed: 1,
+      text: 'Hi {playerName}, selamat kamu telah direkomendasikan menjadi salah satu kandidat "Beescholar". Saat ini kamu dipanggil ke ruang guru untuk menerima informasi detailnya.',
+    },
+  },
+  {
+    index: 3,
+    line: {
+      characterExpression: 'Empty',
+      characterId: '01',
+      speed: 1,
+      text: 'Sebagai salah satu kandidat yang direkomendasikan, kamu juga mendapat poster berisi petunjuk proses untuk menjadi Beescholar dan kamu dapat menyimpannya di ruang penyimpananmu.',
     },
   },
 ];

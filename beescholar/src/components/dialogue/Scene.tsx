@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState } from 'react';
-import { DummyDialogueLine } from '../../constants/dummy.constants';
+import { DummyDialogueLine, DummyIntroductionDialogue } from '../../constants/dummy.constants';
 import { IDialogueProps, IDialogueState } from './Scene.interface';
 import { ICharacter, IDialogue } from '../../constants/global.interfaces';
 import Button from '@mui/material/Button';
@@ -23,8 +23,8 @@ const Scene = (props: IDialogueProps) =>  {
   const [dialogue, setDialogue] = useState<IDialogue>(initialDialogue);
 
   useEffect(() =>{
-    setDialogue(DummyDialogueLine[currentIndex])
-    setActiveCharacter(DummyDialogueLine[currentIndex].line.characterId)
+    setDialogue(DummyIntroductionDialogue[currentIndex])
+    setActiveCharacter(DummyIntroductionDialogue[currentIndex].line.characterId)
   }, [currentIndex])
 
   const handleNextSpeech = () => {
@@ -32,10 +32,10 @@ const Scene = (props: IDialogueProps) =>  {
   };
 
   const dummyApiCall = () => {
-    if (DummyDialogueLine[currentIndex+1] !== undefined) { 
+    if (DummyIntroductionDialogue[currentIndex+1] !== undefined) { 
       setCurrentIndex(currentIndex+1)
     } else {
-      props.backToHomepage();
+      if(props.backToHomepage) props.backToHomepage();
     }
   };
 
@@ -67,7 +67,7 @@ const Scene = (props: IDialogueProps) =>  {
           className='bg-black z-30 w-full h-1/3 absolute bottom-0'>
           {
             <Speech
-            key={`dlg-${DummyDialogueLine[currentIndex].index}`}
+            key={`dlg-${DummyIntroductionDialogue[currentIndex].index}`}
               character={
                 props.characters.find((char) => char.id === dialogue.line.characterId)
                   ?.name || 'Placeholder'

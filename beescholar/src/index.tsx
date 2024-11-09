@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -9,60 +9,80 @@ import PageNotFound from './views/page-not-found/PageNotFound';
 import Story from './views/story/Story';
 import CrosswordPage from './views/crossword/Crossword';
 import { dummyStudent } from './views/skeleton/Skeleton.constants';
-import Mainpage from './views/main-page/Mainpage';
+import Mainpage from './views/landing-page/LandingPage';
 import FollowTheDrum from './views/follow-the-drum/FollowTheDrum';
+import CharacterProfiles from './views/profiles/Profiles';
+import { IStudent } from './constants/global.interfaces';
+import { AuthenticationContext, UserContext } from './config/Context';
 
 function App() {
-  const student = dummyStudent;
+  const [student, setStudent] = useState<IStudent | undefined>();
+  const logoutStudent = () => {
+    setStudent(undefined);
+  };
+
+  const loginStudent = () => {
+    setStudent(dummyStudent);
+  };
+
   // const student = undefined;
   return (
     <BrowserRouter>
-      <Skeleton />
-      <Routes>
-        <Route
-          path='*'
-          element={<PageNotFound />}
+      <UserContext.Provider value={student}>
+        <Skeleton
+          loginStudent={loginStudent}
+          logoutStudent={logoutStudent}
         />
-        {student
-          ? ['/home', '/'].map(
-              (
-                path,
-                index // user is authenticated
-              ) => (
-                // if link is /home or /, it will lead to homepage
-                <Route
-                  path={path}
-                  element={<Homepage />}
-                  key={index}
-                />
+        <Routes>
+          <Route
+            path='*'
+            element={<PageNotFound />}
+          />
+          {student
+            ? ['/home', '/'].map(
+                (
+                  path,
+                  index // user is authenticated
+                ) => (
+                  // if link is /home or /, it will lead to homepage
+                  <Route
+                    path={path}
+                    element={<Homepage />}
+                    key={index}
+                  />
+                )
               )
-            )
-          : ['/home', '/'].map(
-              (
-                path,
-                index // user is not authenticated
-              ) => (
-                // if link is /home or /, it will lead to mainpage
-                <Route
-                  path={path}
-                  element={<Mainpage />}
-                  key={index}
-                />
-              )
-            )}
-        <Route
-          path='/story'
-          element={<Story />}
-        />
-        <Route
-          path='/crossword'
-          element={<CrosswordPage />}
-        />
-        <Route
-          path='/followthedrum'
-          element={<FollowTheDrum />}
-        />
-      </Routes>
+            : ['/home', '/'].map(
+                (
+                  path,
+                  index // user is not authenticated
+                ) => (
+                  // if link is /home or /, it will lead to mainpage
+                  <Route
+                    path={path}
+                    element={<Mainpage />}
+                    key={index}
+                  />
+                )
+              )}
+          <Route
+            path='/story'
+            element={<Story />}
+          />
+          <Route
+            path='/crossword'
+            element={<CrosswordPage />}
+          />
+          <Route
+            path='/followthedrum'
+            element={<FollowTheDrum />}
+          />
+          <Route
+            path='/profiles'
+            element={<CharacterProfiles />}
+          />
+        </Routes>
+      </UserContext.Provider>
     </BrowserRouter>
   );
 }
