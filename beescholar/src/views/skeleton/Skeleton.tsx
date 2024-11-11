@@ -3,7 +3,6 @@ import { ISkeletonProps} from './Skeleton.interface';
 import { dummyStudent } from './Skeleton.constants';
 import Navbar from '../../components/navbar/Navbar';
 import { IStudent } from '../../constants/global.interfaces';
-import { UserContext } from '../../config/Context';
 
 const Skeleton = (props: ISkeletonProps) => {
   // const [student, setStudent] = useState<IStudent>(dummyStudent)
@@ -14,8 +13,6 @@ const Skeleton = (props: ISkeletonProps) => {
         <Navbar
           isLoading={false}
           isShown={true}
-          loginStudent={props.loginStudent}
-          logoutStudent={props.logoutStudent}
         />
       </div>
     </div>

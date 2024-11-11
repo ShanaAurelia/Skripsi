@@ -5,6 +5,4 @@ export interface ISkeletonState {
 }
 
 export interface ISkeletonProps {
-  loginStudent(): void
-  logoutStudent(): void
 }

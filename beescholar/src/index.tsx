@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { createContext, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -13,33 +13,23 @@ import Mainpage from './views/landing-page/LandingPage';
 import FollowTheDrum from './views/follow-the-drum/FollowTheDrum';
 import CharacterProfiles from './views/profiles/Profiles';
 import { IStudent } from './constants/global.interfaces';
-import { AuthenticationContext, UserContext } from './config/Context';
+import { AuthProvider, useAuth } from './config/Context';
 
 function App() {
   const [student, setStudent] = useState<IStudent | undefined>();
-  const logoutStudent = () => {
-    setStudent(undefined);
-  };
-
-  const loginStudent = () => {
-    setStudent(dummyStudent);
-  };
+  const user = useAuth();
 
   // const student = undefined;
   return (
     <BrowserRouter>
-      <UserContext.Provider value={student}>
-        <Skeleton
-          loginStudent={loginStudent}
-          logoutStudent={logoutStudent}
-        />
+      <AuthProvider>
+        <Skeleton />
         <Routes>
           <Route
             path='*'
             element={<PageNotFound />}
           />
-          {student
-            ? ['/home', '/'].map(
+          {['/home', '/'].map(
                 (
                   path,
                   index // user is authenticated
@@ -51,8 +41,8 @@ function App() {
                     key={index}
                   />
                 )
-              )
-            : ['/home', '/'].map(
+              )}
+             {['/landing-page'].map(
                 (
                   path,
                   index // user is not authenticated
@@ -82,7 +72,7 @@ function App() {
             element={<CharacterProfiles />}
           />
         </Routes>
-      </UserContext.Provider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

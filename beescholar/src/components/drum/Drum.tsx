@@ -295,7 +295,7 @@ const Drum = (props: IDrumProps) => {
                   <button
                     id='finish-button'
                     className='bg-green-500 button-end'
-                    onClick={() => window.location.replace('/home')}>
+                    onClick={() => redirect("/home")}>
                     Finish Minigame
                   </button>
                   <button

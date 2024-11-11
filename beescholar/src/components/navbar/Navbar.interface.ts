@@ -5,6 +5,4 @@ export interface INavbarState {}
 export interface INavbarProps {
   isLoading: boolean;
   isShown: boolean;
-  loginStudent(): void;
-  logoutStudent(): void;
 }

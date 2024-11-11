@@ -1,15 +1,14 @@
 import React, { Component, useContext } from 'react';
 import { INavbarProps, INavbarState } from './Navbar.interface';
 import './Navbar.css';
-import { AuthenticationContext, UserContext } from '../../config/Context';
+import { useAuth } from '../../config/Context';
+import { dummyStudent } from '../../views/skeleton/Skeleton.constants';
+import { redirect } from 'react-router-dom';
 
 const Navbar = (props: INavbarProps) => {
+  const contextData = useAuth();
+  const student = contextData.user;
   const NavbarUserLogin = () => {
-    const student = useContext(UserContext);
-
-    const redirect = (to: string) => {
-      return window.location.replace(`/${to}`);
-    };
 
     return (
       student && (
@@ -52,13 +51,13 @@ const Navbar = (props: INavbarProps) => {
             <button
               id='home-button-background'
               className='nav-log-button-background mr-5'
-              onClick={() => redirect('home')}>
+              onClick={() => window.location.replace('home')}>
               <h3 className='nav-log-button-text'>Home</h3>
             </button>
             <button
               id='logout-button-background'
               className='nav-log-button-background'
-              onClick={props.logoutStudent}>
+              onClick={contextData.logout}>
               <h3 className='nav-log-button-text'>Logout</h3>
             </button>
           </div>
@@ -74,15 +73,13 @@ const Navbar = (props: INavbarProps) => {
         <div className='nav-log-container'>
           <button
             className='nav-log-button-background'
-            onClick={props.loginStudent}>
+            onClick={() => contextData.login(dummyStudent.email)}>
             <h3 className='nav-log-button-text'>Login</h3>
           </button>
         </div>
       </div>
     );
   };
-
-  const student = useContext(UserContext);
 
   if (props.isShown && student !== undefined) {
     return NavbarUserLogin();

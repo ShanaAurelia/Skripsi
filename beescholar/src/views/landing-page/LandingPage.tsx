@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
 import { IMainpageProps } from './LandingPage.interface';
 import { Button } from '@mui/material';
+import { useAuth } from '../../config/Context';
+import { redirect } from 'react-router-dom';
 
 const Mainpage = (props: IMainpageProps) => {
+  const user = useAuth();
+
+  const handleStart = () =>{
+    if(user.user !== undefined) window.location.replace("/home")
+  }
+
   return (
     <div
       className='bg-black h-screen object-bottom flex'
@@ -15,7 +23,7 @@ const Mainpage = (props: IMainpageProps) => {
       <div
         id='start-container'
         className='relative z-10 p-2'>
-          <Button variant='contained' color='warning' onClick={() => {}}>Start</Button>
+          <Button variant='contained' color='warning' onClick={handleStart}>Start</Button>
         </div>
         </div>
     </div>
