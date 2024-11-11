@@ -3,13 +3,13 @@ import { INavbarProps, INavbarState } from './Navbar.interface';
 import './Navbar.css';
 import { useAuth } from '../../config/Context';
 import { dummyStudent } from '../../views/skeleton/Skeleton.constants';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = (props: INavbarProps) => {
   const contextData = useAuth();
   const student = contextData.user;
+  const navigate = useNavigate();
   const NavbarUserLogin = () => {
-
     return (
       student && (
         <div
@@ -48,12 +48,14 @@ const Navbar = (props: INavbarProps) => {
           <div
             id='logout-button-container'
             className='nav-log-container'>
-            <button
-              id='home-button-background'
-              className='nav-log-button-background mr-5'
-              onClick={() => window.location.replace('home')}>
-              <h3 className='nav-log-button-text'>Home</h3>
-            </button>
+            {contextData.isStarted && (
+              <button
+                id='home-button-background'
+                className='nav-log-button-background mr-5'
+                onClick={() => navigate('/game/')}>
+                <h3 className='nav-log-button-text'>Home</h3>
+              </button>
+            )}
             <button
               id='logout-button-background'
               className='nav-log-button-background'

@@ -16,10 +16,15 @@ function RouteProtection({children}: IAuthProviderProps){
   const navigate = useNavigate();
 
   useEffect(function(){
-    if(!isAuthenticated) navigate("/")
+    if(!isAuthenticated) navigate("/beescholar")
   }, [isAuthenticated, navigate])
 
   return children;
 }
+
+function NavigateTo(to: string){
+  const nav = useNavigate();
+  return nav(to)
+} 
 
 export default RouteProtection

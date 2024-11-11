@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { IMainpageProps } from './LandingPage.interface';
 import { Button } from '@mui/material';
 import { useAuth } from '../../config/Context';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Mainpage = (props: IMainpageProps) => {
   const user = useAuth();
+  const navigate = useNavigate();
 
   const handleStart = () =>{
-    if(user.user !== undefined) window.location.replace("/home")
+    if(user.user !== undefined) user.start();
   }
 
   return (
