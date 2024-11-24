@@ -12,7 +12,7 @@
     }
 
     .nav-log-button-background{
-        @apply container bg-cyan-900 flex rounded-lg justify-center p-4;
+        @apply container bg-[#0171A9] flex rounded-xl justify-center items-center p-4 border-white border-2 hover:bg-[#1CAAF1];
     }
 
     .nav-log-button-text{

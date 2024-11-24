@@ -25,7 +25,11 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* Public Routes under "/beescholar" */}
-          <Route path='/beescholar' element={<Skeleton />}>
+          <Route path={'/'} element={<Skeleton />}>
+            <Route index element={<Mainpage />} />
+            <Route element={<PageNotFound />} />
+          </Route>
+          <Route path={'/beescholar'} element={<Skeleton />}>
             <Route index element={<Mainpage />} />
             <Route element={<PageNotFound />} />
           </Route>

@@ -53,14 +53,14 @@ const Navbar = (props: INavbarProps) => {
                 id='home-button-background'
                 className='nav-log-button-background mr-5'
                 onClick={() => navigate('/game/')}>
-                <h3 className='nav-log-button-text'>Home</h3>
+                <h3 className='nav-log-button-text'>HOME</h3>
               </button>
             )}
             <button
               id='logout-button-background'
               className='nav-log-button-background'
               onClick={contextData.logout}>
-              <h3 className='nav-log-button-text'>Logout</h3>
+              <h3 className='nav-log-button-text'>LOGOUT</h3>
             </button>
           </div>
         </div>
@@ -76,7 +76,7 @@ const Navbar = (props: INavbarProps) => {
           <button
             className='nav-log-button-background'
             onClick={() => contextData.login(dummyStudent.email)}>
-            <h3 className='nav-log-button-text'>Login</h3>
+            <h3 className='nav-log-button-text'>LOGIN</h3>
           </button>
         </div>
       </div>
