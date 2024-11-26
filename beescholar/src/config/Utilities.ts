@@ -27,4 +27,8 @@ function NavigateTo(to: string){
   return nav(to)
 } 
 
-export default RouteProtection
+export function GetUserData(){
+    return JSON.parse(window.localStorage.getItem('user-beescholar') || "");
+}
+
+export default RouteProtection;

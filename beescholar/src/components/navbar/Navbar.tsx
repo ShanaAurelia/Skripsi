@@ -4,10 +4,16 @@ import './Navbar.css';
 import { useAuth } from '../../config/Context';
 import { dummyStudent } from '../../views/skeleton/Skeleton.constants';
 import { useNavigate } from 'react-router-dom';
+import { GetUserData } from '../../config/Utilities';
 
 const Navbar = (props: INavbarProps) => {
   const contextData = useAuth();
-  const student = contextData.user;
+  var _savedUser;
+  if(window.localStorage.getItem('user-beescholar') !== null){
+    _savedUser = GetUserData();
+    contextData.checkExistingUser(_savedUser)
+  }
+  const student = _savedUser? _savedUser:contextData.user;
   const navigate = useNavigate();
   const NavbarUserLogin = () => {
     return (

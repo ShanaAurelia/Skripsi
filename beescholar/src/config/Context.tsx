@@ -2,6 +2,8 @@ import { createContext, useContext, ReactNode, useReducer } from 'react';
 import { IStudent } from '../constants/global.interfaces';
 import { DummyStudent } from '../constants/dummy.constants';
 import { Navigate, redirect, useNavigate } from 'react-router-dom';
+import { dummyStudent } from '../views/skeleton/Skeleton.constants';
+import { GetUserData } from './Utilities';
 
 interface IUserContext {
   user: IStudent | undefined;
@@ -10,6 +12,7 @@ interface IUserContext {
   login(email: string): void;
   logout(): void;
   start(): void;
+  checkExistingUser(payload:any): void;
 }
 
 export interface IAuthProviderProps {
@@ -27,7 +30,8 @@ const defaultValue: IUserContext = {
   isStarted: false,
   login: () => {},
   logout: () => {},
-  start: () => {}
+  start: () => {},
+  checkExistingUser: (payload:any) => {}
 };
 
 function reducer(state: IUserContext, action: IUserContextPayload) {
@@ -40,6 +44,9 @@ function reducer(state: IUserContext, action: IUserContextPayload) {
 
     case 'start':
       return{ ...state, isStarted: true}
+    
+    case 'check':
+      return{...state, user:action.payload, isAuthenticated: true}
 
     default:
       throw new Error('Unknown action in UserContext');
@@ -58,10 +65,12 @@ function AuthProvider({ children }: IAuthProviderProps) {
   function login(email: string) {
     if (email === DummyStudent.email) {
       dispatch({ type: 'login', payload: DummyStudent });
+      window.localStorage.setItem('user-beescholar',JSON.stringify(dummyStudent))
     } else throw new Error('No Email Detected');
   }
 
   function logout() {
+    window.localStorage.removeItem('user-beescholar');
     dispatch({ type: 'logout' });
   }
 
@@ -70,8 +79,13 @@ function AuthProvider({ children }: IAuthProviderProps) {
     navigate('/game/')
   }
 
+  function checkExistingUser(payload:any){
+    if(payload !== "" && user === undefined && isAuthenticated === false){
+      dispatch({ type: 'check', payload: payload})
+    }
+  }
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isStarted, login, logout, start }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isStarted, login, logout, start, checkExistingUser }}>
       {children}
     </AuthContext.Provider>
   );
