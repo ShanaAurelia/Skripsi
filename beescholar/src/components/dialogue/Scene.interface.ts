@@ -11,5 +11,5 @@ export interface IDialogueState{
 export interface  IDialogueProps{
     background: string;
     characters: ICharacter[];
-    backToHomepage(): void;
+    backToHomepage?(): void;
 }

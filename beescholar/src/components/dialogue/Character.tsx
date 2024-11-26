@@ -12,7 +12,7 @@ const Character = (char: ICharacterSceneProps) => {
     }
 
     return(
-        <div id='character' className='h-full w-5/6 opacity-100 z-20 flex justify-between'>
+        <div id='character' className={'h-full w-5/6 z-20 flex justify-between'}>
             <img src={char.src} className={'bottom-0 justify-end object-scale-down ' + adjustPosition(char.position)}/>
         </div>
     )

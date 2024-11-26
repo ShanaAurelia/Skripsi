@@ -10,6 +10,7 @@ import Crossword, {
 import { testCrossword } from '../../constants/crossword.constants';
 import { Button, Modal } from '@mui/material';
 import './Crossword.css';
+import { useNavigate } from 'react-router-dom';
 
 const CrosswordPage = (props: ICrosswordProps) => {
   // constructor(props: ICrosswordProps) {
@@ -23,6 +24,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
   const [isCrosswordComplete, setIsCrosswordComplete] = useState(false);
   const [isCrosswordCorrect, setIsCrosswordCorrect] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const navigate = useNavigate();
 
   const setCrosswordComplete = () => {
     setIsCrosswordComplete(true);
@@ -78,7 +80,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
           color='primary'
           onClick={() => {
             cref.current?.reset();
-            window.location.replace('/home');
+            navigate('/game/');
           }}>
           Home
         </Button>
@@ -97,7 +99,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
         <Modal
           open={openModal}
           onClose={() => {
-            window.location.replace('/home');
+            navigate('/game/');
           }}>
           <div
             id='modal-correct-background'
@@ -113,7 +115,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
                 color='success'
                 onClick={() => {
                   cref.current?.reset();
-                  window.location.replace('/home');
+                  navigate('/game/');
                 }}>
                 Go Back
               </Button>
@@ -137,7 +139,8 @@ const CrosswordPage = (props: ICrosswordProps) => {
                 color='warning'
                 onClick={() => {
                   cref.current?.reset();
-                  window.location.replace('/crossword');
+                  setOpenModal(false);
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}>
                 Try Again
               </Button>

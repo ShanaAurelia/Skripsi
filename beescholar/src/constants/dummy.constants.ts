@@ -1,5 +1,5 @@
 import { IDialogueProps } from '../components/dialogue/Scene.interface';
-import { IDialogue, IStudent } from './global.interfaces';
+import { ICharacter, IDialogue, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {
   id: '0a1d5e9e-ca7d-47d1-8466-00ca9f8818b7',
@@ -38,7 +38,7 @@ export const DummyDialogue: IDialogueProps = {
       role: 'Student',
       picture: '/characters/aset merch BINUS Support 6 - pemberi info copy.png',
     },
-  ]
+  ],
 };
 
 export const DummyDialogueLine: IDialogue[] = [
@@ -88,3 +88,82 @@ export const DummyDialogueLine: IDialogue[] = [
     },
   },
 ];
+
+export const DummyIntroductionDialogue: IDialogue[] = [
+  {
+    index: 0,
+    line: {
+      characterExpression: 'Empty',
+      characterId: '01',
+      speed: 1,
+      text: 'Halo, siapa nama kamu?',
+    },
+  },
+  {
+    index: 1,
+    line: {
+      characterExpression: 'Empty',
+      characterId: '01',
+      speed: 1,
+      text: 'Hi {playerName}. Perkenalkan nama aku Diyan... Aku akan mendampingi mu agar kamu bisa berhasil menjadi Beescholar',
+    },
+  },
+  {
+    index: 2,
+    line: {
+      characterExpression: 'Empty',
+      characterId: '01',
+      speed: 1,
+      text: 'Hi {playerName}, selamat kamu telah direkomendasikan menjadi salah satu kandidat "Beescholar". Saat ini kamu dipanggil ke ruang guru untuk menerima informasi detailnya.',
+    },
+  },
+  {
+    index: 3,
+    line: {
+      characterExpression: 'Empty',
+      characterId: '01',
+      speed: 1,
+      text: 'Sebagai salah satu kandidat yang direkomendasikan, kamu juga mendapat poster berisi petunjuk proses untuk menjadi Beescholar dan kamu dapat menyimpannya di ruang penyimpananmu.',
+    },
+  },
+];
+
+export const KMGCharacters:ICharacter[] = [
+  {
+    id: "01",
+    campusId: "01",
+    description: "A temporary description",
+    dislikes: "Spicy food",
+    likes: "Mild food",
+    name: "Tempo",
+    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
+    role: "Student"
+  },{
+    id: "02",
+    campusId: "02",
+    description: "A temporary description",
+    dislikes: "Spicy food",
+    likes: "Mild food",
+    name: "Tempon",
+    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
+    role: "Beescholar"
+  },{
+    id: "03",
+    campusId: "03",
+    description: "A temporary description",
+    dislikes: "Spicy food",
+    likes: "Mild food",
+    name: "Temporin",
+    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
+    role: "Student"
+  },{
+    id: "04",
+    campusId: "04",
+    description: "A temporary description",
+    dislikes: "Spicy food",
+    likes: "Mild food",
+    name: "Tempo",
+    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
+    role: "Literature Club Leader"
+  },
+]

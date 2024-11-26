@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { createContext, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -9,60 +9,50 @@ import PageNotFound from './views/page-not-found/PageNotFound';
 import Story from './views/story/Story';
 import CrosswordPage from './views/crossword/Crossword';
 import { dummyStudent } from './views/skeleton/Skeleton.constants';
-import Mainpage from './views/main-page/Mainpage';
+import Mainpage from './views/landing-page/LandingPage';
 import FollowTheDrum from './views/follow-the-drum/FollowTheDrum';
+import CharacterProfiles from './views/profiles/Profiles';
+import { IStudent } from './constants/global.interfaces';
+import { AuthProvider, useAuth } from './config/Context';
+import RouteProtection from './config/Utilities';
 
 function App() {
-  const student = dummyStudent;
-  // const student = undefined;
+  const [student, setStudent] = useState<IStudent | undefined>();
+  const user = useAuth();
+
   return (
     <BrowserRouter>
-      <Skeleton />
-      <Routes>
-        <Route
-          path='*'
-          element={<PageNotFound />}
-        />
-        {student
-          ? ['/home', '/'].map(
-              (
-                path,
-                index // user is authenticated
-              ) => (
-                // if link is /home or /, it will lead to homepage
-                <Route
-                  path={path}
-                  element={<Homepage />}
-                  key={index}
-                />
-              )
-            )
-          : ['/home', '/'].map(
-              (
-                path,
-                index // user is not authenticated
-              ) => (
-                // if link is /home or /, it will lead to mainpage
-                <Route
-                  path={path}
-                  element={<Mainpage />}
-                  key={index}
-                />
-              )
-            )}
-        <Route
-          path='/story'
-          element={<Story />}
-        />
-        <Route
-          path='/crossword'
-          element={<CrosswordPage />}
-        />
-        <Route
-          path='/followthedrum'
-          element={<FollowTheDrum />}
-        />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          {/* Public Routes under "/beescholar" */}
+          <Route path={'/'} element={<Skeleton />}>
+            <Route index element={<Mainpage />} />
+            <Route element={<PageNotFound />} />
+          </Route>
+          <Route path={'/beescholar'} element={<Skeleton />}>
+            <Route index element={<Mainpage />} />
+            <Route element={<PageNotFound />} />
+          </Route>
+
+          {/* Protected Routes under "/game" */}
+          <Route
+            path='/game'
+            element={
+              <RouteProtection>
+                <Skeleton />
+              </RouteProtection>
+            }
+          >
+            <Route index element={<Homepage />} />
+            <Route path='home' element={<Homepage />} />
+            <Route path='story' element={<Story />} />
+            <Route path='crossword' element={<CrosswordPage />} />
+            <Route path='followthedrum' element={<FollowTheDrum />} />
+            <Route path='profiles' element={<CharacterProfiles />} />
+            <Route path='*' element={<PageNotFound />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
@@ -70,7 +60,5 @@ function App() {
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(<App />);
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// Uncomment to measure app performance
 // reportWebVitals();
