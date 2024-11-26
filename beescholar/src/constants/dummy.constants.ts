@@ -1,5 +1,5 @@
 import { IDialogueProps } from '../components/dialogue/Scene.interface';
-import { IDialogue, IStudent } from './global.interfaces';
+import { ICharacter, IDialogue, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {
   id: '0a1d5e9e-ca7d-47d1-8466-00ca9f8818b7',
@@ -127,3 +127,43 @@ export const DummyIntroductionDialogue: IDialogue[] = [
     },
   },
 ];
+
+export const KMGCharacters:ICharacter[] = [
+  {
+    id: "01",
+    campusId: "01",
+    description: "A temporary description",
+    dislikes: "Spicy food",
+    likes: "Mild food",
+    name: "Tempo",
+    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
+    role: "Student"
+  },{
+    id: "02",
+    campusId: "02",
+    description: "A temporary description",
+    dislikes: "Spicy food",
+    likes: "Mild food",
+    name: "Tempon",
+    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
+    role: "Beescholar"
+  },{
+    id: "03",
+    campusId: "03",
+    description: "A temporary description",
+    dislikes: "Spicy food",
+    likes: "Mild food",
+    name: "Temporin",
+    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
+    role: "Student"
+  },{
+    id: "04",
+    campusId: "04",
+    description: "A temporary description",
+    dislikes: "Spicy food",
+    likes: "Mild food",
+    name: "Tempo",
+    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
+    role: "Literature Club Leader"
+  },
+]
