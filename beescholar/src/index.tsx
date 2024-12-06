@@ -15,6 +15,7 @@ import CharacterProfiles from './views/profiles/Profiles';
 import { IStudent } from './constants/global.interfaces';
 import { AuthProvider, useAuth } from './config/Context';
 import RouteProtection from './config/Utilities';
+import CampusMap from './views/campus-map/Campus_Map';
 
 function App() {
   const [student, setStudent] = useState<IStudent | undefined>();
@@ -49,6 +50,7 @@ function App() {
             <Route path='crossword' element={<CrosswordPage />} />
             <Route path='followthedrum' element={<FollowTheDrum />} />
             <Route path='profiles' element={<CharacterProfiles />} />
+            <Route path='map' element={<CampusMap/>} />
             <Route path='*' element={<PageNotFound />} />
           </Route>
         </Routes>

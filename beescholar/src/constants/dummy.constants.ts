@@ -1,4 +1,5 @@
 import { IDialogueProps } from '../components/dialogue/Scene.interface';
+import { IInteractibles } from '../components/map/Map_Book.interfaces';
 import { ICharacter, IDialogue, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {
@@ -128,42 +129,68 @@ export const DummyIntroductionDialogue: IDialogue[] = [
   },
 ];
 
-export const KMGCharacters:ICharacter[] = [
+export const KMGCharacters: ICharacter[] = [
   {
-    id: "01",
-    campusId: "01",
-    description: "A temporary description",
-    dislikes: "Spicy food",
-    likes: "Mild food",
-    name: "Tempo",
-    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
-    role: "Student"
-  },{
-    id: "02",
-    campusId: "02",
-    description: "A temporary description",
-    dislikes: "Spicy food",
-    likes: "Mild food",
-    name: "Tempon",
-    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
-    role: "Beescholar"
-  },{
-    id: "03",
-    campusId: "03",
-    description: "A temporary description",
-    dislikes: "Spicy food",
-    likes: "Mild food",
-    name: "Temporin",
-    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
-    role: "Student"
-  },{
-    id: "04",
-    campusId: "04",
-    description: "A temporary description",
-    dislikes: "Spicy food",
-    likes: "Mild food",
-    name: "Tempo",
-    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
-    role: "Literature Club Leader"
+    id: '01',
+    campusId: '01',
+    description: 'A temporary description',
+    dislikes: 'Spicy food',
+    likes: 'Mild food',
+    name: 'Tempo',
+    picture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+    role: 'Student',
   },
-]
+  {
+    id: '02',
+    campusId: '02',
+    description: 'A temporary description',
+    dislikes: 'Spicy food',
+    likes: 'Mild food',
+    name: 'Tempon',
+    picture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+    role: 'Beescholar',
+  },
+  {
+    id: '03',
+    campusId: '03',
+    description: 'A temporary description',
+    dislikes: 'Spicy food',
+    likes: 'Mild food',
+    name: 'Temporin',
+    picture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+    role: 'Student',
+  },
+  {
+    id: '04',
+    campusId: '04',
+    description: 'A temporary description',
+    dislikes: 'Spicy food',
+    likes: 'Mild food',
+    name: 'Tempo',
+    picture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+    role: 'Literature Club Leader',
+  },
+];
+
+export const DummyInteractibles: IInteractibles[] = [
+  {
+    id: '01',
+    description: 'Meet Up with Diyan in the Teacher Office',
+    type: 'Main Quest',
+  },
+  {
+    id: '02',
+    description: 'Someone wants to talk in the Band Room',
+    type: 'Trivial Task',
+  },
+  {
+    id: '03',
+    description: 'Someone needs help in the Classroom',
+    type: 'Interaction',
+  },
+  {
+    id: '04',
+    description: 'Talk to Ania in the Hallway',
+    type: 'Interaction',
+  },
+];
