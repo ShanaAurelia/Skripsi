@@ -68,11 +68,11 @@ const MapBook = () => {
         className='w-11/12 h-5/6 flex flex-col'>
         <div
           id='to-do-container'
-          className='h-1/2 w-full bg-[#A95E01] relative flex flex-col p-2 rounded-lg'>
+          className='h-1/2 w-full bg-[#A95E01] relative flex flex-col rounded-lg'>
           <div
             id='todo-header'
             className='h-1/3'>
-            <h3 className='m-3 text-2xl text-white tracking-widest font-semibold'>
+            <h3 className='ml-3 mt-2 mb-2 text-2xl text-white tracking-widest font-semibold'>
               TO-DO
             </h3>
           </div>
@@ -105,6 +105,25 @@ const MapBook = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+        <div
+          id='tutorial-container'
+          className='w-2/5 h-5/6 flex flex-col'>
+          <div
+            id='tutorial-box'
+            className='bg-[#014769] text-white flex flex-col p-3 mt-5 rounded-lg'>
+            <div
+              id='tutorial-text-container'
+              className='h-1/3 w-full'>
+              <h3 className='text-white tracking-widest font-bold'>TUTORIAL</h3>
+            </div>
+            <div
+              id='tutorial-step-container'
+              className='h-2/3 w-full flex flex-col'>
+              <h5 className='text-white font-semibold'>1. Select a room</h5>
+              <h5 className='text-white font-semibold'>2. Click Navigate</h5>
+            </div>
           </div>
         </div>
       </div>
