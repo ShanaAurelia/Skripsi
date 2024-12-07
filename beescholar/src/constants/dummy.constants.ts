@@ -1,6 +1,6 @@
 import { IDialogueProps } from '../components/dialogue/Scene.interface';
 import { IInteractibles } from '../components/map/Map_Book.interfaces';
-import { ICharacter, IDialogue, IStudent } from './global.interfaces';
+import { ICharacter, IDialogue, IRank, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {
   id: '0a1d5e9e-ca7d-47d1-8466-00ca9f8818b7',
@@ -193,4 +193,47 @@ export const DummyInteractibles: IInteractibles[] = [
     description: 'Talk to Ania in the Hallway',
     type: 'Interaction',
   },
+];
+
+export const DummyLeaderboardStory: string[] = [
+  'John Doe',
+  'Maria Sanches',
+  'Maurine Moran',
+  'Dennis Jones',
+  'Elena Ormanda',
+  'Esther Carmilla Colleta',
+  'Shannon Legase',
+  'Juan Deleon',
+  'Francis Schmidt',
+  'Michael Bernard Magdir',
+];
+export const DummyLeaderboardPoints: string[] = [
+  'John Doe',
+  'Maria Sanches',
+  'Maurine Moran',
+  'Dennis Jones',
+  'Elena Ormanda',
+  'Esther Carmilla Colleta',
+  'Shannon Legase',
+  'Juan Deleon',
+  'Francis Schmidt',
+  'Michael Bernard Magdir',
+];
+export const DummyLeaderboardCrossword: string[] = [
+  'John Doe',
+  'Maria Sanches',
+  'Maurine Moran',
+  'Dennis Jones',
+  'Elena Ormanda',
+  'Esther Carmilla Colleta',
+  'Shannon Legase',
+  'Juan Deleon',
+  'Francis Schmidt',
+  'Michael Bernard Magdir',
+];
+
+export const DummyPlayerRank: IRank[] = [
+  { leaderboard: 'story', name: 'John Doe', rank: 1 },
+  { leaderboard: 'points', name: 'John Doe', rank: 1 },
+  { leaderboard: 'crossword', name: 'John Doe', rank: 1 },
 ];

@@ -48,7 +48,7 @@ const Homepage = () => {
               <button id='play-story-button' className='menu-button' onClick={() => navigate('story', {replace: true})}> PLAY STORY </button>
               <button id='characters-button' className='menu-button' onClick={() => navigate('profiles', {replace: true})}> CHARACTERS </button>
               <button id='campus-map-button' className='menu-button' onClick={() => navigate('map', {replace: true})}> CAMPUS MAP </button>
-              <button id='leaderboard-button' className='menu-button'> LEADERBOARD </button>
+              <button id='leaderboard-button' className='menu-button' onClick={() => navigate('leaderboard', {replace: true})}> LEADERBOARD </button>
               <button id='tutorial-button' className='menu-button'> TUTORIAL </button>
             </div>
         <img
