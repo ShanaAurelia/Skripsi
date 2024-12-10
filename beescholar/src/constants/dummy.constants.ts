@@ -177,22 +177,35 @@ export const DummyInteractibles: IInteractibles[] = [
     id: '01',
     description: 'Meet Up with Diyan in the Teacher Office',
     type: 'Main Quest',
+    location: 'Teacher Office'
   },
   {
     id: '02',
     description: 'Someone wants to talk in the Band Room',
     type: 'Trivial Task',
+    minigameType: 'Story Case',
+    location: 'Band Room'
   },
   {
     id: '03',
     description: 'Someone needs help in the Classroom',
-    type: 'Interaction',
+    type: 'Trivial Task',
+    minigameType: 'Follow the Drum',
+    location: "Classroom"
   },
   {
     id: '04',
     description: 'Talk to Ania in the Hallway',
     type: 'Interaction',
+    location: 'Hallway'
   },
+  // {
+  //   id: '05',
+  //   description: 'New Crossword Available',
+  //   type: 'Trivial Task',
+  //   minigameType: 'Crossword',
+  //   location: ''
+  // }
 ];
 
 export const DummyLeaderboardStory: string[] = [

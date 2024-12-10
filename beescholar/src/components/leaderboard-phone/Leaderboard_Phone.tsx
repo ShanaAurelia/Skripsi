@@ -7,6 +7,8 @@ import {
   DummyLeaderboardStory,
   DummyPlayerRank,
 } from '../../constants/dummy.constants';
+import '../../constants/global.css';
+import { useNavigate } from 'react-router-dom';
 
 const Phoneboard = () => {
   const [storyLeaderboard, setStoryLeaderboard] = useState<string[]>([]);
@@ -40,6 +42,8 @@ const Phoneboard = () => {
     });
   }, [playerLeaderboard]);
 
+  const navigate = useNavigate();
+
   const phoneScreenFill = () => (
     <div
       id='phone-screen-fill'
@@ -55,7 +59,7 @@ const Phoneboard = () => {
             className='board-global'>
             <div
               id='global-leaderboard-story-title'
-              className='flex flex-col h-1/5 w-full items-center mb-2'>
+              className='flex flex-col h-1/5 w-full items-center mt-2'>
               <h3 className='text-black font-semibold text-md'>TOP 10</h3>
               <h3 className='text-black font-semibold text-md'>
                 STORY CLEAR TIME
@@ -63,14 +67,14 @@ const Phoneboard = () => {
             </div>
             <div
               id='global-leaderboard-story-ranking'
-              className='h-4/5 w-11/12 flex flex-col justify-center bg-[#67BBE7] rounded-md mb-3 overflow-y-auto overflow-x-hidden pt-10 pb-3'>
+              className='global-leaderboard-list no-scrollbar'>
               {storyLeaderboard.map((name, index) =>
                 index + 1 < 4 ? (
-                  <h3 className='text-white font-medium text-lg text-ellipsis whitespace-nowrap w-full h-1/6 ml-2 mr-2'>
+                  <h3 className='global-leaderboard-top-3'>
                     {index + 1} {name}
                   </h3>
                 ) : (
-                  <h5 className='text-white font-normal text-base text-ellipsis whitespace-nowrap w-full h-1/6 ml-2 mr-2'>
+                  <h5 className='global-leaderboard-top-10'>
                     {index + 1} {name}
                   </h5>
                 )
@@ -83,7 +87,7 @@ const Phoneboard = () => {
             {' '}
             <div
               id='global-leaderboard-story-title'
-              className='flex flex-col h-1/5 w-full items-center mb-2'>
+              className='flex flex-col h-1/5 w-full items-center mt-2'>
               <h3 className='text-black font-semibold text-md'>TOP 10</h3>
               <h3 className='text-black font-semibold text-md text-center'>
                 BEESCHOLAR POINTS
@@ -91,14 +95,14 @@ const Phoneboard = () => {
             </div>
             <div
               id='global-leaderboard-story-ranking'
-              className='h-4/5 w-11/12 flex flex-col justify-center bg-[#67BBE7] rounded-md mb-3 overflow-y-auto overflow-x-hidden pt-10 pb-3'>
+              className='global-leaderboard-list no-scrollbar'>
               {pointLeaderboard.map((name, index) =>
                 index + 1 < 4 ? (
-                  <h3 className='text-white font-medium text-lg text-ellipsis whitespace-nowrap w-full h-1/6 ml-2 mr-2'>
+                  <h3 className='global-leaderboard-top-3'>
                     {index + 1} {name}
                   </h3>
                 ) : (
-                  <h5 className='text-white font-normal text-base text-ellipsis whitespace-nowrap w-full h-1/6 ml-2 mr-2'>
+                  <h5 className='global-leaderboard-top-10'>
                     {index + 1} {name}
                   </h5>
                 )
@@ -119,15 +123,15 @@ const Phoneboard = () => {
             </div>
             <div
               id='global-leaderboard-story-ranking'
-              className='h-4/5 w-11/12 flex flex-col justify-center bg-[#67BBE7] rounded-md mb-3 overflow-y-auto overflow-x-hidden pt-10 pb-3'>
+              className='global-leaderboard-list no-scrollbar'>
               {crosswordLeaderboard.map((name, index) =>
                 index + 1 < 4 ? (
-                  <h3 className='text-white font-medium text-lg text-ellipsis whitespace-nowrap w-full h-1/6 ml-2 mr-2'>
-                    {index + 1} {name}
+                  <h3 className='global-leaderboard-top-3'>
+                    {index + 1}. {name}
                   </h3>
                 ) : (
-                  <h5 className='text-white font-normal text-base text-ellipsis whitespace-nowrap w-full h-1/6 ml-2 mr-2'>
-                    {index + 1} {name}
+                  <h5 className='global-leaderboard-top-10'>
+                    {index + 1}. {name}
                   </h5>
                 )
               )}
@@ -148,7 +152,7 @@ const Phoneboard = () => {
               id='player-rank-story'
               className='w-5/6 h-3/4 rounded-xl bg-[#67BBE7] flex justify-center items-center'>
               <h5 className='text-white font-medium text-lg'>
-                {playerStoryLeaderboard?.rank} {playerStoryLeaderboard?.name}
+                {playerStoryLeaderboard?.rank}. {playerStoryLeaderboard?.name}
               </h5>
             </div>
           </div>
@@ -170,7 +174,7 @@ const Phoneboard = () => {
               id='player-rank-crossword'
               className='w-5/6 h-3/4 rounded-xl bg-[#67BBE7] flex justify-center items-center'>
               <h5 className='text-white font-medium text-lg'>
-                {playerCrosswordLeaderboard?.rank}
+                {playerCrosswordLeaderboard?.rank}.{' '}
                 {playerCrosswordLeaderboard?.name}
               </h5>
             </div>
@@ -202,9 +206,13 @@ const Phoneboard = () => {
       <div
         id='phone-button-container'
         className='w-1/12 h-full flex justify-center items-center'>
-        <div
+        <button
           id='phone-button'
-          className='bg-white w-12 h-12 rounded-full'></div>
+          className='bg-white w-12 h-12 rounded-full'
+          onClick={() => navigate('/game/', {replace:true})}
+          >
+
+        </button>
       </div>
     </div>
   );

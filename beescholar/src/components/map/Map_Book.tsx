@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import './Map_Book.css';
-import { Popover } from '@mui/material';
+import '../../constants/global.css';
+import { Modal, Popover } from '@mui/material';
 import { IInteractibles } from './Map_Book.interfaces';
 import { DummyInteractibles } from '../../constants/dummy.constants';
+import { useNavigate } from 'react-router-dom';
 
 const MapBook = () => {
   const [activeLocation, setActiveLocation] = useState<string>('KMG');
   const [openPopover, setOpenPopover] = useState<boolean>(false);
+  const [openTaskModal, setOpenTaskModal] = useState<boolean>(false);
+  const [openMainQuestModal, setOpenMainQuestModal] = useState<boolean>(false);
+  const [openInteraction, setOpenInteraction] = useState<boolean>(false);
   const [popoverLocation, setPopoverLocation] = useState<string>();
   const [element, setElement] = useState<any>();
   const [interactibles, setInteractibles] = useState<IInteractibles[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setInteractibles(DummyInteractibles);
   }, []);
-
-  useEffect(() => {
-    element !== undefined && handleMapLocation();
-  }, [element]);
 
   useEffect(() => {
     if (element !== undefined) {
@@ -55,8 +57,47 @@ const MapBook = () => {
         return '?';
     }
   };
+
+  const handleInteractibleAction = () => {
+    if (popoverLocation !== undefined) {
+      const trigger = interactibles.find(
+        (i) => i.location === translateKMGMapId(popoverLocation)
+      );
+      if (trigger) {
+        switch (trigger.type) {
+          case 'Trivial Task':
+            setOpenTaskModal(true);
+            return;
+          case 'Interaction':
+            setOpenInteraction(true);
+            return;
+          case 'Main Quest':
+            setOpenMainQuestModal(true);
+            return;
+        }
+      }
+    }
+  };
+
   const handleMapLocation = () => {
     setPopoverLocation(element.target.id);
+  };
+
+  const translateKMGMapId = (roomId: string) => {
+    switch (roomId) {
+      case 'teacher-office':
+        return 'Teacher Office';
+      case 'classroom':
+        return 'Classroom';
+      case 'band-room':
+        return 'Band Room';
+      case 'hallway-horizontal':
+        return 'Hallway';
+      case 'hallway-vertical':
+        return 'Hallway';
+      default:
+        return '...';
+    }
   };
 
   const renderMapInteractibles = () => (
@@ -72,13 +113,13 @@ const MapBook = () => {
           <div
             id='todo-header'
             className='h-1/3'>
-            <h3 className='ml-3 mt-2 mb-2 text-2xl text-white tracking-widest font-semibold'>
+            <h3 className='ml-3 mt-2 text-2xl text-white tracking-widest font-semibold'>
               TO-DO
             </h3>
           </div>
           <div
             id='todo-interactibles-list'
-            className='w-full h-2/3 overflow-y-auto text-wrap flex flex-col items-center'>
+            className='w-full h-2/3 overflow-y-auto text-wrap flex flex-col items-center no-scrollbar'>
             {interactibles.map((i) => (
               <div
                 id={`${i.id}-container`}
@@ -108,23 +149,62 @@ const MapBook = () => {
           </div>
         </div>
         <div
-          id='tutorial-container'
-          className='w-2/5 h-5/6 flex flex-col'>
+          id='flex-container-description'
+          className='flex flex-row justify-evenly w-full h-max items-center'>
           <div
-            id='tutorial-box'
-            className='bg-[#014769] text-white flex flex-col p-3 mt-5 rounded-lg'>
+            id='tutorial-container'
+            className='w-2/5 h-5/6 flex flex-col'>
             <div
-              id='tutorial-text-container'
-              className='h-1/3 w-full'>
-              <h3 className='text-white tracking-widest font-bold'>TUTORIAL</h3>
-            </div>
-            <div
-              id='tutorial-step-container'
-              className='h-2/3 w-full flex flex-col'>
-              <h5 className='text-white font-semibold'>1. Select a room</h5>
-              <h5 className='text-white font-semibold'>2. Click Navigate</h5>
+              id='tutorial-box'
+              className='bg-[#014769] text-white flex flex-col p-3 mt-5 rounded-lg'>
+              <div
+                id='tutorial-text-container'
+                className='h-1/3 w-full'>
+                <h3 className='text-white tracking-widest font-bold'>
+                  TUTORIAL
+                </h3>
+              </div>
+              <div
+                id='tutorial-step-container'
+                className='h-2/3 w-full flex flex-col'>
+                <h5 className='text-white font-semibold'>1. Select a room</h5>
+                <h5 className='text-white font-semibold'>2. Click Navigate</h5>
+              </div>
             </div>
           </div>
+          <div
+            id='active-location-container'
+            className='w-2/5 h-5/6 flex flex-col'>
+            <div
+              id='active-location-box'
+              className='bg-[#014769] text-white flex flex-col p-3 mt-5 rounded-lg justify-between'>
+              <div
+                id='active-location-text-container'
+                className='h-1/3 w-full text-center'>
+                <h3 className='text-white tracking-widest font-bold'>
+                  SELECTED LOCATION
+                </h3>
+              </div>
+              <div
+                id='active-location-step-container'
+                className='h-1/3 w-full flex flex-col text-center mb-2 mt-4 bg-white rounded-lg'>
+                <h5 className='text-[#014769] font-semibold'>
+                  {popoverLocation ? translateKMGMapId(popoverLocation) : '...'}
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          id='navigate-button-container'
+          className='flex justify-center items-center w-full pt-10'>
+          <button
+            id='navigate-button'
+            className='bg-[#C06C00] text-lg font-bold rounded-2xl text-white w-1/2 hover:bg-[#F18700] duration-300 motion-reduce:transition disabled:bg-[#E0E0E0]'
+            disabled={!popoverLocation}
+            onClick={handleInteractibleAction}>
+            NAVIGATE
+          </button>
         </div>
       </div>
     </div>
@@ -276,8 +356,20 @@ const MapBook = () => {
         width='76'
         height='467'
         fill='#D9D9D9'
+        onMouseEnter={(e) => {
+          setElement(e);
+          setOpenPopover(true);
+        }}
+        onMouseLeave={() => {
+          setOpenPopover(false);
+          setElement(undefined);
+        }}
         onClick={(e) => {
           setElement(e);
+          setOpenPopover(true);
+          setTimeout(() => {
+            handleMapLocation();
+          }, 300);
         }}
         id='hallway-horizontal'
         className='hover:cursor-pointer'
@@ -289,11 +381,23 @@ const MapBook = () => {
         height='397'
         transform='rotate(-90 62 303)'
         fill='#D9D9D9'
+        onMouseEnter={(e) => {
+          setElement(e);
+          setOpenPopover(true);
+        }}
+        onMouseLeave={() => {
+          setOpenPopover(false);
+          setElement(undefined);
+        }}
         onClick={(e) => {
           setElement(e);
+          setOpenPopover(true);
+          setTimeout(() => {
+            handleMapLocation();
+          }, 300);
         }}
         id='hallway-vertical'
-        className='hover:cursor-pointer'
+        className='hover:cursor-pointer active:border-black active:border-2'
       />
       <path
         d='M232.555 263.273V265.113H223.32V263.273H232.555ZM223.672 255.938V273H221.41V255.938H223.672ZM234.523 255.938V273H232.273V255.938H234.523ZM245.691 270.832V264.305C245.691 263.805 245.59 263.371 245.387 263.004C245.191 262.629 244.895 262.34 244.496 262.137C244.098 261.934 243.605 261.832 243.02 261.832C242.473 261.832 241.992 261.926 241.578 262.113C241.172 262.301 240.852 262.547 240.617 262.852C240.391 263.156 240.277 263.484 240.277 263.836H238.109C238.109 263.383 238.227 262.934 238.461 262.488C238.695 262.043 239.031 261.641 239.469 261.281C239.914 260.914 240.445 260.625 241.062 260.414C241.688 260.195 242.383 260.086 243.148 260.086C244.07 260.086 244.883 260.242 245.586 260.555C246.297 260.867 246.852 261.34 247.25 261.973C247.656 262.598 247.859 263.383 247.859 264.328V270.234C247.859 270.656 247.895 271.105 247.965 271.582C248.043 272.059 248.156 272.469 248.305 272.812V273H246.043C245.934 272.75 245.848 272.418 245.785 272.004C245.723 271.582 245.691 271.191 245.691 270.832ZM246.066 265.312L246.09 266.836H243.898C243.281 266.836 242.73 266.887 242.246 266.988C241.762 267.082 241.355 267.227 241.027 267.422C240.699 267.617 240.449 267.863 240.277 268.16C240.105 268.449 240.02 268.789 240.02 269.18C240.02 269.578 240.109 269.941 240.289 270.27C240.469 270.598 240.738 270.859 241.098 271.055C241.465 271.242 241.914 271.336 242.445 271.336C243.109 271.336 243.695 271.195 244.203 270.914C244.711 270.633 245.113 270.289 245.41 269.883C245.715 269.477 245.879 269.082 245.902 268.699L246.828 269.742C246.773 270.07 246.625 270.434 246.383 270.832C246.141 271.23 245.816 271.613 245.41 271.98C245.012 272.34 244.535 272.641 243.98 272.883C243.434 273.117 242.816 273.234 242.129 273.234C241.27 273.234 240.516 273.066 239.867 272.73C239.227 272.395 238.727 271.945 238.367 271.383C238.016 270.812 237.84 270.176 237.84 269.473C237.84 268.793 237.973 268.195 238.238 267.68C238.504 267.156 238.887 266.723 239.387 266.379C239.887 266.027 240.488 265.762 241.191 265.582C241.895 265.402 242.68 265.312 243.547 265.312H246.066ZM253.625 255V273H251.445V255H253.625ZM259.461 255V273H257.281V255H259.461ZM266.152 270.75L269.41 260.32H270.84L270.559 262.395L267.242 273H265.848L266.152 270.75ZM263.961 260.32L266.738 270.867L266.938 273H265.473L261.793 260.32H263.961ZM273.957 270.785L276.605 260.32H278.762L275.082 273H273.629L273.957 270.785ZM271.156 260.32L274.344 270.574L274.707 273H273.324L269.914 262.371L269.633 260.32H271.156ZM288.465 270.832V264.305C288.465 263.805 288.363 263.371 288.16 263.004C287.965 262.629 287.668 262.34 287.27 262.137C286.871 261.934 286.379 261.832 285.793 261.832C285.246 261.832 284.766 261.926 284.352 262.113C283.945 262.301 283.625 262.547 283.391 262.852C283.164 263.156 283.051 263.484 283.051 263.836H280.883C280.883 263.383 281 262.934 281.234 262.488C281.469 262.043 281.805 261.641 282.242 261.281C282.688 260.914 283.219 260.625 283.836 260.414C284.461 260.195 285.156 260.086 285.922 260.086C286.844 260.086 287.656 260.242 288.359 260.555C289.07 260.867 289.625 261.34 290.023 261.973C290.43 262.598 290.633 263.383 290.633 264.328V270.234C290.633 270.656 290.668 271.105 290.738 271.582C290.816 272.059 290.93 272.469 291.078 272.812V273H288.816C288.707 272.75 288.621 272.418 288.559 272.004C288.496 271.582 288.465 271.191 288.465 270.832ZM288.84 265.312L288.863 266.836H286.672C286.055 266.836 285.504 266.887 285.02 266.988C284.535 267.082 284.129 267.227 283.801 267.422C283.473 267.617 283.223 267.863 283.051 268.16C282.879 268.449 282.793 268.789 282.793 269.18C282.793 269.578 282.883 269.941 283.062 270.27C283.242 270.598 283.512 270.859 283.871 271.055C284.238 271.242 284.688 271.336 285.219 271.336C285.883 271.336 286.469 271.195 286.977 270.914C287.484 270.633 287.887 270.289 288.184 269.883C288.488 269.477 288.652 269.082 288.676 268.699L289.602 269.742C289.547 270.07 289.398 270.434 289.156 270.832C288.914 271.23 288.59 271.613 288.184 271.98C287.785 272.34 287.309 272.641 286.754 272.883C286.207 273.117 285.59 273.234 284.902 273.234C284.043 273.234 283.289 273.066 282.641 272.73C282 272.395 281.5 271.945 281.141 271.383C280.789 270.812 280.613 270.176 280.613 269.473C280.613 268.793 280.746 268.195 281.012 267.68C281.277 267.156 281.66 266.723 282.16 266.379C282.66 266.027 283.262 265.762 283.965 265.582C284.668 265.402 285.453 265.312 286.32 265.312H288.84ZM297.418 271.688L300.945 260.32H303.266L298.18 274.957C298.062 275.27 297.906 275.605 297.711 275.965C297.523 276.332 297.281 276.68 296.984 277.008C296.688 277.336 296.328 277.602 295.906 277.805C295.492 278.016 294.996 278.121 294.418 278.121C294.246 278.121 294.027 278.098 293.762 278.051C293.496 278.004 293.309 277.965 293.199 277.934L293.188 276.176C293.25 276.184 293.348 276.191 293.48 276.199C293.621 276.215 293.719 276.223 293.773 276.223C294.266 276.223 294.684 276.156 295.027 276.023C295.371 275.898 295.66 275.684 295.895 275.379C296.137 275.082 296.344 274.672 296.516 274.148L297.418 271.688ZM294.828 260.32L298.121 270.164L298.684 272.449L297.125 273.246L292.461 260.32H294.828Z'
@@ -308,8 +412,17 @@ const MapBook = () => {
         fill='#F39F33'
         id='teacher-office'
         className='hover:cursor-pointer'
+        onMouseEnter={(e) => {
+          setElement(e);
+          setOpenPopover(true);
+        }}
+        onMouseLeave={() => setOpenPopover(false)}
         onClick={(e) => {
           setElement(e);
+          setOpenPopover(true);
+          setTimeout(() => {
+            handleMapLocation();
+          }, 300);
         }}
       />
       <path
@@ -324,9 +437,18 @@ const MapBook = () => {
         height='100'
         rx='20'
         fill='#81C7E9'
-        id='bandroom'
+        id='band-room'
+        onMouseEnter={(e) => {
+          setElement(e);
+          setOpenPopover(true);
+        }}
+        onMouseLeave={() => setOpenPopover(false)}
         onClick={(e) => {
           setElement(e);
+          setOpenPopover(true);
+          setTimeout(() => {
+            handleMapLocation();
+          }, 300);
         }}
         className='hover:cursor-pointer'
       />
@@ -343,8 +465,17 @@ const MapBook = () => {
         rx='20'
         fill='#81C7E9'
         id='classroom'
+        onMouseEnter={(e) => {
+          setElement(e);
+          setOpenPopover(true);
+        }}
+        onMouseLeave={() => setOpenPopover(false)}
         onClick={(e) => {
           setElement(e);
+          setOpenPopover(true);
+          setTimeout(() => {
+            handleMapLocation();
+          }, 300);
         }}
         className='hover:cursor-pointer'
       />
@@ -361,6 +492,8 @@ const MapBook = () => {
       id={`popover`}
       container={() => document.getElementById('campus-map-container')}
       open={openPopover}
+      hideBackdrop={true}
+      onClose={() => setOpenPopover(false)}
       className='z-30 w-1/2 h-1/4 rounded-lg'
       anchorEl={element !== undefined ? element.target : null}
       anchorOrigin={{
@@ -374,7 +507,7 @@ const MapBook = () => {
       <div
         id='popover-backrgound'
         className='bg-white w-44 h-30 flex flex-col'>
-        <div
+        {/* <div
           id='popover-header'
           className='w-full h-7 bg-[#014769] flex justify-end items-center z-20'>
           <div
@@ -387,7 +520,7 @@ const MapBook = () => {
               X
             </button>
           </div>
-        </div>
+        </div> */}
         <div
           id='popover-body'
           className='h-1/4 w-full flex z-10 relative bg-black'>
@@ -397,16 +530,70 @@ const MapBook = () => {
           />
           <div
             id='navigate-button-container'
-            className='absolute z-20 w-full h-max flex justify-center bottom-2'>
-            <button
-              id='navigate-button'
-              className='bg-[#F39F33] pt-1 pb-1 pr-3 pl-3 text-xs font-bold rounded-2xl text-white'>
-              NAVIGATE
-            </button>
-          </div>
+            className='absolute z-20 w-full h-max flex justify-center bottom-2'></div>
         </div>
       </div>
     </Popover>
+  );
+
+  const renderTaskModal = () => (
+    <Modal
+      open={openTaskModal}
+      className='w-full h-full flex justify-center items-center'
+      disableScrollLock={true}>
+      <div
+        id='task-modal-container'
+        className='w-11/12 h-3/4 bg-[#C06C00] flex flex-col rounded-xl border-black border-4'>
+        <div
+          id='task-modal-title-container'
+          className='flex justify-center items-center w-full h-1/4 relative'>
+          <div
+            id='task-modal-title-box'
+            className='bg-[#F3931B] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
+            <h4 className='text-white font-semibold tracking-widest text-2xl'>
+              TRIVIAL TASK
+            </h4>
+          </div>
+          <button
+            id='close-modal-button'
+            className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
+            onClick={() => setOpenTaskModal(false)}
+            >
+            ❌
+          </button>
+        </div>
+        <div id='task-modal-body-container' className='w-full h-1/2 flex flex-row justify-evenly items-center'>
+        <div
+          id='profiles-picture'
+          className=' w-1/4 h-full flex justify-center items-center relative'>
+          <div
+            id='profiles-squareframe'
+            className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
+          />
+          <img
+            src={"/characters/aset merch BINUS Support 3 - bahagia copy.png"}
+            className='absolute w-full'
+          />
+        </div>
+        <div id='task-modal-descriptions-container' className='w-1/2 h-full flex flex-col justify-evenly relative'>
+        <div id='task-modal-descriptions' className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+          <div id='task-modal-description-header' className='w-full h-1/4 text-center '>
+            <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>TASK DESCRIPTION</h5>
+          </div>
+          <div id='task-modal-description-body' className='w-full h-3/4 pt-3 flex justify-between flex-col'>
+            <p className='text-black font-medium tracking-wide text-lg'>Tempo needs your help to learn a certain drum pattern before his music quiz. He has been trying to self-learn the pattern himself, but keeps failing at the best part...</p>
+            <p className='text-black font-medium tracking-wide text-lg'>Minigame: Follow the Drum</p>
+          </div>
+        </div>
+        <div id='button-container' className='w-full h-max flex justify-end flex-row'>
+          <button id='go-button' className='bg-[#76B743] hover:border-2 rounded-lg p-3 text-white font-bold text-lg tracking-wider hover:bg-[#609636] hover:border-black'
+          onClick={() => navigate('/game/followthedrum', {replace:true})}
+          >LETS GO</button>
+        </div>
+        </div>
+        </div>
+      </div>
+    </Modal>
   );
 
   const renderCampusMap = () => (
@@ -415,10 +602,10 @@ const MapBook = () => {
       className='w-full h-full flex justify-center items-center'>
       <div
         id='campus-map-background'
-        className='w-3/4 h-3/4 flex bg-white justify-center'>
+        className='w-3/4 h-5/6 flex bg-white justify-center'>
         <div
           id='map-svg-container'
-          className='object-scale-down w-3/5 h-3/5'>
+          className='object-scale-down w-3/4'>
           {KMGMap()}
           {renderPopoverComponents()}
         </div>
@@ -427,7 +614,7 @@ const MapBook = () => {
   );
 
   const renderBook = () => (
-    <div className=' w-5/6 h-5/6 flex flex-row'>
+    <div className=' w-5/6 h-5/6 flex flex-row relative'>
       {renderBookmark()}
       <div
         id='book-page-left'
@@ -440,6 +627,7 @@ const MapBook = () => {
         className='bg-white h-full w-1/2'>
         {renderMapInteractibles()}
       </div>
+      {renderTaskModal()}
     </div>
   );
 
