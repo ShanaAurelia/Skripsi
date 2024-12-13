@@ -1,5 +1,6 @@
 import { IDialogueProps } from '../components/dialogue/Scene.interface';
-import { IInteractibles } from '../components/map/Map_Book.interfaces';
+import { IInteractibles, ITask, ITrivialTask } from '../components/map/Map_Book.interfaces';
+import { IStorycase } from '../components/storycase-book/Storycase.interfaces';
 import { ICharacter, IDialogue, IRank, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {
@@ -250,3 +251,53 @@ export const DummyPlayerRank: IRank[] = [
   { leaderboard: 'points', name: 'John Doe', rank: 1 },
   { leaderboard: 'crossword', name: 'John Doe', rank: 1 },
 ];
+
+
+export const DummyFollowTheDrum: ITrivialTask = {
+  id: "00",
+  description: "Tempo needs your help to learn a certain drum pattern before his music quiz. He has been trying to self-learn the pattern himself, but keeps failing at the best part...",
+  type: 'Follow the Drum',
+  location: 'Band Room'
+}
+
+export const DummyStoryCase: ITrivialTask = {
+  id: "01",
+  description: "Tempo have some questions regarding tomorrow's new event, Enrichment. Can you help answer his questions?",
+  type: 'Story Case',
+  location: 'Classroom'
+}
+
+export const DummyTasksList: ITask = {
+  tasks: [{...DummyFollowTheDrum}, {...DummyStoryCase}]
+}
+
+export const DummyStoryCaseMinigame: IStorycase = {
+  data:{
+    articleLink: "https://support.binus.ac.id/en/",
+    caseNumber: "01",
+    description: "Yesterday, Tempo lost his Student Flazz Card in the train station. Right now he's confused on what to do..",
+    id: "00",
+    profilePicture: "/characters/aset merch BINUS Support 4 - pusing copy.png"
+  },
+  dialogue:[
+    {
+      index: 0,
+      line: {
+        characterExpression: 'none',
+        characterId: '00',
+        speed: 1,
+        text: 'Yesterday I lost my Campus card while commuting in the train.. Tomorrow is the Exams and they will check for Flazz Cards.. what should I do?'
+      }
+    }
+  ],
+  characters:[
+    {
+      id: '00',
+      name: "Tempo"
+    },
+    {
+      id: '01',
+      name: "John Doe"
+    }
+  ]
+}

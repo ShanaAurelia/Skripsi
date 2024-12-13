@@ -17,6 +17,8 @@ import { AuthProvider, useAuth } from './config/Context';
 import RouteProtection from './config/Utilities';
 import CampusMap from './views/campus-map/Campus_Map';
 import Leaderboard from './views/leaderboard/Leaderboard';
+import Stage from './views/stage/Stage';
+import StoryCase from './views/story-case/StoryCase';
 
 function App() {
   const [student, setStudent] = useState<IStudent | undefined>();
@@ -53,6 +55,8 @@ function App() {
             <Route path='profiles' element={<CharacterProfiles />} />
             <Route path='map' element={<CampusMap/>} />
             <Route path='leaderboard' element={<Leaderboard/>}/>
+            <Route path='stage' element={<Stage />} />
+            <Route path='storycase' element={<StoryCase />} />
             <Route path='*' element={<PageNotFound />} />
           </Route>
         </Routes>

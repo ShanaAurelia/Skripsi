@@ -152,7 +152,7 @@ const ProfilesBook = () => {
   const renderMiddlePart = () => (
     <div
       id='book-middle-part'
-      className='h-full w-10 flex flex-col justify-evenly items-center z-10 bg-gradient-to-r from-[#81C7E9] to-white'>
+      className='h-full w-10 flex flex-col justify-evenly items-center absolute'>
       <div
         id='top-pin'
         className='book-pin'>
@@ -186,11 +186,11 @@ const ProfilesBook = () => {
         className='absolute z-0 h-full w-0.5 flex justify-center items-center'>
         <div
           id='left-book-shadow'
-          className='shadow-[10px_0_20px_1px_black] h-5/6 w-1/2 bg-black'
+          className='shadow-[10px_0_20px_1px_black] h-full w-1/2 '
         />
         <div
           id='right-book-shadow'
-          className='shadow-[-10px_0_20px_1px_black] h-5/6 w-1/2 bg-black'
+          className='shadow-[-10px_0_20px_1px_black] h-full w-1/2 '
         />
       </div>
       <div
@@ -225,7 +225,7 @@ const ProfilesBook = () => {
   );
 
   const renderProfileList = () => (
-    <div className='grid grid-cols-3 gap-3 gap-y-6 m-10'>
+    <div className='grid grid-cols-3 gap-3 gap-y-6 m-10 z-30'>
       {students.map((student) => (
         <>
           <button
@@ -250,7 +250,7 @@ const ProfilesBook = () => {
   const renderProfileDescription = () => (
     <div
       id='proile'
-      className='flex flex-col justify-evenly w-full h-full '>
+      className='flex flex-col justify-evenly w-full h-full z-30'>
       <div
         id='profile-top'
         className='flex flex-row w-full h-1/2 bg-white'>
@@ -302,7 +302,7 @@ const ProfilesBook = () => {
       <div
         id='profile-middle'
         className=' h-5 w-full flex flex-row relative'>
-        <h1 className='font-extrabold md:text-4xl sm:text-base absolute md:right-10 sm:right-3 md:-top-7 sm:-top-3 z-10 drop-shadow-md'>
+        <h1 className='font-extrabold md:text-4xl sm:text-base absolute md:right-10 sm:right-3 md:-top-7 sm:-top-3 drop-shadow-md'>
           {activeProfile?.name}
         </h1>
         <div
@@ -411,14 +411,18 @@ const ProfilesBook = () => {
   );
 
   const renderBook = () => (
-    <div className=' w-5/6 h-5/6 flex flex-row'>
+    <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center'>
       {renderBookmark()}
       <div
         id='book-page-left'
-        className='bg-[#81C7E9] w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden '>
+        className='bg-[#81C7E9] w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden'>
         {renderProfileList()}
       </div>
+      <div className='w-1/6 h-full absolute flex justify-center ml-12'>
+      <div className='justify-center items-center flex z-0 absolute h-full w-min ml-1'>
       {renderMiddlePart()}
+      </div>
+      </div>
       <div
         id='book-page-right'
         className='bg-white h-full w-1/2'>

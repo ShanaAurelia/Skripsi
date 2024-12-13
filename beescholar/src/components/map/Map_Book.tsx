@@ -2,22 +2,31 @@ import React, { useEffect, useState } from 'react';
 import './Map_Book.css';
 import '../../constants/global.css';
 import { Modal, Popover } from '@mui/material';
-import { IInteractibles } from './Map_Book.interfaces';
-import { DummyInteractibles } from '../../constants/dummy.constants';
+import { IInteractibles, ITask, ITrivialTask } from './Map_Book.interfaces';
+import {
+  DummyFollowTheDrum,
+  DummyInteractibles,
+  DummyTasksList,
+} from '../../constants/dummy.constants';
 import { useNavigate } from 'react-router-dom';
 
 const MapBook = () => {
   const [activeLocation, setActiveLocation] = useState<string>('KMG');
   const [openPopover, setOpenPopover] = useState<boolean>(false);
   const [openTaskModal, setOpenTaskModal] = useState<boolean>(false);
+  const [taskModalData, setTaskModalData] = useState<ITrivialTask>();
+  const [taskList, setTaskList] = useState<ITask>();
   const [openMainQuestModal, setOpenMainQuestModal] = useState<boolean>(false);
   const [openInteraction, setOpenInteraction] = useState<boolean>(false);
+  const [noInteractibleModalOpen, setNoInteractibleModalOpen] =
+    useState<boolean>(false);
   const [popoverLocation, setPopoverLocation] = useState<string>();
   const [element, setElement] = useState<any>();
   const [interactibles, setInteractibles] = useState<IInteractibles[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    setTaskList(DummyTasksList);
     setInteractibles(DummyInteractibles);
   }, []);
 
@@ -58,21 +67,45 @@ const MapBook = () => {
     }
   };
 
+  const handleSelectTrivialTask = () => {
+    if (popoverLocation)
+      setTaskModalData(
+        taskList?.tasks.find(
+          (task) => task.location === translateKMGMapId(popoverLocation)
+        )
+      );
+    setTimeout(() => {
+      setOpenTaskModal(true);
+    }, 500);
+  };
+
+  const handleNavigateTrivialTask = () => {
+    if (taskModalData?.type === 'Follow the Drum') {
+      return navigate('/game/followthedrum', { replace: true });
+    } else {
+      return navigate('/game/storycase', { replace: true });
+    }
+  };
+
   const handleInteractibleAction = () => {
     if (popoverLocation !== undefined) {
       const trigger = interactibles.find(
         (i) => i.location === translateKMGMapId(popoverLocation)
       );
+      console.log(trigger)
       if (trigger) {
         switch (trigger.type) {
           case 'Trivial Task':
-            setOpenTaskModal(true);
+            handleSelectTrivialTask();
             return;
           case 'Interaction':
             setOpenInteraction(true);
             return;
           case 'Main Quest':
             setOpenMainQuestModal(true);
+            return;
+          default:
+            setNoInteractibleModalOpen(true);
             return;
         }
       }
@@ -268,7 +301,7 @@ const MapBook = () => {
   const renderMiddlePart = () => (
     <div
       id='book-middle-part'
-      className='h-full w-10 flex flex-col justify-evenly items-center z-10 bg-gradient-to-r from-[#81C7E9] to-white'>
+      className='h-full w-10 flex flex-col justify-evenly items-center absolute'>
       <div
         id='top-pin'
         className='book-pin'>
@@ -302,11 +335,11 @@ const MapBook = () => {
         className='absolute z-0 h-full w-0.5 flex justify-center items-center'>
         <div
           id='left-book-shadow'
-          className='shadow-[10px_0_20px_1px_black] h-5/6 w-1/2 bg-black'
+          className='shadow-[10px_0_20px_1px_black] h-full w-1/2 '
         />
         <div
           id='right-book-shadow'
-          className='shadow-[-10px_0_20px_1px_black] h-5/6 w-1/2 bg-black'
+          className='shadow-[-10px_0_20px_1px_black] h-full w-1/2 '
         />
       </div>
       <div
@@ -557,41 +590,77 @@ const MapBook = () => {
           <button
             id='close-modal-button'
             className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
-            onClick={() => setOpenTaskModal(false)}
-            >
+            onClick={() => setOpenTaskModal(false)}>
             ❌
           </button>
         </div>
-        <div id='task-modal-body-container' className='w-full h-1/2 flex flex-row justify-evenly items-center'>
         <div
-          id='profiles-picture'
-          className=' w-1/4 h-full flex justify-center items-center relative'>
+          id='task-modal-body-container'
+          className='w-full h-1/2 flex flex-row justify-evenly items-center'>
           <div
-            id='profiles-squareframe'
-            className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
-          />
-          <img
-            src={"/characters/aset merch BINUS Support 3 - bahagia copy.png"}
-            className='absolute w-full'
-          />
-        </div>
-        <div id='task-modal-descriptions-container' className='w-1/2 h-full flex flex-col justify-evenly relative'>
-        <div id='task-modal-descriptions' className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
-          <div id='task-modal-description-header' className='w-full h-1/4 text-center '>
-            <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>TASK DESCRIPTION</h5>
+            id='profiles-picture'
+            className=' w-1/4 h-full flex justify-center items-center relative'>
+            <div
+              id='profiles-squareframe'
+              className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
+            />
+            <img
+              src={'/characters/aset merch BINUS Support 3 - bahagia copy.png'}
+              className='absolute w-full'
+            />
           </div>
-          <div id='task-modal-description-body' className='w-full h-3/4 pt-3 flex justify-between flex-col'>
-            <p className='text-black font-medium tracking-wide text-lg'>Tempo needs your help to learn a certain drum pattern before his music quiz. He has been trying to self-learn the pattern himself, but keeps failing at the best part...</p>
-            <p className='text-black font-medium tracking-wide text-lg'>Minigame: Follow the Drum</p>
+          <div
+            id='task-modal-descriptions-container'
+            className='w-1/2 h-full flex flex-col justify-evenly relative'>
+            <div
+              id='task-modal-descriptions'
+              className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+              <div
+                id='task-modal-description-header'
+                className='w-full h-1/4 text-center '>
+                <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>
+                  TASK DESCRIPTION
+                </h5>
+              </div>
+              <div
+                id='task-modal-description-body'
+                className='w-full h-3/4 pt-3 flex justify-between flex-col'>
+                <p className='text-black font-medium tracking-wide text-lg'>
+                  {taskModalData?.description}
+                </p>
+                <p className='text-black font-medium tracking-wide text-lg'>
+                  Minigame: {taskModalData?.type}
+                </p>
+              </div>
+            </div>
+            <div
+              id='button-container'
+              className='w-full h-max flex justify-end flex-row'>
+              <button
+                id='go-button'
+                className='bg-[#76B743] hover:border-2 rounded-lg p-3 text-white font-bold text-lg tracking-wider hover:bg-[#609636] hover:border-black'
+                onClick={() => handleNavigateTrivialTask()}>
+                LETS GO
+              </button>
+            </div>
           </div>
         </div>
-        <div id='button-container' className='w-full h-max flex justify-end flex-row'>
-          <button id='go-button' className='bg-[#76B743] hover:border-2 rounded-lg p-3 text-white font-bold text-lg tracking-wider hover:bg-[#609636] hover:border-black'
-          onClick={() => navigate('/game/followthedrum', {replace:true})}
-          >LETS GO</button>
-        </div>
-        </div>
-        </div>
+      </div>
+    </Modal>
+  );
+
+  const renderNoInteractibleModal = () => (
+    <Modal
+      open={noInteractibleModalOpen}
+      onClose={() => setNoInteractibleModalOpen(false)}
+      className='w-full h-full flex justify-center items-center'>
+      <div
+        id='modal-container'
+        className='w-11/12 h-3/4 bg-[#C06C00] flex flex-col rounded-xl border-black border-4'>
+        {' '}
+        <h2 className='font-semibold tracking-widest text-2xl'>
+          There is nothing to do here...
+        </h2>
       </div>
     </Modal>
   );
@@ -614,20 +683,25 @@ const MapBook = () => {
   );
 
   const renderBook = () => (
-    <div className=' w-5/6 h-5/6 flex flex-row relative'>
+    <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center'>
       {renderBookmark()}
       <div
         id='book-page-left'
         className='bg-[#81C7E9] w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden '>
         {renderCampusMap()}
       </div>
+      <div className='w-1/6 h-full absolute flex justify-center ml-12'>
+      <div className='justify-center items-center flex z-0 absolute h-full w-min ml-1'>
       {renderMiddlePart()}
+      </div>
+      </div>
       <div
         id='book-page-right'
         className='bg-white h-full w-1/2'>
         {renderMapInteractibles()}
       </div>
       {renderTaskModal()}
+      {renderNoInteractibleModal()}
     </div>
   );
 

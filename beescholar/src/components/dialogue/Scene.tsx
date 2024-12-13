@@ -77,7 +77,7 @@ const Scene = (props: IDialogueProps) =>  {
             key={`dlg-${DummyIntroductionDialogue[currentIndex].index}`}
               character={
                 props.characters.find((char) => char.id === dialogue.line.characterId)
-                  ?.name || 'Placeholder'
+                  ?.name || 'Unknown'
               }
               line={dialogue.line.text}
               speed={dialogue.line.speed}
