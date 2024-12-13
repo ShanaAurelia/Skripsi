@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components{
+    .board-global{
+        @apply w-3/12 h-4/5 flex justify-center items-center bg-white rounded-xl flex-col;
+    }
+
+    .board-player{
+        @apply w-3/12 h-1/2 flex justify-center items-center bg-white rounded-xl flex-col;
+    }
+
+    .global-leaderboard-list{
+        @apply h-4/5 w-11/12 flex flex-col justify-center bg-[#67BBE7] rounded-md mb-3 overflow-y-auto relative;
+    }
+
+    .global-leaderboard-top-3{
+        @apply text-white font-medium text-lg text-ellipsis whitespace-nowrap h-1/6 ml-2 mr-2 overflow-hidden;
+    }
+
+    .global-leaderboard-top-10{
+        @apply text-white font-normal text-base text-ellipsis whitespace-nowrap h-1/6 ml-2 mr-2 overflow-hidden;
+    }
+}

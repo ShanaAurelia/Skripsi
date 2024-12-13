@@ -1,5 +1,7 @@
 import { IDialogueProps } from '../components/dialogue/Scene.interface';
-import { ICharacter, IDialogue, IStudent } from './global.interfaces';
+import { IInteractibles, ITask, ITrivialTask } from '../components/map/Map_Book.interfaces';
+import { IStorycase } from '../components/storycase-book/Storycase.interfaces';
+import { ICharacter, IDialogue, IRank, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {
   id: '0a1d5e9e-ca7d-47d1-8466-00ca9f8818b7',
@@ -128,42 +130,174 @@ export const DummyIntroductionDialogue: IDialogue[] = [
   },
 ];
 
-export const KMGCharacters:ICharacter[] = [
+export const KMGCharacters: ICharacter[] = [
   {
-    id: "01",
-    campusId: "01",
-    description: "A temporary description",
-    dislikes: "Spicy food",
-    likes: "Mild food",
-    name: "Tempo",
-    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
-    role: "Student"
-  },{
-    id: "02",
-    campusId: "02",
-    description: "A temporary description",
-    dislikes: "Spicy food",
-    likes: "Mild food",
-    name: "Tempon",
-    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
-    role: "Beescholar"
-  },{
-    id: "03",
-    campusId: "03",
-    description: "A temporary description",
-    dislikes: "Spicy food",
-    likes: "Mild food",
-    name: "Temporin",
-    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
-    role: "Student"
-  },{
-    id: "04",
-    campusId: "04",
-    description: "A temporary description",
-    dislikes: "Spicy food",
-    likes: "Mild food",
-    name: "Tempo",
-    picture: "/characters/aset merch BINUS Support 4 - pusing copy.png",
-    role: "Literature Club Leader"
+    id: '01',
+    campusId: '01',
+    description: 'A temporary description',
+    dislikes: 'Spicy food',
+    likes: 'Mild food',
+    name: 'Tempo',
+    picture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+    role: 'Student',
   },
-]
+  {
+    id: '02',
+    campusId: '02',
+    description: 'A temporary description',
+    dislikes: 'Spicy food',
+    likes: 'Mild food',
+    name: 'Tempon',
+    picture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+    role: 'Beescholar',
+  },
+  {
+    id: '03',
+    campusId: '03',
+    description: 'A temporary description',
+    dislikes: 'Spicy food',
+    likes: 'Mild food',
+    name: 'Temporin',
+    picture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+    role: 'Student',
+  },
+  {
+    id: '04',
+    campusId: '04',
+    description: 'A temporary description',
+    dislikes: 'Spicy food',
+    likes: 'Mild food',
+    name: 'Tempo',
+    picture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+    role: 'Literature Club Leader',
+  },
+];
+
+export const DummyInteractibles: IInteractibles[] = [
+  {
+    id: '01',
+    description: 'Meet Up with Diyan in the Teacher Office',
+    type: 'Main Quest',
+    location: 'Teacher Office'
+  },
+  {
+    id: '02',
+    description: 'Someone wants to talk in the Band Room',
+    type: 'Trivial Task',
+    minigameType: 'Story Case',
+    location: 'Band Room'
+  },
+  {
+    id: '03',
+    description: 'Someone needs help in the Classroom',
+    type: 'Trivial Task',
+    minigameType: 'Follow the Drum',
+    location: "Classroom"
+  },
+  {
+    id: '04',
+    description: 'Talk to Ania in the Hallway',
+    type: 'Interaction',
+    location: 'Hallway'
+  },
+  // {
+  //   id: '05',
+  //   description: 'New Crossword Available',
+  //   type: 'Trivial Task',
+  //   minigameType: 'Crossword',
+  //   location: ''
+  // }
+];
+
+export const DummyLeaderboardStory: string[] = [
+  'John Doe',
+  'Maria Sanches',
+  'Maurine Moran',
+  'Dennis Jones',
+  'Elena Ormanda',
+  'Esther Carmilla Colleta',
+  'Shannon Legase',
+  'Juan Deleon',
+  'Francis Schmidt',
+  'Michael Bernard Magdir',
+];
+export const DummyLeaderboardPoints: string[] = [
+  'John Doe',
+  'Maria Sanches',
+  'Maurine Moran',
+  'Dennis Jones',
+  'Elena Ormanda',
+  'Esther Carmilla Colleta',
+  'Shannon Legase',
+  'Juan Deleon',
+  'Francis Schmidt',
+  'Michael Bernard Magdir',
+];
+export const DummyLeaderboardCrossword: string[] = [
+  'John Doe',
+  'Maria Sanches',
+  'Maurine Moran',
+  'Dennis Jones',
+  'Elena Ormanda',
+  'Esther Carmilla Colleta',
+  'Shannon Legase',
+  'Juan Deleon',
+  'Francis Schmidt',
+  'Michael Bernard Magdir',
+];
+
+export const DummyPlayerRank: IRank[] = [
+  { leaderboard: 'story', name: 'John Doe', rank: 1 },
+  { leaderboard: 'points', name: 'John Doe', rank: 1 },
+  { leaderboard: 'crossword', name: 'John Doe', rank: 1 },
+];
+
+
+export const DummyFollowTheDrum: ITrivialTask = {
+  id: "00",
+  description: "Tempo needs your help to learn a certain drum pattern before his music quiz. He has been trying to self-learn the pattern himself, but keeps failing at the best part...",
+  type: 'Follow the Drum',
+  location: 'Band Room'
+}
+
+export const DummyStoryCase: ITrivialTask = {
+  id: "01",
+  description: "Tempo have some questions regarding tomorrow's new event, Enrichment. Can you help answer his questions?",
+  type: 'Story Case',
+  location: 'Classroom'
+}
+
+export const DummyTasksList: ITask = {
+  tasks: [{...DummyFollowTheDrum}, {...DummyStoryCase}]
+}
+
+export const DummyStoryCaseMinigame: IStorycase = {
+  data:{
+    articleLink: "https://support.binus.ac.id/en/",
+    caseNumber: "01",
+    description: "Yesterday, Tempo lost his Student Flazz Card in the train station. Right now he's confused on what to do..",
+    id: "00",
+    profilePicture: "/characters/aset merch BINUS Support 4 - pusing copy.png"
+  },
+  dialogue:[
+    {
+      index: 0,
+      line: {
+        characterExpression: 'none',
+        characterId: '00',
+        speed: 1,
+        text: 'Yesterday I lost my Campus card while commuting in the train.. Tomorrow is the Exams and they will check for Flazz Cards.. what should I do?'
+      }
+    }
+  ],
+  characters:[
+    {
+      id: '00',
+      name: "Tempo"
+    },
+    {
+      id: '01',
+      name: "John Doe"
+    }
+  ]
+}

@@ -12,7 +12,7 @@
   }
 
   .drum-part {
-    @apply w-min h-max rounded-full flex hover:cursor-pointer active:animate-drum-hit;
+    @apply w-min h-max rounded-full flex hover:cursor-pointer active:animate-drum-hit text-center;
   }
 
   .modal-background {

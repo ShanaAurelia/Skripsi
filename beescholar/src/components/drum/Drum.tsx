@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IDrumPattern, IDrumProps } from './Drum.interface';
 import './Drum.css';
 import { Box, Button, Modal } from '@mui/material';
-import { redirect } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 // drum parts: Snare, Hi-Tom, Medium Tom, Floor Tom, Bass Drum, Ride Cymbal, Crash Cymbal, Hi-Hats (pake 5 drum main tanpa cymbal)
 /*
     Color Keywords:
@@ -38,6 +38,7 @@ const Drum = (props: IDrumProps) => {
   const [colorAnimation, setColorAnimation] = useState('');
   const [colorKey, setColorKey] = useState<number>();
   const [onRetry, setOnRetry] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setHitIndex(0);
@@ -248,7 +249,7 @@ const Drum = (props: IDrumProps) => {
       {openModal && (
         <Modal
           open={openModal}
-          onClose={() => redirect('/home')}>
+          onClose={() => navigate('/game/', {replace: true})}>
           <div
             id='modal-container'
             className='absolute bg-black h-screen w-screen justify-evenly flex'>
@@ -295,7 +296,7 @@ const Drum = (props: IDrumProps) => {
                   <button
                     id='finish-button'
                     className='bg-green-500 button-end'
-                    onClick={() => redirect("/home")}>
+                    onClick={() => navigate('/game/', {replace: true})}>
                     Finish Minigame
                   </button>
                   <button

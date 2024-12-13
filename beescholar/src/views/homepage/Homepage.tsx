@@ -38,7 +38,7 @@ const Homepage = () => {
   return (
     <div
       id='home-container'
-      className='h-screen w-screen bg-[#014769] items-center flex justify-center'>
+      className='h-screen w-full bg-[#014769] items-center flex justify-center'>
       <div
         id='background'
         className='flex justify-center items-center h-full w-5/6'>
@@ -47,8 +47,8 @@ const Homepage = () => {
             className='z-10 bg-white h-5/6 w-1/3 flex flex-col items-center justify-evenly'>
               <button id='play-story-button' className='menu-button' onClick={() => navigate('story', {replace: true})}> PLAY STORY </button>
               <button id='characters-button' className='menu-button' onClick={() => navigate('profiles', {replace: true})}> CHARACTERS </button>
-              <button id='campus-map-button' className='menu-button'> CAMPUS MAP </button>
-              <button id='leaderboard-button' className='menu-button'> LEADERBOARD </button>
+              <button id='campus-map-button' className='menu-button' onClick={() => navigate('map', {replace: true})}> CAMPUS MAP </button>
+              <button id='leaderboard-button' className='menu-button' onClick={() => navigate('leaderboard', {replace: true})}> LEADERBOARD </button>
               <button id='tutorial-button' className='menu-button'> TUTORIAL </button>
             </div>
         <img

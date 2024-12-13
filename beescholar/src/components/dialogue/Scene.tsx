@@ -5,6 +5,7 @@ import { ICharacter, IDialogue } from '../../constants/global.interfaces';
 import Button from '@mui/material/Button';
 import Speech from '../speech/Speech';
 import Character from './Character';
+import { useAuth } from '../../config/Context';
 
 const initialDialogue:IDialogue = {
   index: 0,
@@ -21,10 +22,16 @@ const Scene = (props: IDialogueProps) =>  {
   const [activeCharacter, setActiveCharacter] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dialogue, setDialogue] = useState<IDialogue>(initialDialogue);
+  const contextData = useAuth();
 
   useEffect(() =>{
-    setDialogue(DummyIntroductionDialogue[currentIndex])
-    setActiveCharacter(DummyIntroductionDialogue[currentIndex].line.characterId)
+    var _dialogue = DummyIntroductionDialogue;
+    _dialogue.forEach((line) => {
+      if(contextData.user?.name)
+      line.line.text = line.line.text.replace('{playerName}', contextData.user?.name)
+    })
+    setDialogue(_dialogue[currentIndex])
+    setActiveCharacter(_dialogue[currentIndex].line.characterId)
   }, [currentIndex])
 
   const handleNextSpeech = () => {
@@ -70,7 +77,7 @@ const Scene = (props: IDialogueProps) =>  {
             key={`dlg-${DummyIntroductionDialogue[currentIndex].index}`}
               character={
                 props.characters.find((char) => char.id === dialogue.line.characterId)
-                  ?.name || 'Placeholder'
+                  ?.name || 'Unknown'
               }
               line={dialogue.line.text}
               speed={dialogue.line.speed}

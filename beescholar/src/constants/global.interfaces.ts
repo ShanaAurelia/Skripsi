@@ -69,3 +69,9 @@ export interface ICrosswordCellData{
   row: number;
   col: number;
 }
+
+export interface IRank{
+  rank: number;
+  name: string;
+  leaderboard: string;
+}

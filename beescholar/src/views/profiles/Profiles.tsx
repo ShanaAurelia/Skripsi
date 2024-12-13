@@ -11,7 +11,7 @@ const CharacterProfiles = () => {
   const renderLazyLoading = () => <div></div>;
 
   return (
-    <div className='h-screen w-screen bg-[#014769] items-center flex justify-center'>
+    <div className='h-screen w-full bg-[#014769] items-center flex justify-center'>
       {isLoading ? renderLazyLoading() : <ProfilesBook key={'profile-book'}/>}
     </div>
   );

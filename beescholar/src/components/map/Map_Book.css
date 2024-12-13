@@ -9,14 +9,14 @@
     }
 
     .right-shadow-pin{
-        @apply flex-grow h-full shadow-[-1px_0_1px_0_white_inset] ;
+        @apply flex-grow h-full shadow-[-1px_0_1px_0_white_inset] z-10;
     }
     .left-shadow-pin{
-        @apply flex-grow h-full shadow-[1px_0_1px_0_white_inset] ;
+        @apply flex-grow h-full shadow-[1px_0_1px_0_white_inset] z-10;
     }
 
     .pins-container{
-        @apply bg-black w-full h-1/4 flex flex-row ;
+        @apply bg-black w-full h-1/4 flex flex-row z-10;
     }
 
     .bookmark-button{
