@@ -48,6 +48,7 @@ function reducer(state: IUserContext, action: IUserContextPayload) {
     case 'check':
       return{...state, user:action.payload, isAuthenticated: true}
 
+
     default:
       throw new Error('Unknown action in UserContext');
   }
@@ -66,12 +67,16 @@ function AuthProvider({ children }: IAuthProviderProps) {
     if (email === DummyStudent.email) {
       dispatch({ type: 'login', payload: DummyStudent });
       window.localStorage.setItem('user-beescholar',JSON.stringify(dummyStudent))
-    } else throw new Error('No Email Detected');
+      window.location.reload()
+    } else {
+      alert('Your credentials did not match our database!');
+    };
   }
 
   function logout() {
     window.localStorage.removeItem('user-beescholar');
     dispatch({ type: 'logout' });
+    window.location.reload()
   }
 
   function start(){

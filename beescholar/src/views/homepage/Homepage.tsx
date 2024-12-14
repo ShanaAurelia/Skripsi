@@ -44,7 +44,7 @@ const Homepage = () => {
         className='flex justify-center items-center h-full w-5/6 relative'>
         <div
           id='menu-container'
-          className='z-10 bg-white h-5/6 w-1/3 flex flex-col items-center justify-evenly'>
+          className='z-10 bg-white h-5/6 w-1/3 flex flex-col items-center justify-evenly rounded-l-lg shadow-md shadow-black drop-shadow-md'>
           <button
             id='play-story-button'
             className='menu-button'
@@ -80,11 +80,16 @@ const Homepage = () => {
             TUTORIAL{' '}
           </button>
         </div>
+        <div id='background-image-container' className='w-5/6 h-5/6 rounded-r-lg shadow-md shadow-black bg-black'>
         <img
           src='/backgrounds/dummy-classroom.jpeg'
-          className='w-5/6 h-5/6 '
+          className='w-full h-full opacity-60'
         />
-        <button id='crossword-available' className='absolute w-10 h-10 top-20 right-5 bg-white border-red-600 border-2 rounded-full items-center justify-center flex' onClick={() => navigate('crossword', {replace: true})}>
+        </div>
+        <button
+          id='crossword-available'
+          className='absolute w-10 h-10 top-20 right-5 bg-white border-red-600 border-2 rounded-full items-center justify-center flex shadow-sm shadow-black'
+          onClick={() => navigate('crossword', { replace: true })}>
           <h3 className='font-bold text-2xl'>‼️</h3>
         </button>
       </div>

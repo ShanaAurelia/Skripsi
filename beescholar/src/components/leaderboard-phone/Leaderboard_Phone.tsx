@@ -109,7 +109,7 @@ const Phoneboard = () => {
               )}
             </div>
           </div>
-          <div
+          {/* <div
             id='global-leaderboard-crossword-clear'
             className='board-global'>
             {' '}
@@ -136,7 +136,7 @@ const Phoneboard = () => {
                 )
               )}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div
@@ -167,7 +167,7 @@ const Phoneboard = () => {
               </h5>
             </div>
           </div>
-          <div
+          {/* <div
             id='player-leaderboard-crossword-clear'
             className='board-player'>
             <div
@@ -178,7 +178,7 @@ const Phoneboard = () => {
                 {playerCrosswordLeaderboard?.name}
               </h5>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
