@@ -15,3 +15,10 @@ export interface ITrivialTask{
     description: string;
     location: string;
 }
+
+export interface INPCInteraction{
+    characterPicture: string,
+    characterName: string,
+    line: string,
+    speed: number
+}

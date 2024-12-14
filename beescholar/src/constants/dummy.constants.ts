@@ -1,11 +1,12 @@
 import { IDialogueProps } from '../components/dialogue/Scene.interface';
 import {
   IInteractibles,
+  INPCInteraction,
   ITask,
   ITrivialTask,
 } from '../components/map/Map_Book.interfaces';
 import { IStorycase, IStoryCaseSpeech } from '../components/storycase-book/Storycase.interfaces';
-import { ICharacter, IDialogue, IRank, IStudent } from './global.interfaces';
+import { ICharacter, IDialogue, IRank, ISpeech, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {
   id: '0a1d5e9e-ca7d-47d1-8466-00ca9f8818b7',
@@ -55,7 +56,7 @@ export const DummyDialogueLine: IDialogue[] = [
       characterExpression: 'Empty',
       characterId: '01',
       speed: 2,
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi maximus porta ante, non efficitur magna ullamcorper et. Donec et dui in risus vehicula euismod eu et diam. Duis dignissim est ex, id hendrerit est fermentum ut. Sed pellentesque augue viverra mauris imperdiet interdum. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque ut malesuada urna. Proin.',
+      text: 'It has been raining',
     },
   },
   {
@@ -306,3 +307,30 @@ export const DummyStoryCaseSpeech: IStoryCaseSpeech[] = [
     }
   }
 ];
+
+export const DummyNPCInteraction:INPCInteraction[] = [
+  {
+    characterPicture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
+    characterName: "Tempo",
+    line: 'Aku sedang berbahagia akhir-akhir ini, karena ujian sudah selesai dan aku bisa beristirahat cukup lama',
+    speed: 5
+  },
+  {
+    characterPicture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
+    characterName: "Tempo",
+    line: 'Semoga nilai ujian aku bisa memuaskan ya, supaya aku bisa membanggakan keluargaku',
+    speed: 3
+  },
+  {
+    characterPicture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
+    characterName: "Tempo",
+    line: 'kalau menurutmu gimana? Apakah kamu bisa menyelesaikan ujianmu dengan baik?',
+    speed: 1
+  },
+  {
+    characterPicture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
+    characterName: "Tempo",
+    line: 'Aku harap kita berdua bisa wisuda bersama. Nanti jangan lupa foto ya',
+    speed: 3
+  }
+]

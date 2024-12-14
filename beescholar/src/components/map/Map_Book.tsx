@@ -2,13 +2,21 @@ import React, { useEffect, useState } from 'react';
 import './Map_Book.css';
 import '../../constants/global.css';
 import { Modal, Popover } from '@mui/material';
-import { IInteractibles, ITask, ITrivialTask } from './Map_Book.interfaces';
+import {
+  IInteractibles,
+  INPCInteraction,
+  ITask,
+  ITrivialTask,
+} from './Map_Book.interfaces';
 import {
   DummyFollowTheDrum,
   DummyInteractibles,
+  DummyNPCInteraction,
   DummyTasksList,
 } from '../../constants/dummy.constants';
 import { useNavigate } from 'react-router-dom';
+import Speech from '../speech/Speech';
+import Character from '../dialogue/Character';
 
 const MapBook = () => {
   const [activeLocation, setActiveLocation] = useState<string>('KMG');
@@ -21,12 +29,16 @@ const MapBook = () => {
   const [noInteractibleModalOpen, setNoInteractibleModalOpen] =
     useState<boolean>(false);
   const [popoverLocation, setPopoverLocation] = useState<string>();
+  const [interactionData, setInteractionData] = useState<INPCInteraction[]>([]);
+  const [interactionCount, setInteractionCount] = useState<number>(0);
   const [element, setElement] = useState<any>();
   const [interactibles, setInteractibles] = useState<IInteractibles[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     setTaskList(DummyTasksList);
+    setInteractionData(DummyNPCInteraction);
+    setInteractionCount(0);
     setInteractibles(DummyInteractibles);
   }, []);
 
@@ -92,7 +104,7 @@ const MapBook = () => {
       const trigger = interactibles.find(
         (i) => i.location === translateKMGMapId(popoverLocation)
       );
-      console.log(trigger)
+      console.log(trigger);
       if (trigger) {
         switch (trigger.type) {
           case 'Trivial Task':
@@ -665,6 +677,63 @@ const MapBook = () => {
     </Modal>
   );
 
+  const renderInteraction = () => {
+    const _interactionData = interactionData[interactionCount];
+
+    const handleCheckDialogue = () => {
+      if (interactionData[interactionCount + 1] === undefined) {
+        return false;
+      }
+      return true;
+    }
+
+    const handleNextDialogue = () => {
+      handleCheckDialogue() && setInteractionCount(interactionCount + 1);
+      !handleCheckDialogue() && setOpenInteraction(false);
+    };
+
+    return (
+      <div className='w-full h-full flex flex-col absolute justify-center items-center'>
+        <div
+          id='character'
+          className='w-1/4 h-1/2 absolute z-30'>
+          <img
+            src={_interactionData.characterPicture}
+            className=''
+          />
+        </div>
+        <div
+          id='speech-box'
+          className='z-30 w-full h-1/3 absolute bottom-0'>
+          <div
+            className='w-full h-full bg-white flex  flex-col justify-start'
+            id='speech-background'>
+            <div
+              id='speech-character-name'
+              className='bg-orange-300 p-3 rounded-lg h-max -top-10 left-5 w-max z-40 absolute font-bold text-3xl text-black'>
+              {_interactionData.characterName}
+            </div>
+            <div
+              id='speech-box'
+              className=' flex flex-row absolute h-full w-full justify-between overflow-auto top-10'>
+              <div
+                id='speech-text'
+                className='w-5/6 h-1/3 text-xl font-medium text-black ml-5'>
+                {_interactionData.line}
+              </div>
+              <button
+                className='absolute h-1/4 top-4 right-2 bg-[#014769] p-2 rounded-xl'
+                onClick={handleNextDialogue}>
+                <p className='font-bold text-white text-3xl '>{handleCheckDialogue()?"Next":"Finish"}</p>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className='w-full h-full bg-black opacity-70 z-20'></div>
+      </div>
+    );
+  };
+
   const renderCampusMap = () => (
     <div
       id='campus-map-container'
@@ -683,26 +752,29 @@ const MapBook = () => {
   );
 
   const renderBook = () => (
-    <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center'>
-      {renderBookmark()}
-      <div
-        id='book-page-left'
-        className='bg-[#81C7E9] w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden '>
-        {renderCampusMap()}
-      </div>
-      <div className='w-1/6 h-full absolute flex justify-center ml-12'>
-      <div className='justify-center items-center flex z-0 absolute h-full w-min ml-1'>
-      {renderMiddlePart()}
-      </div>
-      </div>
-      <div
-        id='book-page-right'
-        className='bg-white h-full w-1/2'>
-        {renderMapInteractibles()}
+    <>
+      <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center'>
+        {renderBookmark()}
+        <div
+          id='book-page-left'
+          className='bg-[#81C7E9] w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden '>
+          {renderCampusMap()}
+        </div>
+        <div className='w-1/6 h-full absolute flex justify-center ml-12'>
+          <div className='justify-center items-center flex z-0 absolute h-full w-min ml-1'>
+            {renderMiddlePart()}
+          </div>
+        </div>
+        <div
+          id='book-page-right'
+          className='bg-white h-full w-1/2'>
+          {renderMapInteractibles()}
+        </div>
       </div>
       {renderTaskModal()}
       {renderNoInteractibleModal()}
-    </div>
+      {openInteraction && renderInteraction()}
+    </>
   );
 
   return <>{renderBook()}</>;
