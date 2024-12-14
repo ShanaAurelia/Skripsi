@@ -5,16 +5,23 @@ export interface IStorycaseData{
     caseNumber: string,
     description: string,
     articleLink: string,
-    profilePicture: string
+    profilePicture: string,
 }
 
-export interface IStoryCaseCharacter{
-    id: string,
-    name: string
+export interface IStoryCaseSpeech{
+    dialogueBubble?: IStoryCaseBubbleSpeech,
+    speechOption?: IStoryCaseOption[]
 }
 
 export interface IStorycase{
-    data: IStorycaseData,
-    dialogue: IDialogue[],
-    characters: IStoryCaseCharacter[]
+    data: IStorycaseData
+}
+
+export interface IStoryCaseBubbleSpeech{
+    text: string,
+    isSatisfactory?: boolean;
+}
+
+export interface IStoryCaseOption{
+    optionText: string
 }

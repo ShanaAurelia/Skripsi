@@ -5,11 +5,10 @@ import './Speech.css';
 import { Button } from '@mui/material';
 
 const Speech = (dialogue: ISpeechProps) => {
-
   var container = document.querySelector('.text');
 
   useEffect(() => {
-    init()
+    init();
     setTimeout(() => {
       revealOneCharacter(characters);
     }, 600);
@@ -30,7 +29,7 @@ const Speech = (dialogue: ISpeechProps) => {
         classes: dialogue.class || [],
       });
     });
-  }
+  };
 
   const revealOneCharacter = (list: any) => {
     var next = list.splice(0, 1)[0];
@@ -45,7 +44,7 @@ const Speech = (dialogue: ISpeechProps) => {
         revealOneCharacter(list);
       }, delay * 10);
     }
-    revealedCharacterCount = revealedCharacterCount+1;
+    revealedCharacterCount = revealedCharacterCount + 1;
   };
 
   return (
@@ -54,7 +53,7 @@ const Speech = (dialogue: ISpeechProps) => {
       id='speech-background'>
       <div
         id='speech-character-name'
-        className='bg-orange-300 p-3 rounded-lg h-max -top-10 w-max z-40 absolute'>
+        className='bg-orange-300 p-3 rounded-lg h-max -top-10 w-max z-40 absolute font-bold text-3xl text-black'>
         {dialogue.character}
       </div>
       <div
@@ -62,14 +61,12 @@ const Speech = (dialogue: ISpeechProps) => {
         className=' flex flex-row absolute h-full w-full justify-between overflow-auto'>
         <div
           id='speech-text'
-          className='text w-5/6'>
-        </div>
+          className='text w-5/6 text-xl font-medium text-black'></div>
         <Button
-          className='absolute h-1/6 top-4 right-2'
+          className='absolute h-1/6 top-4 right-2 f'
           onClick={dialogue.handleNext}
-          variant='contained'
-          size='large'>
-          Next
+          variant='contained'>
+          <p className='font-bold text-white text-3xl'>Next</p>
         </Button>
       </div>
     </div>

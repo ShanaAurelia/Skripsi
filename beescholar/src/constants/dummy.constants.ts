@@ -1,6 +1,10 @@
 import { IDialogueProps } from '../components/dialogue/Scene.interface';
-import { IInteractibles, ITask, ITrivialTask } from '../components/map/Map_Book.interfaces';
-import { IStorycase } from '../components/storycase-book/Storycase.interfaces';
+import {
+  IInteractibles,
+  ITask,
+  ITrivialTask,
+} from '../components/map/Map_Book.interfaces';
+import { IStorycase, IStoryCaseSpeech } from '../components/storycase-book/Storycase.interfaces';
 import { ICharacter, IDialogue, IRank, IStudent } from './global.interfaces';
 
 export const DummyStudent: IStudent = {
@@ -178,27 +182,27 @@ export const DummyInteractibles: IInteractibles[] = [
     id: '01',
     description: 'Meet Up with Diyan in the Teacher Office',
     type: 'Main Quest',
-    location: 'Teacher Office'
+    location: 'Teacher Office',
   },
   {
     id: '02',
     description: 'Someone wants to talk in the Band Room',
     type: 'Trivial Task',
     minigameType: 'Story Case',
-    location: 'Band Room'
+    location: 'Band Room',
   },
   {
     id: '03',
     description: 'Someone needs help in the Classroom',
     type: 'Trivial Task',
     minigameType: 'Follow the Drum',
-    location: "Classroom"
+    location: 'Classroom',
   },
   {
     id: '04',
     description: 'Talk to Ania in the Hallway',
     type: 'Interaction',
-    location: 'Hallway'
+    location: 'Hallway',
   },
   // {
   //   id: '05',
@@ -252,52 +256,52 @@ export const DummyPlayerRank: IRank[] = [
   { leaderboard: 'crossword', name: 'John Doe', rank: 1 },
 ];
 
-
 export const DummyFollowTheDrum: ITrivialTask = {
-  id: "00",
-  description: "Tempo needs your help to learn a certain drum pattern before his music quiz. He has been trying to self-learn the pattern himself, but keeps failing at the best part...",
+  id: '00',
+  description:
+    'Tempo needs your help to learn a certain drum pattern before his music quiz. He has been trying to self-learn the pattern himself, but keeps failing at the best part...',
   type: 'Follow the Drum',
-  location: 'Band Room'
-}
+  location: 'Band Room',
+};
 
 export const DummyStoryCase: ITrivialTask = {
-  id: "01",
-  description: "Tempo have some questions regarding tomorrow's new event, Enrichment. Can you help answer his questions?",
+  id: '01',
+  description:
+    "Tempo have some questions regarding tomorrow's new event, Enrichment. Can you help answer his questions?",
   type: 'Story Case',
-  location: 'Classroom'
-}
+  location: 'Classroom',
+};
 
 export const DummyTasksList: ITask = {
-  tasks: [{...DummyFollowTheDrum}, {...DummyStoryCase}]
-}
+  tasks: [{ ...DummyFollowTheDrum }, { ...DummyStoryCase }],
+};
 
 export const DummyStoryCaseMinigame: IStorycase = {
-  data:{
-    articleLink: "https://support.binus.ac.id/en/",
-    caseNumber: "01",
-    description: "Yesterday, Tempo lost his Student Flazz Card in the train station. Right now he's confused on what to do..",
-    id: "00",
-    profilePicture: "/characters/aset merch BINUS Support 4 - pusing copy.png"
+  data: {
+    articleLink: 'https://support.binus.ac.id/en/',
+    caseNumber: '01',
+    description:
+      "Yesterday, Tempo lost his Student Flazz Card in the train station. Right now he's confused on what to do..",
+    id: '00',
+    profilePicture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
+  }
+};
+
+export const DummyStoryCaseSpeech: IStoryCaseSpeech[] = [
+  {
+    dialogueBubble: {
+      text:
+        'Yesterday I lost my Flazz card while commuting... the Final Exams will start tomorrow and I will need my Flazz Card to enter the Exam classroom.. what should I do?',
+    }
   },
-  dialogue:[
-    {
-      index: 0,
-      line: {
-        characterExpression: 'none',
-        characterId: '00',
-        speed: 1,
-        text: 'Yesterday I lost my Campus card while commuting in the train.. Tomorrow is the Exams and they will check for Flazz Cards.. what should I do?'
-      }
+  {
+    speechOption: [{ optionText: 'If I were you I would panic right now' }, {optionText: 'Maybe the Student Service Office can help'}, {optionText: 'How about asking the Admission Office?'}]
+  },
+
+  {
+    dialogueBubble:{
+      text: "Oh.. right! thanks for helping me, I'll go to the SSO immediately!",
+      isSatisfactory: false
     }
-  ],
-  characters:[
-    {
-      id: '00',
-      name: "Tempo"
-    },
-    {
-      id: '01',
-      name: "John Doe"
-    }
-  ]
-}
+  }
+];
