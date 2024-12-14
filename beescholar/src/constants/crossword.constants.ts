@@ -40,14 +40,14 @@ export const testCrossword: CluesInput = {
     3: {
         answer: 'BEM',
         clue: 'Apa nama organisasi mahasiswa di Binus University yang berfokus pada pengembangan kepemimpinan dan manajemen? (akronim)',
-        col: 5,
+        col: 1,
         row: 0,
       },
     5: {
       answer: 'CODINGWORKSHOP',
       clue: 'Sebutkan jenis workshop yang sering diadakan di Binus University untuk mendukung pengembangan keterampilan teknologi mahasiswa! (tanpa spasi)',
-      col: 0,
-      row: 6,
+      col: 8,
+      row: 0,
     },
   },
 };

@@ -34,11 +34,11 @@ const CrosswordPage = (props: ICrosswordProps) => {
   return (
     <div
       id='crossword-background'
-      className='crossword-background'>
+      className='crossword-background relative'>
       {/* <Crossword data={testCrossword} acrossLabel={"Across Questions"} downLabel={"Down Questions"}/> */}
       <div
         id='crossword-details'
-        className=''>
+        className='w-3/4 h-5/6 flex flex-row justify-evenly'>
         <CrosswordProvider
           data={testCrossword}
           ref={cref}
@@ -47,12 +47,41 @@ const CrosswordPage = (props: ICrosswordProps) => {
           }>
           <div
             id='crossword'
-            className='flex-row flex mt-5 ml-3.5 mr-3.5'>
-            <CrosswordGrid />
+            className='w-3/4 h-full flex flex-col bg-white p-5 rounded-lg'>
+            <div
+              id='crossword-container'
+              className='w-full h-3/4 '>
+              <CrosswordGrid />
+            </div>
+            <div
+              id='crossword-buttons'
+              className='w-full h-1/2'>
+              <div
+                id='submit-button'
+                className=' p-12 flex flex-row justify-evenly'>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={() => {
+                    cref.current?.reset();
+                    navigate('/game/');
+                  }}>
+                  Home
+                </Button>
+                <Button
+                  variant='outlined'
+                  color='primary'
+                  onClick={() => {
+                    setOpenModal(true);
+                  }}>
+                  Submit
+                </Button>
+              </div>
+            </div>
           </div>
           <div
             id='clues'
-            className='mt-10 flex flex-col justify-evenly'>
+            className='flex flex-col justify-normal items-center'>
             <div
               id='across-clues'
               className='clues-class'>
@@ -71,27 +100,6 @@ const CrosswordPage = (props: ICrosswordProps) => {
             </div>
           </div>
         </CrosswordProvider>
-      </div>
-      <div
-        id='submit-button'
-        className=' p-12 flex flex-row justify-evenly'>
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={() => {
-            cref.current?.reset();
-            navigate('/game/');
-          }}>
-          Home
-        </Button>
-        <Button
-          variant='outlined'
-          color='primary'
-          onClick={() => {
-            setOpenModal(true);
-          }}>
-          Submit
-        </Button>
       </div>
 
       {/* Modal for Correct and Incorrect*/}
@@ -140,7 +148,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
                 onClick={() => {
                   cref.current?.reset();
                   setOpenModal(false);
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}>
                 Try Again
               </Button>

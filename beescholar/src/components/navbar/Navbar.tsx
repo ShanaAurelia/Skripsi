@@ -23,10 +23,10 @@ const Navbar = (props: INavbarProps) => {
           className='nav-background'>
           <div
             id='user-profile-background'
-            className='container h-5/6 w-max flex flex-row bg-slate-50 rounded-lg mt-auto mb-auto'>
+            className='h-5/6 w-2/12 flex flex-row bg-[#E0E0E0] rounded-lg mt-auto mb-auto shadow-md shadow-black'>
             <div
               id='user-profile-picture-background'
-              className='container flex w-1/2 rounded-lg grow'>
+              className='flex rounded-lg w-1/4'>
               <img
                 className='object-fill rounded-lg'
                 src={student.userPictureUrl}
@@ -34,7 +34,7 @@ const Navbar = (props: INavbarProps) => {
             </div>
             <div
               id='user-information-background'
-              className='container flex flex-col flex-initial'>
+              className='flex flex-col w-1/2 justify-center items-center'>
               <div
                 id='user-information'
                 className='container'>
@@ -49,7 +49,19 @@ const Navbar = (props: INavbarProps) => {
                 </h6>
               </div>
             </div>
+            
           </div>
+
+          <div id='candidate-points-container'
+            className='flex flex-col justify-evenly w-1/4 bg-[#F39F33] items-center rounded-lg shadow-md shadow-black h-3/4'>
+              <div id='cp-title' className='w-full h-1/3 justify-center items-center'>
+                <h2 className='font-bold text-2xl text-center text-white'> My Candidate Points </h2>
+              </div>
+              <div id='candidate-points' className='flex flex-row '>
+                <h2 className='font-bold text-xl text-center text-white'>{student.candidatePoints || 0}</h2>
+                <p className='font-medium text-base text-white text-center mt-1'>pts</p>
+              </div>
+            </div>
 
           <div
             id='logout-button-container'

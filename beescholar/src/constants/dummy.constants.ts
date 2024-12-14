@@ -17,6 +17,7 @@ export const DummyStudent: IStudent = {
   semester: 1,
   totalPoint: 0,
   userCode: 2502001001,
+  candidatePoints: 1000,
   userPictureUrl:
     'https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1721433600&semt=ais_user',
 };

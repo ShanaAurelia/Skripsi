@@ -11,6 +11,7 @@ export interface IStudent {
   email: string;
   gender: string;
   userPictureUrl: string;
+  candidatePoints: number;
 }
 
 export interface ICharacter {
