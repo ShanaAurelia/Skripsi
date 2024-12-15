@@ -5,8 +5,18 @@ import {
   ITask,
   ITrivialTask,
 } from '../components/map/Map_Book.interfaces';
-import { IStorycase, IStoryCaseSpeech } from '../components/storycase-book/Storycase.interfaces';
-import { ICharacter, IDialogue, IRank, ISpeech, IStudent } from './global.interfaces';
+import { IStageData } from '../components/stageboard/Stageboard.interface';
+import {
+  IStorycase,
+  IStoryCaseSpeech,
+} from '../components/storycase-book/Storycase.interfaces';
+import {
+  ICharacter,
+  IDialogue,
+  IRank,
+  ISpeech,
+  IStudent,
+} from './global.interfaces';
 
 export const DummyStudent: IStudent = {
   id: '0a1d5e9e-ca7d-47d1-8466-00ca9f8818b7',
@@ -286,51 +296,168 @@ export const DummyStoryCaseMinigame: IStorycase = {
       "Yesterday, Tempo lost his Student Flazz Card in the train station. Right now he's confused on what to do..",
     id: '00',
     profilePicture: '/characters/aset merch BINUS Support 4 - pusing copy.png',
-  }
+  },
 };
 
 export const DummyStoryCaseSpeech: IStoryCaseSpeech[] = [
   {
     dialogueBubble: {
-      text:
-        'Yesterday I lost my Flazz card while commuting... the Final Exams will start tomorrow and I will need my Flazz Card to enter the Exam classroom.. what should I do?',
-    }
+      text: 'Yesterday I lost my Flazz card while commuting... the Final Exams will start tomorrow and I will need my Flazz Card to enter the Exam classroom.. what should I do?',
+    },
   },
   {
-    speechOption: [{ optionText: 'If I were you I would panic right now' }, {optionText: 'Maybe the Student Service Office can help'}, {optionText: 'How about asking the Admission Office?'}]
+    speechOption: [
+      { optionText: 'If I were you I would panic right now' },
+      { optionText: 'Maybe the Student Service Office can help' },
+      { optionText: 'How about asking the Admission Office?' },
+    ],
   },
 
   {
-    dialogueBubble:{
+    dialogueBubble: {
       text: "Oh.. right! thanks for helping me, I'll go to the SSO immediately!",
-      isSatisfactory: false
-    }
-  }
+      isSatisfactory: false,
+    },
+  },
 ];
 
-export const DummyNPCInteraction:INPCInteraction[] = [
+export const DummyNPCInteraction: INPCInteraction[] = [
   {
-    characterPicture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
-    characterName: "Tempo",
+    characterPicture:
+      '/characters/aset merch BINUS Support 3 - bahagia copy.png',
+    characterName: 'Tempo',
     line: 'Aku sedang berbahagia akhir-akhir ini, karena ujian sudah selesai dan aku bisa beristirahat cukup lama',
-    speed: 5
+    speed: 5,
   },
   {
-    characterPicture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
-    characterName: "Tempo",
+    characterPicture:
+      '/characters/aset merch BINUS Support 3 - bahagia copy.png',
+    characterName: 'Tempo',
     line: 'Semoga nilai ujian aku bisa memuaskan ya, supaya aku bisa membanggakan keluargaku',
-    speed: 3
+    speed: 3,
   },
   {
-    characterPicture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
-    characterName: "Tempo",
+    characterPicture:
+      '/characters/aset merch BINUS Support 3 - bahagia copy.png',
+    characterName: 'Tempo',
     line: 'kalau menurutmu gimana? Apakah kamu bisa menyelesaikan ujianmu dengan baik?',
-    speed: 1
+    speed: 1,
   },
   {
-    characterPicture: '/characters/aset merch BINUS Support 3 - bahagia copy.png',
-    characterName: "Tempo",
+    characterPicture:
+      '/characters/aset merch BINUS Support 3 - bahagia copy.png',
+    characterName: 'Tempo',
     line: 'Aku harap kita berdua bisa wisuda bersama. Nanti jangan lupa foto ya',
-    speed: 3
-  }
-]
+    speed: 3,
+  },
+];
+
+export const DummyStage: IStageData = {
+  question: [
+    {
+      text: 'Bagaimana tahapan untuk Enrichment jalur Internship?',
+      type: 'RR',
+      answer: {
+        orderables: [
+          'Apply magang via portal',
+          'Diterima magang',
+          'Lapor ke Enrichment Binus',
+        ],
+      },
+    },
+    {
+      text: 'Dimana kita bisa mendapatkan informasi mengenai Enrichment?',
+      type: 'MC',
+      answer: {
+        choice: [
+          'Bertanya ke Jurusan',
+          'Bertanya ke Lecturer Service Center',
+          'Bertanya ke Admission Office',
+          'Bertanya ke Enrichment Center',
+        ],
+      },
+    },
+    {
+      text: 'Setelah memilih jalur internship, apakah masih bisa berpindah jalur?',
+      type: 'YN',
+      answer: {
+        yesText: "Ya, namun perlu memberikan dokumen tambahan untuk diperiksa",
+        noText: "Tidak, karena jalur yang sudah dipilih harus diikuti"
+      }
+    },
+    {
+      text: 'Bagaimana tahapan untuk Enrichment jalur Internship?',
+      type: 'RR',
+      answer: {
+        orderables: [
+          'Apply magang via portal',
+          'Diterima magang',
+          'Lapor ke Enrichment Binus',
+        ],
+      },
+    },
+    {
+      text: 'Dimana kita bisa mendapatkan informasi mengenai Enrichment?',
+      type: 'MC',
+      answer: {
+        choice: [
+          'Bertanya ke Jurusan',
+          'Bertanya ke Lecturer Service Center',
+          'Bertanya ke Admission Office',
+          'Bertanya ke Enrichment Center',
+        ],
+      },
+    },
+    {
+      text: 'Setelah memilih jalur internship, apakah masih bisa berpindah jalur?',
+      type: 'YN',
+      answer: {
+        yesText: "Ya, namun perlu memberikan dokumen tambahan untuk diperiksa",
+        noText: "Tidak, karena jalur yang sudah dipilih harus diikuti"
+      }
+    },
+    {
+      text: 'Bagaimana tahapan untuk Enrichment jalur Internship?',
+      type: 'RR',
+      answer: {
+        orderables: [
+          'Apply magang via portal',
+          'Diterima magang',
+          'Lapor ke Enrichment Binus',
+        ],
+      },
+    },
+    {
+      text: 'Dimana kita bisa mendapatkan informasi mengenai Enrichment?',
+      type: 'MC',
+      answer: {
+        choice: [
+          'Bertanya ke Jurusan',
+          'Bertanya ke Lecturer Service Center',
+          'Bertanya ke Admission Office',
+          'Bertanya ke Enrichment Center',
+        ],
+      },
+    },
+    {
+      text: 'Setelah memilih jalur internship, apakah masih bisa berpindah jalur?',
+      type: 'YN',
+      answer: {
+        yesText: "Ya, namun perlu memberikan dokumen tambahan untuk diperiksa",
+        noText: "Tidak, karena jalur yang sudah dipilih harus diikuti"
+      }
+    },
+    {
+      text: 'Dimana kita bisa mendapatkan informasi mengenai Enrichment?',
+      type: 'MC',
+      answer: {
+        choice: [
+          'Bertanya ke Jurusan',
+          'Bertanya ke Lecturer Service Center',
+          'Bertanya ke Admission Office',
+          'Bertanya ke Enrichment Center',
+        ],
+      },
+    },
+  ]
+};

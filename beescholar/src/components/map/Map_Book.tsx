@@ -99,12 +99,15 @@ const MapBook = () => {
     }
   };
 
+  const handleNavigateStory = () => {
+      return navigate('/game/stage', {replace: true});    
+  }
+
   const handleInteractibleAction = () => {
     if (popoverLocation !== undefined) {
       const trigger = interactibles.find(
         (i) => i.location === translateKMGMapId(popoverLocation)
       );
-      console.log(trigger);
       if (trigger) {
         switch (trigger.type) {
           case 'Trivial Task':
@@ -581,6 +584,86 @@ const MapBook = () => {
     </Popover>
   );
 
+  const renderMainQuestModal = () => (
+    <Modal
+    open={openMainQuestModal}
+    className='w-full h-full flex justify-center items-center'
+    disableScrollLock={true}>
+    <div
+      id='task-modal-container'
+      className='w-11/12 h-3/4 bg-[#0171A9] flex flex-col rounded-xl border-black border-4'>
+      <div
+        id='task-modal-title-container'
+        className='flex justify-center items-center w-full h-1/4 relative'>
+        <div
+          id='task-modal-title-box'
+          className='bg-[#81C7E9] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
+          <h4 className='text-white font-semibold tracking-widest text-2xl'>
+            STORY CONTINUATION
+          </h4>
+        </div>
+        <button
+          id='close-modal-button'
+          className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
+          onClick={() => setOpenMainQuestModal(false)}>
+          ❌
+        </button>
+      </div>
+      <div
+        id='task-modal-body-container'
+        className='w-full h-1/2 flex flex-row justify-evenly items-center'>
+        <div
+          id='profiles-picture'
+          className=' w-1/4 h-full flex justify-center items-center relative'>
+          <div
+            id='profiles-squareframe'
+            className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
+          />
+          <img
+            src={'/characters/aset merch BINUS Support 3 - bahagia copy.png'}
+            className='absolute w-full'
+          />
+        </div>
+        <div
+          id='task-modal-descriptions-container'
+          className='w-1/2 h-full flex flex-col justify-evenly relative'>
+          <div
+            id='task-modal-descriptions'
+            className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+            <div
+              id='task-modal-description-header'
+              className='w-full h-1/4 text-center '>
+              <h5 className='text-white bg-[#81C7E9] font-semibold tracking-wider text-xl p-2 '>
+                STORY DESCRIPTION
+              </h5>
+            </div>
+            <div
+              id='task-modal-description-body'
+              className='w-full h-3/4 pt-3 flex justify-between flex-col'>
+              <p className='text-black font-medium tracking-wide text-lg'>
+                You will face your first ever Stage
+              </p>
+              <p className='text-black font-medium tracking-wide text-lg'>
+                Topic: Enrichment
+              </p>
+            </div>
+          </div>
+          <div
+            id='button-container'
+            className='w-full h-max flex justify-end flex-row'>
+            <button
+              id='go-button'
+              className='bg-[#76B743] hover:border-2 rounded-lg p-3 text-white font-bold text-lg tracking-wider hover:bg-[#609636] hover:border-black'
+              onClick={() => handleNavigateStory()}>
+              LETS GO
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Modal>
+  )
+
   const renderTaskModal = () => (
     <Modal
       open={openTaskModal}
@@ -772,6 +855,7 @@ const MapBook = () => {
         </div>
       </div>
       {renderTaskModal()}
+      {renderMainQuestModal()}
       {renderNoInteractibleModal()}
       {openInteraction && renderInteraction()}
     </>
