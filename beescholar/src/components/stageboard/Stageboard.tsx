@@ -7,6 +7,7 @@ import {
   IYesOrNo,
 } from './Stageboard.interface';
 import { DummyStage } from '../../constants/dummy.constants';
+import { useNavigate } from 'react-router-dom';
 
 const Stageboard = () => {
   // for stage
@@ -16,6 +17,7 @@ const Stageboard = () => {
   const [answers, setAnswers] = useState<IAnswer[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tryRefresh, setTryRefresh] = useState<boolean>(false);
+  const [allAnswered, setAllAnswered] = useState<boolean>(false);
   // for multiple-choice
   const [multipleChoice, setMultipleChoice] = useState<any>();
   const [mcanswerKey, setmcAnswerKey] = useState<number>();
@@ -29,6 +31,11 @@ const Stageboard = () => {
   const [rrasnwerKey, setrrAnswerKey] = useState<number>();
   // for yes-or-no
   const [yesOrNo, setYesOrNo] = useState<any>();
+  const [ynanswerKey, setynAnswerKey] = useState<number>();
+  // for report
+  const [openReport, setOpenReport] = useState<boolean>();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setStageData(DummyStage);
@@ -52,12 +59,23 @@ const Stageboard = () => {
     }, 5000);
   }, [activeNumber]);
 
+  useEffect(() => {
+    if (answers.length === stageData?.question.length) {
+      setAllAnswered(true);
+    } else {
+      setAllAnswered(false);
+    }
+  }, [answers]);
+
   const handlemcAnswerKey = () => {
     setmcAnswerKey(Math.random());
   };
 
   const handlerrAnswerKey = () => {
     setrrAnswerKey(Math.random());
+  };
+  const handleynAnswerKey = () => {
+    setynAnswerKey(Math.random());
   };
 
   const draggedItem = useRef();
@@ -143,7 +161,7 @@ const Stageboard = () => {
       // set saved order data answer to orders
       setOrders(handleSavedReordering(_answerIndex));
     }
-    if ((!!tryRefresh) || ( order.length > 0 && reorders.length > 0 )) {
+    if (!!tryRefresh || (order.length > 0 && reorders.length > 0)) {
       setTryRefresh(false);
       setIsLoadingOrder(false);
     }
@@ -198,6 +216,7 @@ const Stageboard = () => {
     }
     handlemcAnswerKey();
     handlerrAnswerKey();
+    handleynAnswerKey();
   };
 
   const handleReorderingAnswer = () => {
@@ -279,7 +298,68 @@ const Stageboard = () => {
     </>
   );
 
-  const renderYesOrNo = () => <></>;
+  const renderYesOrNo = () => (
+    <div
+      key={'yn-' + activeNumber + '-' + ynanswerKey}
+      id='yes-or-no-container'
+      className='w-5/6 h-3/4 flex flex-col'>
+      {yesOrNo !== undefined && (
+        <>
+          <div
+            id={'mc-yes-container'}
+            className='w-5/6 h-1/5 flex flex-row justify-center items-center'>
+            <button
+              id={'choice-yes'}
+              onClick={() => {
+                handleAnswer(yesOrNo.yesText);
+              }}
+              className={
+                'border-2 p-2 text-center border-black w-10 h-10 flex justify-center items-center rounded-full hover:border-[#F39F33] hover:text-[#F39F33] ' +
+                (answers.find(
+                  (ans) =>
+                    ans.answer === yesOrNo.yesText &&
+                    ans.number === activeNumber
+                )
+                  ? 'bg-[#76BF43]'
+                  : '')
+              }>
+              <p className='font-bold text-2xl'>{}</p>
+            </button>
+            <div
+              id={'choice-text-yes'}
+              className='w-3/4 h-full flex items-center'>
+              <p className='font-semibold text-lg ml-5'>{yesOrNo.yesText}</p>
+            </div>
+          </div>
+          <div
+            id={'mc-no-container'}
+            className='w-5/6 h-1/5 flex flex-row justify-center items-center'>
+            <button
+              id={'choice-no'}
+              onClick={() => {
+                handleAnswer(yesOrNo.noText);
+              }}
+              className={
+                'border-2 p-2 text-center border-black w-10 h-10 flex justify-center items-center rounded-full hover:border-[#F39F33] hover:text-[#F39F33] ' +
+                (answers.find(
+                  (ans) =>
+                    ans.answer === yesOrNo.noText && ans.number === activeNumber
+                )
+                  ? 'bg-[#76BF43]'
+                  : '')
+              }>
+              <p className='font-bold text-2xl'>{}</p>
+            </button>
+            <div
+              id={'choice-text-no'}
+              className='w-3/4 h-full flex items-center'>
+              <p className='font-semibold text-lg ml-5'>{yesOrNo.noText}</p>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
 
   const renderReordering = () => (
     <>
@@ -339,18 +419,21 @@ const Stageboard = () => {
           Save Answer
         </button>
       )}
-      {(
+      {
         <div className='flex flex-col justify-center items-center'>
-        <button
-          className='bg-[#67BBE7] w-max h-max rounded-md pl-2 pr-2 pt-1 pb-1 text-white font-bold tracking-widest mt-5 ' 
-          onClick={() => {
-            handleIntializeReodering();
-          }}>
-          Refresh Question
-        </button>
-          <p className='text-slate-500 font-normal text-sm'>If reorder boxes is loading too long or not showing, please try Refresh Question</p>
+          <button
+            className='bg-[#67BBE7] w-max h-max rounded-md pl-2 pr-2 pt-1 pb-1 text-white font-bold tracking-widest mt-5 '
+            onClick={() => {
+              handleIntializeReodering();
+            }}>
+            Refresh Question
+          </button>
+          <p className='text-slate-500 font-normal text-sm'>
+            If reorder boxes is loading too long or not showing, please try
+            Refresh Question
+          </p>
         </div>
-      )}
+      }
     </>
   );
 
@@ -386,6 +469,17 @@ const Stageboard = () => {
           </div>
         </>
       )}
+      {allAnswered && (
+        <>
+          <button
+            className='bg-[#76B743] pt-1 pb-1 pl-2 pr-2 text-2xl font-semibold text-black rounded-md mb-3'
+            onClick={() => {
+              setOpenReport(true);
+            }}>
+            Finish Stage
+          </button>
+        </>
+      )}
     </div>
   );
 
@@ -415,13 +509,86 @@ const Stageboard = () => {
     </div>
   );
 
+  const renderReportBoard = () => (
+    <>
+      <div
+        id='whiteboard-container'
+        className='w-5/6 h-3/4 flex bg-white shadow-inner shadow-black justify-center items-center'>
+        <div
+          id='right-side'
+          className='w-1/3 h-full flex flex-col justify-center items-center'>
+          <div
+            id='title-container'
+            className='w-full h-max flex'>
+            <h2 className='text-3xl font-bold tracking-widest underline underline-offset-2'>
+              STAGE REPORT
+            </h2>
+          </div>
+          <div
+            id='report-details'
+            className='w-full h-1/2 flex flex-col justify-evenly items-start '>
+            <h5 className='text-xl font-semibold tracking-wide'>
+              {8} Correct Answers
+            </h5>
+            <h5 className='text-xl font-semibold tracking-wide'>
+              {2} Incorrect Answers
+            </h5>
+            <h5 className='text-xl font-semibold tracking-wide'>
+              {1} Guide used
+            </h5>
+          </div>
+        </div>
+        <div
+          id='left-side'
+          className='w-1/3 h-full flex flex-col justify-evenly items-center'>
+          <div
+            id='beescholar-notes'
+            className='border-dashed border-2 border-black w-3/4 h-max flex justify-center items-center self-end pl-2 pr-2 pt-1 pb-1'>
+            <p className='text-xl font-medium tracking-widest'>
+              You have done well. Keep up the good work.
+            </p>
+          </div>
+          <div
+            id='score-container'
+            className='self-end h-max w-max flex flex-col justify-items-end'>
+            <h2 className='font-bold text-3xl tracking-widest h-max w-max'>
+              Score
+            </h2>
+            <div
+              id='score-point-container'
+              className='border-black border-4 pt-2 pb-2 pl-3 pr-3 flex justify-center items-center'>
+              <h5 className='text-2xl font-black tracking-wide'>750</h5>
+              <p className='text-md font-semibold mt-2'>pts</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        className='bg-white pl-2 pr-2 pt-1 pb-1 text-black rounded-lg border-4 border-black hover:bg-[#81C7E9] hover:border-white text-lg font-semibold tracking-wide hover:text-white delay-150 transition'
+        onClick={() => navigate('/game/', { replace: true })}>
+        back to homepage
+      </button>
+    </>
+  );
+
   return (
-    <div
-      id='board-container'
-      className='w-full h-full flex flex-col justify-evenly items-center'>
-      {renderWhiteboard()}
-      {renderNumberBoard()}
-    </div>
+    <>
+      {!openReport && (
+        <div
+          id='board-container'
+          className='w-full h-full flex flex-col justify-evenly items-center'>
+          {renderWhiteboard()}
+          {renderNumberBoard()}
+        </div>
+      )}
+      {openReport && (
+        <div
+          id='board-report-container'
+          className='w-full h-full flex flex-col justify-evenly items-center'>
+          {renderReportBoard()}
+        </div>
+      )}
+    </>
   );
 };
 
