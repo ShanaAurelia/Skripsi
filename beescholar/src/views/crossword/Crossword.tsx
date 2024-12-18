@@ -56,6 +56,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
             <div
               id='crossword-buttons'
               className='w-full h-1/2'>
+          </div>
               <div
                 id='submit-button'
                 className=' p-12 flex flex-row justify-evenly'>
@@ -66,7 +67,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
                     cref.current?.reset();
                     navigate('/game/');
                   }}>
-                  Home
+                  Back
                 </Button>
                 <Button
                   variant='outlined'
@@ -78,24 +79,30 @@ const CrosswordPage = (props: ICrosswordProps) => {
                 </Button>
               </div>
             </div>
-          </div>
           <div
             id='clues'
             className='flex flex-col justify-normal items-center'>
             <div
               id='across-clues'
               className='clues-class'>
+              <h2 className='font-bold text-2xl text-black underline underline-offset-2'>
+                Across Questions
+              </h2>
               <DirectionClues
                 direction='across'
-                label={'Across Questions'}
+                label={'|'}
+                
               />
             </div>
             <div
               id='down-clues'
               className='clues-class'>
+              <h2 className='font-bold text-2xl text-black underline underline-offset-2'>
+                Down Questions
+              </h2>
               <DirectionClues
                 direction='down'
-                label={'Down Questions'}
+                label={'|'}
               />
             </div>
           </div>

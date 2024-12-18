@@ -25,10 +25,10 @@ const Navbar = (props: INavbarProps) => {
           className='nav-background'>
           <div
             id='user-profile-background'
-            className='h-5/6 w-2/12 flex flex-row bg-[#E0E0E0] rounded-lg mt-auto mb-auto shadow-md shadow-black'>
+            className='h-5/6 w-max flex flex-row bg-[#E0E0E0] rounded-lg mt-auto mb-auto shadow-md shadow-black pr-5'>
             <div
               id='user-profile-picture-background'
-              className='flex rounded-lg w-1/4'>
+              className='flex rounded-lg w-max'>
               <img
                 className='object-fill rounded-lg'
                 src={student.userPictureUrl}
@@ -36,7 +36,7 @@ const Navbar = (props: INavbarProps) => {
             </div>
             <div
               id='user-information-background'
-              className='flex flex-col w-1/2 justify-center items-center'>
+              className='flex flex-col w-max justify-center items-center ml-2'>
               <div
                 id='user-information'
                 className='container'>
