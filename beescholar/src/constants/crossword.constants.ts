@@ -41,13 +41,13 @@ export const testCrossword: CluesInput = {
         answer: 'BEM',
         clue: 'Apa nama organisasi mahasiswa di Binus University yang berfokus pada pengembangan kepemimpinan dan manajemen? (akronim)',
         col: 1,
-        row: 0,
+        row: 5,
       },
     5: {
-      answer: 'CODINGWORKSHOP',
-      clue: 'Sebutkan jenis workshop yang sering diadakan di Binus University untuk mendukung pengembangan keterampilan teknologi mahasiswa! (tanpa spasi)',
+      answer: 'BINUS',
+      clue: 'Sebutkan singkatan dari Bina Nusantara',
       col: 8,
-      row: 0,
+      row: 3,
     },
   },
 };

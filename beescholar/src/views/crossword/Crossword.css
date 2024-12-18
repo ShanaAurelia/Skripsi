@@ -8,7 +8,7 @@
     }
 
     .clues-class{
-        @apply bg-slate-400 p-5 rounded shadow-lg shadow-black mb-10 ml-5;
+        @apply bg-white p-5 rounded shadow-lg shadow-black mb-10 ml-5 text-black font-semibold text-xl;
     }
     
     .modal-background{
