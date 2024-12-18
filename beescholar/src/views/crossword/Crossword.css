@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .crossword-background{
+        @apply h-screen w-full items-center flex justify-center bg-[#014769];
+    }
+
+    .clues-class{
+        @apply bg-slate-400 p-5 rounded shadow-lg shadow-black mb-10 ml-5;
+    }
+    
+    .modal-background{
+        @apply bg-white h-max w-max mt-auto mb-auto p-10 rounded-2xl flex flex-col;
+    }
+}

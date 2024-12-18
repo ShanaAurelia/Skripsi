@@ -4,4 +4,5 @@ export interface ISkeletonState {
   student: IStudent;
 }
 
-export interface ISkeletonProps {}
+export interface ISkeletonProps {
+}

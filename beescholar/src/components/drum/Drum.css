@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .drum-part-set {
+    @apply flex flex-row h-1/2 w-full justify-evenly;
+  }
+
+  .drum-part-name {
+    @apply font-mono mt-auto mb-auto text-wrap text-center;
+  }
+
+  .drum-part {
+    @apply w-min h-max rounded-full flex hover:cursor-pointer active:animate-drum-hit text-center;
+  }
+
+  .modal-background {
+    @apply bg-white h-max w-max mt-auto mb-auto p-10 rounded-2xl flex flex-col;
+  }
+
+  .button-end{
+    @apply h-max w-max m-4 rounded-full p-2;
+  }
+}

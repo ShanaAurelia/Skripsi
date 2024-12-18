@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components{
+    .book-pin{
+        @apply h-10 w-full flex flex-col justify-between;
+    }
+
+    .right-shadow-pin{
+        @apply flex-grow h-full shadow-[-1px_0_1px_0_white_inset] ;
+    }
+    .left-shadow-pin{
+        @apply flex-grow h-full shadow-[1px_0_1px_0_white_inset] ;
+    }
+
+    .pins-container{
+        @apply bg-black w-full h-1/4 flex flex-row ;
+    }
+
+    .bookmark-button{
+        @apply w-1/2 flex justify-center items-center rounded-s-2xl pt-1 pb-1 mb-2 bg-white;
+    }
+
+    .bookmark-text{
+        @apply text-end w-1/4 font-bold text-[8px] md:text-base md:w-1/2;
+    }
+
+    .list-profile{
+        @apply w-12 h-12 rounded-full bg-white justify-center items-center flex border-black border-2 drop-shadow-xl shadow-lg hover:border-[#F39F33] hover:border-4 md:w-24 md:h-24 motion-reduce:transition ease-in-out delay-300 hover:-translate-y-1 hover:scale-110 duration-150;
+    }
+}

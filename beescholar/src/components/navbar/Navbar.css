@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .nav-background{
+        @apply bg-cyan-800 h-20 content-center flex flex-row justify-between items-center pr-2 pl-2 w-full;
+    }
+
+    .nav-log-container{
+        @apply container h-4/6 w-max flex mt-auto mb-auto;
+    }
+
+    .nav-log-button-background{
+        @apply container bg-[#0171A9] flex rounded-xl justify-center items-center p-4 border-white border-2 hover:bg-[#1CAAF1];
+    }
+
+    .nav-log-button-text{
+        @apply font-sans font-semibold text-base content-center text-white;
+    }
+}
