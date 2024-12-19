@@ -599,7 +599,7 @@ const MapBook = () => {
           id='task-modal-title-box'
           className='bg-[#81C7E9] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
           <h4 className='text-white font-semibold tracking-widest text-2xl'>
-            STORY CONTINUATION
+          {translateKMGMapId(popoverLocation || "").toUpperCase()}
           </h4>
         </div>
         <button
@@ -634,7 +634,7 @@ const MapBook = () => {
               id='task-modal-description-header'
               className='w-full h-1/4 text-center '>
               <h5 className='text-white bg-[#81C7E9] font-semibold tracking-wider text-xl p-2 '>
-                STORY DESCRIPTION
+                STORY CONTINUATION
               </h5>
             </div>
             <div
@@ -679,7 +679,7 @@ const MapBook = () => {
             id='task-modal-title-box'
             className='bg-[#F3931B] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
             <h4 className='text-white font-semibold tracking-widest text-2xl'>
-              TRIVIAL TASK
+              {translateKMGMapId(popoverLocation || "").toUpperCase()}
             </h4>
           </div>
           <button
@@ -714,7 +714,7 @@ const MapBook = () => {
                 id='task-modal-description-header'
                 className='w-full h-1/4 text-center '>
                 <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>
-                  TASK DESCRIPTION
+                  TRIVIAL TASK
                 </h5>
               </div>
               <div

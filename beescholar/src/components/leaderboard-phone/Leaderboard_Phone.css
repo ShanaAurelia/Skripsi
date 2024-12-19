@@ -23,4 +23,12 @@
     .global-leaderboard-top-10{
         @apply text-white font-normal text-base text-ellipsis whitespace-nowrap h-1/6 ml-2 mr-2 overflow-hidden;
     }
+
+    .self-card-activity{
+        @apply text-black text-xs font-semibold col-span-3;
+    }
+
+    .self-card-nonactivity{
+        @apply text-black text-xs col-span-1 text-center;
+    }
 }
