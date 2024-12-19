@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import { ISpeechProps, ISpeechState } from './Speech.interface';
 import { TypeAnimation } from 'react-type-animation';
 import './Speech.css';
-import { Button } from '@mui/material';
+import '../../constants/global.css'
 
 const Speech = (dialogue: ISpeechProps) => {
   var container = document.querySelector('.text');
@@ -58,16 +58,15 @@ const Speech = (dialogue: ISpeechProps) => {
       </div>
       <div
         id='speech-box'
-        className=' flex flex-row absolute h-full w-full justify-between overflow-auto'>
+        className='flex flex-row h-full w-full justify-between overflow-auto p-5'>
         <div
           id='speech-text'
           className='text w-5/6 text-xl font-medium text-black'></div>
-        <Button
-          className='absolute h-1/6 top-4 right-2 f'
-          onClick={dialogue.handleNext}
-          variant='contained'>
-          <p className='font-bold text-white text-3xl'>Next</p>
-        </Button>
+        <button
+          className='beescholar-button h-max p-2 pr-3 pl-3 rounded-xl flex justify-center items-center'
+          onClick={dialogue.handleNext}>
+          <p className='font-semibold text-2xl text-center'>Next</p>
+        </button>
       </div>
     </div>
   );

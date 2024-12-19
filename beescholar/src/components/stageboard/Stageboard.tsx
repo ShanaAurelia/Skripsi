@@ -8,6 +8,7 @@ import {
 } from './Stageboard.interface';
 import { DummyStage } from '../../constants/dummy.constants';
 import { useNavigate } from 'react-router-dom';
+import '../../constants/global.css'
 
 const Stageboard = () => {
   // for stage
@@ -411,7 +412,7 @@ const Stageboard = () => {
       </div>
       {!tryRefresh && !isLoadingOrder && (
         <button
-          className='bg-[#F3931B] rounded-md pl-2 pr-2 pt-1 pb-1 text-white font-bold tracking-widest disabled:cursor-wait'
+          className='beescholar-button rounded-md pl-2 pr-2 pt-1 pb-1 text-white font-bold tracking-widest disabled:cursor-wait'
           disabled={isLoadingOrder}
           onClick={() => {
             handleReorderingAnswer();
@@ -422,15 +423,15 @@ const Stageboard = () => {
       {
         <div className='flex flex-col justify-center items-center'>
           <button
-            className='bg-[#67BBE7] w-max h-max rounded-md pl-2 pr-2 pt-1 pb-1 text-white font-bold tracking-widest mt-5 '
+            className='beescholar-error-button w-max h-max rounded-md pl-2 pr-2 pt-1 pb-1 text-white font-bold tracking-widest mt-5 '
             onClick={() => {
               handleIntializeReodering();
             }}>
-            Refresh Question
+            Refresh Boxes
           </button>
           <p className='text-slate-500 font-normal text-sm'>
             If reorder boxes is loading too long or not showing, please try
-            Refresh Question
+            Refresh Boxes
           </p>
         </div>
       }
@@ -472,7 +473,7 @@ const Stageboard = () => {
       {allAnswered && (
         <>
           <button
-            className='bg-[#76B743] pt-1 pb-1 pl-2 pr-2 text-2xl font-semibold text-black rounded-md mb-3'
+            className='beescholar-success-button pt-1 pb-1 pl-2 pr-2 text-2xl font-semibold  rounded-md mb-3'
             onClick={() => {
               setOpenReport(true);
             }}>
@@ -564,7 +565,7 @@ const Stageboard = () => {
         </div>
       </div>
       <button
-        className='bg-white pl-2 pr-2 pt-1 pb-1 text-black rounded-lg border-4 border-black hover:bg-[#81C7E9] hover:border-white text-lg font-semibold tracking-wide hover:text-white delay-150 transition'
+        className='beescholar-button pl-2 pr-2 pt-1 pb-1  rounded-lg b text-lg font-semibold tracking-wide drop-shadow-lg shadow-sm shadow-black'
         onClick={() => navigate('/game/', { replace: true })}>
         back to homepage
       </button>

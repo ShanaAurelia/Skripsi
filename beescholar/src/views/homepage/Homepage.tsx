@@ -38,7 +38,7 @@ const Homepage = () => {
   return (
     <div
       id='home-container'
-      className='h-screen w-full bg-[#014769] items-center flex justify-center'>
+      className='h-screen w-full bg-[#81C7E9] items-center flex justify-center'>
       <div
         id='background'
         className='flex justify-center items-center h-full w-5/6 relative'>

@@ -1,6 +1,7 @@
 import React, { Component, useContext, useEffect, useState } from 'react';
 import { INavbarProps, INavbarState } from './Navbar.interface';
 import './Navbar.css';
+import '../../constants/global.css'
 import { useAuth } from '../../config/Context';
 import { dummyStudent } from '../../views/skeleton/Skeleton.constants';
 import { useNavigate } from 'react-router-dom';
@@ -187,11 +188,6 @@ const Navbar = (props: INavbarProps) => {
                         value={password}
                         onChange={(e) => handleChangePassword(e.target.value)}
                       />
-                      {/* <button
-                        className='absolute right-2 opacity-60'
-                        onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? 'hide' : 'show'}
-                      </button> */}
                     </div>
                   </div>
                 </div>
@@ -199,12 +195,12 @@ const Navbar = (props: INavbarProps) => {
                   id='button-container'
                   className='w-full h-1/4 flex justify-evenly items-center flex-row'>
                   <button
-                    className='bg-[#0171A9] p-2 text-white font-semibold tracking-wide rounded-md'
+                    className='beescholar-error-button p-2 font-semibold tracking-wide rounded-md'
                     onClick={() => setIsOpenModal(false)}>
                     Cancel
                   </button>
                   <button
-                    className='bg-[#0171A9] p-2 text-white font-semibold tracking-wide rounded-md'
+                    className='beescholar-button p-2 font-semibold tracking-wide rounded-md'
                     onClick={() => {handleLogin()}}>
                     Login
                   </button>

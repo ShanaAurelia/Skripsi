@@ -8,7 +8,8 @@ import Crossword, {
   DirectionClues,
 } from '@jaredreisinger/react-crossword';
 import { testCrossword } from '../../constants/crossword.constants';
-import { Button, Modal } from '@mui/material';
+import { Modal } from '@mui/material';
+import '../../constants/global.css'
 import './Crossword.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -47,7 +48,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
           }>
           <div
             id='crossword'
-            className='w-3/4 h-full flex flex-col bg-white p-5 rounded-lg'>
+            className='w-3/4 h-full flex flex-col bg-white p-5 rounded-lg drop-shadow-xl shadow-sm'>
             <div
               id='crossword-container'
               className='w-full h-3/4 '>
@@ -60,23 +61,21 @@ const CrosswordPage = (props: ICrosswordProps) => {
               <div
                 id='submit-button'
                 className=' p-12 flex flex-row justify-evenly'>
-                <Button
-                  variant='contained'
-                  color='primary'
+                <button
+                  className='beescholar-button p-2 pl-3 pr-3 font-semibold text-lg rounded-2xl'
                   onClick={() => {
                     cref.current?.reset();
                     navigate('/game/');
                   }}>
                   Back
-                </Button>
-                <Button
-                  variant='outlined'
-                  color='primary'
+                </button>
+                <button
+                className='beescholar-button p-2 pl-3 pr-3 font-semibold text-lg rounded-2xl '
                   onClick={() => {
                     setOpenModal(true);
                   }}>
                   Submit
-                </Button>
+                </button>
               </div>
             </div>
           <div
@@ -125,15 +124,14 @@ const CrosswordPage = (props: ICrosswordProps) => {
               <div id='modal-correct-details'>
                 Congratulations, all your answers are correct!
               </div>
-              <Button
-                variant='contained'
-                color='success'
+              <button
+                className='beescholar-success-button'
                 onClick={() => {
                   cref.current?.reset();
                   navigate('/game/');
                 }}>
                 Go Back
-              </Button>
+              </button>
             </div>
           </div>
         </Modal>
@@ -149,16 +147,15 @@ const CrosswordPage = (props: ICrosswordProps) => {
               <div id='modal-incorrect-details'>
                 You have incorrect answers...
               </div>
-              <Button
-                variant='contained'
-                color='warning'
+              <button
+                className='beescholar-error-button'
                 onClick={() => {
                   cref.current?.reset();
                   setOpenModal(false);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}>
                 Try Again
-              </Button>
+              </button>
             </div>
           </div>
         </Modal>

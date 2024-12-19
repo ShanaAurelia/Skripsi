@@ -169,7 +169,9 @@ const Phoneboard = () => {
   );
 
   const phoneLeaderboardCardHeader = () => (
-    <div id='card-header' className='w-full p-2 h-1/5 z-10'>
+    <div
+      id='card-header'
+      className='w-full p-2 h-1/5 z-10'>
       <div
         id='self-information-container'
         className='w-full h-max grid grid-cols-4 grid-rows-2 gap-2 z-10'>
@@ -196,43 +198,61 @@ const Phoneboard = () => {
           <p className='text-xs'>Completed on 24 Feb 2024</p>
         </div>
       </div>
-      <div id='candidate-point-container' className='bg-[#014769] w-full h-max z-10 rounded-2xl'>
-        <h2 className='text-white font-bold text-base text-center '>15000 Candidate Points</h2>
+      <div
+        id='candidate-point-container'
+        className='bg-[#014769] w-full h-max z-10 rounded-2xl'>
+        <h2 className='text-white font-bold text-base text-center '>
+          15000 Candidate Points
+        </h2>
       </div>
-    </div >
+    </div>
   );
 
   const phoneLeaderboardCardBody = () => (
-  <div id='card-body-container' className='w-11/12 z-10 h-3/5 drop-shadow-lg shadow-sm shadow-black bg-white mb-5 rounded-xl flex justify-center items-start'>
-    <div id='information-grid' className='w-5/6 h-max grid grid-cols-1 grid-flow-row mt-6 gap-2'>
-    <div id='quest-done-grid' className='grid grid-cols-5'>
-      <h4 className='self-card-activity'>Quest Done</h4>
-      <h4 className='self-card-nonactivity'>:</h4>
-      <h4 className='self-card-nonactivity'>3/17</h4>
+    <div
+      id='card-body-container'
+      className='w-11/12 z-10 h-3/5 drop-shadow-lg shadow-sm shadow-black bg-white mb-5 rounded-xl flex justify-center items-start'>
+      <div
+        id='information-grid'
+        className='w-5/6 h-max grid grid-cols-1 grid-flow-row mt-6 gap-2'>
+        <div
+          id='quest-done-grid'
+          className='grid grid-cols-5'>
+          <h4 className='self-card-activity'>Quest Done</h4>
+          <h4 className='self-card-nonactivity'>:</h4>
+          <h4 className='self-card-nonactivity'>3/17</h4>
+        </div>
+        <div
+          id='activity-done-grid'
+          className='grid grid-cols-5'>
+          <h4 className='self-card-activity'>Story Activity Done</h4>
+          <h4 className='self-card-nonactivity'>:</h4>
+          <h4 className='self-card-nonactivity'>3/17</h4>
+        </div>
+        <div
+          id='crossword-done-grid'
+          className='grid grid-cols-5'>
+          <h4 className='self-card-activity'>Crossword Done</h4>
+          <h4 className='self-card-nonactivity'>:</h4>
+          <h4 className='self-card-nonactivity'>3/17</h4>
+        </div>
+        <div
+          id='task-done-grid'
+          className='grid grid-cols-5'>
+          <h4 className='self-card-activity'>Trivial Task Done</h4>
+          <h4 className='self-card-nonactivity'>:</h4>
+          <h4 className='self-card-nonactivity'>3/17</h4>
+        </div>
+        <div
+          id='campus-done-grid'
+          className='grid grid-cols-5'>
+          <h4 className='self-card-activity'>Campus Done</h4>
+          <h4 className='self-card-nonactivity'>:</h4>
+          <h4 className='self-card-nonactivity'>3/17</h4>
+        </div>
+      </div>
     </div>
-    <div id='activity-done-grid' className='grid grid-cols-5'>
-      <h4 className='self-card-activity'>Story Activity Done</h4>
-      <h4 className='self-card-nonactivity'>:</h4>
-      <h4 className='self-card-nonactivity'>3/17</h4>
-    </div>
-    <div id='crossword-done-grid' className='grid grid-cols-5'>
-      <h4 className='self-card-activity'>Crossword Done</h4>
-      <h4 className='self-card-nonactivity'>:</h4>
-      <h4 className='self-card-nonactivity'>3/17</h4>
-    </div>
-    <div id='task-done-grid' className='grid grid-cols-5'>
-      <h4 className='self-card-activity'>Trivial Task Done</h4>
-      <h4 className='self-card-nonactivity'>:</h4>
-      <h4 className='self-card-nonactivity'>3/17</h4>
-    </div>
-    <div id='campus-done-grid' className='grid grid-cols-5'>
-      <h4 className='self-card-activity'>Campus Done</h4>
-      <h4 className='self-card-nonactivity'>:</h4>
-      <h4 className='self-card-nonactivity'>3/17</h4>
-    </div>
-    </div>
-  </div>
-);
+  );
 
   const phoneLeaderboardCard = () => (
     <div
@@ -254,7 +274,9 @@ const Phoneboard = () => {
       <div
         id='phone-navigation-container'
         className='w-full h-max flex justify-start items-start mb-2'>
-        <img src='/component-images/Back-Button.svg' />
+        <button onClick={() => navigate('/game/', { replace: true })}>
+          <img src='/component-images/Back-Button.svg' />
+        </button>
       </div>
       <div
         id='phone-fill-leaderboard-container'
@@ -297,8 +319,7 @@ const Phoneboard = () => {
         className='w-1/12 h-full flex justify-center items-center'>
         <button
           id='phone-button'
-          className='bg-white w-12 h-12 rounded-full'
-          onClick={() => navigate('/game/', { replace: true })}></button>
+          className='bg-white w-12 h-12 rounded-full'></button>
       </div>
     </div>
   );

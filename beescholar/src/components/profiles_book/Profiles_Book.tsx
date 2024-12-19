@@ -101,7 +101,7 @@ const ProfilesBook = () => {
       <button
         id='KMG'
         className={
-          (activeLocation === 'KMG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'KMG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('KMG')}>
         <h5 className='bookmark-text'>K M G</h5>
@@ -109,7 +109,7 @@ const ProfilesBook = () => {
       <button
         id='BDG'
         className={
-          (activeLocation === 'BDG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'BDG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('BDG')}>
         <h5 className='bookmark-text'>B D G</h5>
@@ -117,7 +117,7 @@ const ProfilesBook = () => {
       <button
         id='SMG'
         className={
-          (activeLocation === 'SMG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'SMG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('SMG')}>
         <h5 className='bookmark-text'>S M G</h5>
@@ -125,7 +125,7 @@ const ProfilesBook = () => {
       <button
         id='BKS'
         className={
-          (activeLocation === 'BKS' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'BKS' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('BKS')}>
         <h5 className='bookmark-text'>B K S</h5>
@@ -133,7 +133,7 @@ const ProfilesBook = () => {
       <button
         id='MLG'
         className={
-          (activeLocation === 'MLG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'MLG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('MLG')}>
         <h5 className='bookmark-text'>M L G</h5>
@@ -141,7 +141,7 @@ const ProfilesBook = () => {
       <button
         id='ALS'
         className={
-          (activeLocation === 'ALS' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'ALS' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('ALS')}>
         <h5 className='bookmark-text'>A L S</h5>
@@ -415,17 +415,17 @@ const ProfilesBook = () => {
       {renderBookmark()}
       <div
         id='book-page-left'
-        className='bg-[#81C7E9] w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden'>
+        className='bg-[#4EB0E1] w-1/2 h-full drop-shadow-lg shadow-md shadow-black overflow-auto overflow-x-hidden'>
         {renderProfileList()}
       </div>
       <div className='w-1/6 h-full absolute flex justify-center ml-12'>
-      <div className='justify-center items-center flex z-0 absolute h-full w-min ml-1'>
+      <div className='justify-center items-center flex z-10 absolute h-full w-min ml-1 drop-shadow-lg shadow-md shadow-black'>
       {renderMiddlePart()}
       </div>
       </div>
       <div
         id='book-page-right'
-        className='bg-white h-full w-1/2'>
+        className='bg-white h-full w-1/2 drop-shadow-lg shadow-md shadow-black'>
         {renderProfileDescription()}
       </div>
     </div>

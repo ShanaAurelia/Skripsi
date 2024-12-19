@@ -8,7 +8,7 @@ const Leaderboard = () => {
     const renderLazyLoading = () => <div></div>;
   
     return (
-      <div className='h-screen w-full bg-[#014769] items-center flex justify-center'>
+      <div className='h-screen w-full bg-[#81C7E9] items-center flex justify-center'>
         {isLoading ? renderLazyLoading() : <Phoneboard/>}
       </div>
     );

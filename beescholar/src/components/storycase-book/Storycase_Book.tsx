@@ -26,9 +26,15 @@ const StorycaseBook = () => {
     setStoryCaseData(DummyStoryCaseMinigame);
     setLoading(true);
     setTimeout(() => {
-      setDialogueCount(1);
-      setLoading(false);
+      setLoading(false)
+    }, 500);
+    setTimeout(() => {
+      setDialogueCount(1)
+      setLoading(true)
     }, 1500);
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
   }, []);
 
   useEffect(() => {
@@ -36,13 +42,18 @@ const StorycaseBook = () => {
   }, [dialogueCount]);
 
   useEffect(() => {
-    setSatisfied(storyCaseSpeech?.dialogueBubble?.isSatisfactory);
+    setTimeout(() => {
+      setSatisfied(storyCaseSpeech?.dialogueBubble?.isSatisfactory);
+    }, 2000);
   }, [storyCaseSpeech?.dialogueBubble?.isSatisfactory]);
 
   useEffect(() => {
+    // use effect for saving state data (make scrollable chat history-kinda)
     if (saveSpeech?.length === 0 && storyCaseSpeech?.dialogueBubble) {
+      // only works for first speech bubble.
       setSaveSpeech([storyCaseSpeech.dialogueBubble.text]);
     } else if (chosenOption !== '') {
+      // only work to save player option
       setSaveSpeech((curr) => {
         if (chosenOption) {
           return [...curr, chosenOption];
@@ -51,6 +62,7 @@ const StorycaseBook = () => {
       });
       setChosenOption('');
     } else if (storyCaseSpeech?.dialogueBubble) {
+      // only work for next speech bubbles that is not a player option
       setSaveSpeech((curr) => {
         if (storyCaseSpeech.dialogueBubble) {
           return [...curr, storyCaseSpeech.dialogueBubble.text];
@@ -58,15 +70,17 @@ const StorycaseBook = () => {
         return curr;
       });
     }
-  }, [storyCaseSpeech]);
+  }, [dialogueCount]);
 
   const handleNextDialogue = (opt: string) => {
     setChosenOption(opt);
     setLoading(true);
     setTimeout(() => {
       setDialogueCount(dialogueCount + 1);
-      setLoading(false);
-    }, 1500);
+    }, 500);
+    setTimeout(() => {
+      setLoading(false)
+    }, 2000);
   };
 
   const handleChoiceIndex = (idx: number) => {
@@ -105,11 +119,11 @@ const StorycaseBook = () => {
           {optionBubble.map((opt, idx) => (
             <button
               id='option-container'
-              className='bg-[#F39F33] p-1 w-11/12 h-min flex flex-row rounded-lg mb-3 items-center'
+              className='beescholar-button p-1 w-11/12 h-min flex flex-row rounded-lg mb-3 items-center'
               onClick={() => handleNextDialogue(opt.optionText)}>
               <div
                 id='option-index'
-                className='bg-white w-11 h-10 flex justify-center items-center text-center rounded-full mr-3'>
+                className='bg-[#d26b1c] w-11 h-10 flex justify-center items-center text-center rounded-full mr-3'>
                 <h3 className='text-lg font-bold'>{handleChoiceIndex(idx)}</h3>
               </div>
               <div
@@ -241,14 +255,14 @@ const StorycaseBook = () => {
         className='h-1/2 w-full flex flex-col items-center justify-evenly'>
         <div
           id='case-description'
-          className='bg-[#81C7E9] w-5/6 p-3 text-center'>
-          <p className='text-base font-medium'>
+          className='bg-[#4EB0E1] w-5/6 p-3 text-center'>
+          <p className='text-base font-medium text-white'>
             {storyCaseData?.data.description}
           </p>
         </div>
         <div
           id='case-article-link'
-          className='bg-[#81C7E9] w-5/6 p-3 flex flex-row items-center relative text-center'>
+          className='bg-[#4EB0E1] w-5/6 p-3 flex flex-row items-center relative text-center text-white'>
           <div
             id='case-help-icon'
             className='w-1/6 h-full items-center'>
@@ -288,7 +302,7 @@ const StorycaseBook = () => {
                 'w-full mb-2 flex ' +
                 (idx % 2 == 0 ? 'justify-start' : 'justify-end')
               }>
-              <h3 className='text-lg font-semibold bg-[#81C7E9] p-1 pl-2 pr-2 rounded-lg w-max text-white'>
+              <h3 className='text-lg font-semibold bg-[#4EB0E1] p-1 pl-2 pr-2 rounded-lg w-max text-white'>
                 {idx % 2 == 0 ? 'TEMPO' : Auth.user?.name}
               </h3>
             </div>
@@ -311,16 +325,16 @@ const StorycaseBook = () => {
               id='speech-bubble-name-container'
               className={
                 'w-full mb-2 flex ' +
-                ((dialogueCount + 1) % 2 == 0 ? 'justify-start' : 'justify-end')
+                ((dialogueCount) % 2 == 0 ? 'justify-start' : 'justify-end')
               }>
-              <h3 className='text-lg font-semibold bg-[#81C7E9] p-1 pl-2 pr-2 rounded-lg w-max text-white'>
-                {(dialogueCount + 1) % 2 == 0 ? 'TEMPO' : Auth.user?.name}
+              <h3 className='text-lg font-semibold bg-[#4EB0E1] p-1 pl-2 pr-2 rounded-lg w-max text-white'>
+                {(dialogueCount) % 2 == 0 ? 'TEMPO' : Auth.user?.name}
               </h3>
             </div>
             <div
               id='speech-bubble-text-container'
               className='w-full flex flex-col relative object-contain'>
-              {(dialogueCount + 1) % 2 == 0 ? 'TEMPO' : Auth.user?.name} is
+              {(dialogueCount) % 2 == 0 ? 'TEMPO' : Auth.user?.name} is
               writing...
             </div>
           </div>
@@ -339,7 +353,7 @@ const StorycaseBook = () => {
                 'w-full mb-2  flex ' +
                 (dialogueCount % 2 == 0 ? 'justify-start' : 'justify-end')
               }>
-              <h3 className='text-lg font-semibold bg-[#81C7E9] p-1 pl-2 pr-2 rounded-lg w-max  text-white'>
+              <h3 className='text-lg font-semibold bg-[#4EB0E1] p-1 pl-2 pr-2 rounded-lg w-max  text-white'>
                 {dialogueCount % 2 == 0 ? 'TEMPO' : Auth.user?.name}
               </h3>
             </div>
@@ -356,7 +370,7 @@ const StorycaseBook = () => {
           id='button-container'
           className='w-full h-full right-5 bottom-10 z-30 justify-end flex mt-5'>
           <button
-            className='bg-[#76B743] w-max h-min pr-2 pl-2 pb-1 pt-1 text-center font-bold tracking-widest text-2xl rounded-xl text-white'
+            className='beescholar-success-button w-max h-min pr-2 pl-2 pb-1 pt-1 text-center font-bold tracking-widest text-2xl rounded-xl '
             onClick={() => navigate('/game/', { replace: true })}>
             END CASE
           </button>
@@ -367,7 +381,7 @@ const StorycaseBook = () => {
           id='button-container'
           className=' w-full h-full right-5 bottom-10 z-30 justify-end flex mt-5'>
           <button
-            className='bg-[#D73930] w-max h-min pr-2 pl-2 pb-1 pt-1 text-center font-bold tracking-widest text-2xl rounded-xl text-white'
+            className='beescholar-error-button w-max h-min pr-2 pl-2 pb-1 pt-1 text-center font-bold tracking-widest text-2xl rounded-xl '
             onClick={() => navigate('/game/map')}>
             RETRY CASE
           </button>
@@ -380,17 +394,17 @@ const StorycaseBook = () => {
     <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center'>
       <div
         id='book-page-left'
-        className='bg-white w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden relative'>
+        className='bg-white w-1/2 h-full drop-shadow-lg shadow-md shadow-black overflow-auto overflow-x-hidden relative'>
         {renderLeftPart()}
       </div>
       <div className='w-1/6 h-full absolute flex justify-center'>
-        <div className='justify-center items-center flex z-10 absolute h-full w-min'>
+        <div className='justify-center items-center flex z-10 absolute h-full w-min drop-shadow-lg shadow-md shadow-black'>
           {renderMiddlePart()}
         </div>
       </div>
       <div
         id='book-page-right'
-        className=' bg-[#81C7E9] h-full w-1/2 relative'>
+        className=' bg-[#4EB0E1] h-full w-1/2 relative drop-shadow-lg shadow-md shadow-black'>
         {renderRightPart()}
       </div>
     </div>

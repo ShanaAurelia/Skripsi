@@ -4,6 +4,6 @@
 
 @layer components{
     .menu-button{
-       @apply text-2xl text-clip overflow-hidden w-max hover:bg-[#81C7E9] pl-5 pr-5 pt-2 pb-2 ease-linear duration-300;
+       @apply text-2xl text-clip overflow-hidden w-max hover:bg-[#F39F33] pl-5 pr-5 pt-2 pb-2 ease-linear duration-300 rounded-2xl;
     }
 }
