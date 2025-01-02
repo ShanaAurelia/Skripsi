@@ -22,3 +22,39 @@ export interface INPCInteraction{
     line: string,
     speed: number
 }
+
+export interface IUnlockCampus{
+    id: string,
+    campusName: string,
+    description: string,
+    mininumSemester: number
+}
+
+export interface ICampusRoom{
+    id: string,
+    roomName: string,
+    type: string,
+    background: string
+}
+
+export interface IActivityHeader{
+    id: string,
+    dateEnd?: Date,
+    dateStart?: Date,
+    description: string,
+    questTitle: string,
+    roomName?: string,
+    activities: IActivityData[]
+}
+
+export interface IActivityData{
+    id: string,
+    name: string,
+    type: string,
+    description: string,
+    isRepeatable: boolean,
+    isCompleted: boolean,
+    completionPoint: number,
+    priority: number,
+    startSceneId: string
+}

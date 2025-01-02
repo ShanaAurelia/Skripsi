@@ -15,7 +15,7 @@ const Navbar = (props: INavbarProps) => {
     _savedUser = GetUserData();
     contextData.checkExistingUser(_savedUser);
   }
-  const student = _savedUser ? _savedUser : contextData.user;
+  const student = _savedUser ? _savedUser.data : contextData.user;
   const navigate = useNavigate();
   
   const NavbarUserLogin = () => {
@@ -32,7 +32,7 @@ const Navbar = (props: INavbarProps) => {
               className='flex rounded-lg w-max'>
               <img
                 className='object-fill rounded-lg'
-                src={student.userPictureUrl}
+                src={student.profilePicture}
               />
             </div>
             <div
@@ -69,7 +69,7 @@ const Navbar = (props: INavbarProps) => {
               id='candidate-points'
               className='flex flex-row '>
               <h2 className='font-bold text-xl text-center text-white'>
-                {student.candidatePoints || 0}
+                {student.totalPoint || 0}
               </h2>
               <p className='font-medium text-base text-white text-center mt-1'>
                 pts

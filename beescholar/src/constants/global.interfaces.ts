@@ -4,14 +4,14 @@ export interface IStudent {
   id: string;
   name: string;
   userCode: number;
+  role: string;
   academicCareer: string;
   totalPoint: number;
   completionDate: Date;
   semester: number;
   email: string;
   gender: string;
-  userPictureUrl: string;
-  candidatePoints: number;
+  profilePicture: string;
 }
 
 export interface ICharacter {
