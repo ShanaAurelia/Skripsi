@@ -75,10 +75,10 @@ function AuthProvider({ children }: IAuthProviderProps) {
       )
       .then(function (response) {
         console.log(response.data);
-          dispatch({ type: 'login', payload: response.data });
+          dispatch({ type: 'login', payload: response.data.data });
           window.localStorage.setItem(
             'user-beescholar',
-            JSON.stringify(response.data)
+            JSON.stringify(response.data.data)
           );
       })
       .catch(function (error){

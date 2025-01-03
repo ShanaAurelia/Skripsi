@@ -9,40 +9,161 @@ import {
 } from '../../constants/dummy.constants';
 import '../../constants/global.css';
 import { useNavigate } from 'react-router-dom';
+import {
+  IPersonalStats,
+  IPlayerRank,
+} from './Leaderboard_Phone.interface';
+import axios from 'axios';
+import { useAuth } from '../../config/Context';
 
 const Phoneboard = () => {
-  const [storyLeaderboard, setStoryLeaderboard] = useState<string[]>([]);
-  const [pointLeaderboard, setPointLeaderboard] = useState<string[]>([]);
-  const [crosswordLeaderboard, setCrosswordLeaderboard] = useState<string[]>(
+  const [storyLeaderboard, setStoryLeaderboard] = useState<IPlayerRank[]>([]);
+  const [pointLeaderboard, setPointLeaderboard] = useState<IPlayerRank[]>([]);
+  const [crosswordLeaderboard, setCrosswordLeaderboard] = useState<IPlayerRank[]>(
     []
   );
-  const [playerLeaderboard, setPlayerLeaderboard] = useState<IRank[]>([]);
-  const [playerStoryLeaderboard, setPlayerStoryLeaderboard] = useState<IRank>();
-  const [playerPointLeaderboard, setPlayerPointLeaderboard] = useState<IRank>();
+  const [openDropdown, setOpenDropdown] = useState<boolean>(false);
+  const [currentOption, setCurrentOption] = useState<
+    'Clear Time' | 'Crosswords' | 'Total Points'
+  >('Clear Time');
+  const [isLoadingStats, setIsLoadingStats] = useState<boolean>(false);
+  const [isLoadingBoard, setIsLoadingBoard] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [playerStats, setPlayerStats] = useState<IPersonalStats>();
+  const [playerStoryLeaderboard, setPlayerStoryLeaderboard] =
+    useState<IPlayerRank>();
+  const [playerPointLeaderboard, setPlayerPointLeaderboard] =
+    useState<IPlayerRank>();
   const [playerCrosswordLeaderboard, setPlayerCrosswordLeaderboard] =
-    useState<IRank>();
+    useState<IPlayerRank>();
 
   useEffect(() => {
-    setStoryLeaderboard(DummyLeaderboardStory);
-    setPointLeaderboard(DummyLeaderboardPoints);
-    setPlayerLeaderboard(DummyPlayerRank);
-    setCrosswordLeaderboard(DummyLeaderboardCrossword);
+    getData();
   }, []);
 
   useEffect(() => {
-    playerLeaderboard.forEach((rank) => {
-      switch (rank.leaderboard) {
-        case 'story':
-          return setPlayerStoryLeaderboard(rank);
-        case 'points':
-          return setPlayerPointLeaderboard(rank);
-        case 'crossword':
-          return setPlayerCrosswordLeaderboard(rank);
-      }
-    });
-  }, [playerLeaderboard]);
+    getData();
+  }, [currentOption])
+
+  // useEffect(() => {
+  //   playerLeaderboard.forEach((rank) => {
+  //     switch (rank.leaderboard) {
+  //       case 'story':
+  //         return setPlayerStoryLeaderboard(rank);
+  //       case 'points':
+  //         return setPlayerPointLeaderboard(rank);
+  //       case 'crossword':
+  //         return setPlayerCrosswordLeaderboard(rank);
+  //     }
+  //   });
+  // }, [playerLeaderboard]);
 
   const navigate = useNavigate();
+  const Auth = useAuth();
+  const user = Auth.user;
+
+  const getPlayerStats = () => {
+    axios
+      .get(`http://127.0.0.1:8000/api/leaderboard/stats/${user?.id}`)
+      .then((res) => {
+        setPlayerStats(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsError(true);
+      });
+  };
+
+  const getData = () => {
+    setIsLoadingBoard(true);
+    handleGetLeaderboard();
+    setIsLoadingStats(true);
+    getPlayerStats();
+    setTimeout(() => {
+      setIsLoadingStats(false);
+    }, 500);
+  };
+
+  const handleRefresh = () => {
+    getData();
+  };
+
+  const handleChangeDropdown = (
+    opt: 'Clear Time' | 'Crosswords' | 'Total Points'
+  ) => {
+    setCurrentOption(opt);
+    setOpenDropdown(false);
+  };
+
+  const handleGetLeaderboard = async () => {
+    const opt = currentOption;
+    switch (opt) {
+      case 'Clear Time':
+        await axios
+          .get(`http://127.0.0.1:8000/api/leaderboard/clear_time/${user?.id}`)
+          .then((res) => {
+            setStoryLeaderboard(res.data.data.topUsers);
+            setPlayerStoryLeaderboard(res.data.data.currentUser);
+            setTimeout(() => {
+              setIsLoadingBoard(false);
+            }, 500);
+          })
+          .catch((error) => {
+            console.log(error);
+            setIsError(true);
+          });
+        return;
+      case 'Total Points':
+        await axios
+          .get(`http://127.0.0.1:8000/api/leaderboard/point/${user?.id}`)
+          .then((res) => {
+            setPointLeaderboard(res.data.data.topUsers);
+            setPlayerPointLeaderboard(res.data.data.currentUser);
+            setTimeout(() => {
+              setIsLoadingBoard(false);
+            }, 500);
+          })
+          .catch((error) => {
+            console.log(error);
+            setIsError(true);
+          });
+        return;
+    }
+  };
+
+  const handlePlayerBoard = () => {
+    const opt = currentOption;
+    switch (opt) {
+      case 'Clear Time':
+        if (playerStoryLeaderboard?.completionDate !== null && playerStoryLeaderboard?.completionDate !== undefined) {
+          return playerStoryLeaderboard?.completionDate.toDateString();
+        } else {
+          return 'No Date Data';
+        }
+      case 'Crosswords':
+        return playerCrosswordLeaderboard?.name.toString();
+      case 'Total Points':
+        if(playerPointLeaderboard?.totalPoint !== undefined){
+          return playerPointLeaderboard?.totalPoint.toString() + "pts";
+        }else{
+          return "N/A pts"
+        }
+      default:
+        return 'N/A';
+    }
+    return 'N/A';
+  };
+
+  const handleGlobalRankData = () => {
+    switch(currentOption){
+      case "Clear Time":
+        return storyLeaderboard.map((data, idx) => phoneGlobalLeaderboardRank(data, idx+1))
+      case "Crosswords":
+        return crosswordLeaderboard.map((data, idx) => phoneGlobalLeaderboardRank(data, idx+1))
+      case "Total Points":
+        return pointLeaderboard.map((data, idx) => phoneGlobalLeaderboardRank(data, idx+1))
+    }
+  }
 
   const phoneGlobalLeaderboardHeader = () => (
     <div
@@ -61,7 +182,9 @@ const Phoneboard = () => {
       <div
         id='date-header'
         className='text-white font-semibold text-base col-span-2'>
-        Completed Date
+        {currentOption === "Clear Time" && "Completed Date"}
+        {currentOption === "Crosswords" && "Crosswords Done"}
+        {currentOption === "Total Points" && "Total Points"}
       </div>
     </div>
   );
@@ -78,6 +201,7 @@ const Phoneboard = () => {
         className='w-2/5 h-full flex flex-row justify-between'>
         <button
           id='refresh-button'
+          onClick={() => handleRefresh()}
           className='bg-[#F3931B] text-center font-semibold text-white flex justify-between items-center pl-2 pr-2 rounded-lg drop-shadow-sm shadow-sm shadow-black'>
           <p className='text-sm pr-2'>Refresh </p>
           <img
@@ -85,15 +209,42 @@ const Phoneboard = () => {
             className='w-3 h-3'
           />{' '}
         </button>
-        <button
-          id='refresh-button'
-          className='bg-[#F3931B] text-center font-semibold text-white flex justify-between items-center pl-2 pr-2 rounded-lg drop-shadow-sm shadow-sm shadow-black'>
-          <p className='text-sm pr-2'>Clear Time </p>
-          <img
-            src='/component-images/Dropdown-Icon.svg'
-            className='w-3 h-3'
-          />{' '}
-        </button>
+        <div className='h-max flex flex-col relative'>
+          <button
+            id='stats-button'
+            onClick={() => setOpenDropdown(!openDropdown)}
+            className='bg-[#F3931B] text-center font-semibold text-white flex justify-between items-center pl-2 pr-2 rounded-lg drop-shadow-sm shadow-sm shadow-black z-20'>
+            <p className='text-sm pr-2'>{currentOption}</p>
+            <img
+              src='/component-images/Dropdown-Icon.svg'
+              className='w-3 h-3'
+            />{' '}
+          </button>
+          {openDropdown && (
+            <div
+              id='dropdown-container'
+              className=' w-full bg-[#F3931B] flex-col flex absolute mt-5 p-2 rounded-lg'>
+              <button
+                id='stats-button'
+                onClick={() => handleChangeDropdown('Crosswords')}
+                className='bg-white text-center font-semibold text-[#F3931B] flex justify-between items-center rounded-lg drop-shadow-sm shadow-sm shadow-black mb-2 pl-1 pr-1'>
+                <p className='text-sm'>Crosswords</p>
+              </button>
+              <button
+                id='stats-button'
+                onClick={() => handleChangeDropdown('Total Points')}
+                className='bg-white text-center font-semibold text-[#F3931B] flex justify-between items-center rounded-lg drop-shadow-sm shadow-sm shadow-black mb-2 pl-1 pr-1'>
+                <p className='text-sm'>Total Points</p>
+              </button>
+              <button
+                id='stats-button'
+                onClick={() => handleChangeDropdown('Clear Time')}
+                className='bg-white text-center font-semibold text-[#F3931B] flex justify-between items-center rounded-lg drop-shadow-sm shadow-sm shadow-black pl-1 pr-1'>
+                <p className='text-sm'>Clear Time</p>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -110,7 +261,7 @@ const Phoneboard = () => {
     </div>
   );
 
-  const phoneSelfLeaderboardRank = () => (
+  const phoneSelfLeaderboardRank = (playerData: string | undefined) => (
     <>
       <div
         id='self-rank'
@@ -120,7 +271,7 @@ const Phoneboard = () => {
           id='self-photo'
           className='w-9 h-9 rounded-full absolute -right-3 top-2 border-2 border-black'>
           <img
-            src='https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1721433600&semt=ais_user'
+            src={user?.profilePicture}
             className='rounded-full w-max h-max'
           />
         </div>
@@ -128,31 +279,75 @@ const Phoneboard = () => {
       <div
         id='self-name'
         className='text-black font-semibold text-lg rounded-xl col-span-2 p-3'>
-        John Doe
+        {user?.name}
       </div>
       <div
         id='self-date'
         className='text-[#014769] font-semibold text-lg rounded-xl col-span-2 p-3'>
-        24 Feb 2025 23:59
+        {playerData}
       </div>
     </>
   );
 
-  const phoneGlobalLeaderboardRank = () => <></>;
+  const phoneGlobalLeaderboardRank = (playerData: IPlayerRank, rank: number) => (<>
+    <div
+      id='self-rank'
+      className='text-black font-semibold text-lg bg-[#67BBE7] rounded-xl pl-2 p-3 relative'>
+      {rank}
+      <div
+        id='self-photo'
+        className='w-9 h-9 rounded-full absolute -right-3 top-2 border-2 border-black'>
+        <img
+          src={playerData.profilePicture}
+          className='rounded-full w-max h-max'
+        />
+      </div>
+    </div>
+    <div
+      id='self-name'
+      className='text-black font-semibold text-lg rounded-xl col-span-2 p-3'>
+      {playerData.name}
+    </div>
+    <div
+      id='self-date'
+      className='text-[#014769] font-semibold text-lg rounded-xl col-span-2 p-3'>
+      {currentOption === "Clear Time" && playerData.completionDate?.toString()}
+      {currentOption === "Crosswords" && playerData.crosswordDone}
+      {currentOption === "Total Points" && playerData.totalPoint+"pts"}
+    </div>
+  </>);
+
+  const phoneLoadingPlayerCard = () => (
+    <>
+      <div
+        id='self-rank'
+        className='text-black font-semibold text-lg bg-[#67BBE7] rounded-xl pl-2 p-3 relative animate-pulse'>
+        <div
+          id='self-photo'
+          className='w-9 h-9 rounded-full absolute -right-3 top-2 border-2 border-black bg-slate-700 animate-pulse'></div>
+      </div>
+      <div
+        id='self-name'
+        className='text-black font-semibold text-lg rounded-xl col-span-2 p-3 bg-slate-700 animate-pulse'></div>
+      <div
+        id='self-date'
+        className='text-[#014769] font-semibold text-lg rounded-xl col-span-2 p-3 bg-slate-700 animate-pulse'></div>
+    </>
+  );
 
   const phoneLeaderboardBoard = () => (
     <div
       id='phone-leaderboard-container'
-      className='w-full h-full flex flex-col justify-between'>
+      className='w-full h-full flex flex-col'>
       {phoneLeaderboardTitleOption()}
       <div
         id='global-leaderboard-container'
-        className='w-full h-5/6 flex flex-col items-center justify-center mb-5'>
+        className='w-full h-3/6 flex flex-col items-center justify-center mb-5'>
         {phoneGlobalLeaderboardHeader()}
         <div
           id='rank-container-global'
-          className='bg-[#FFFCFC] w-full h-full grid grid-cols-5 gap-2 rounded-xl'>
-          {phoneGlobalLeaderboardRank()}
+          className='bg-[#FFFCFC] w-full h-5/6 grid grid-cols-5 gap-2 rounded-xl overflow-auto no-scrollbar'>
+          {handleGlobalRankData()}
         </div>
       </div>
       <div
@@ -162,7 +357,9 @@ const Phoneboard = () => {
         <div
           id='rank-container-self'
           className='bg-[#FFFCFC] w-full h-full grid grid-cols-5 gap-2 rounded-xl'>
-          {phoneSelfLeaderboardRank()}
+          {isLoadingBoard
+            ? phoneLoadingPlayerCard()
+            : phoneSelfLeaderboardRank(handlePlayerBoard())}
         </div>
       </div>
     </div>
@@ -171,22 +368,22 @@ const Phoneboard = () => {
   const phoneLeaderboardCardHeader = () => (
     <div
       id='card-header'
-      className='w-full p-2 h-1/5 z-10'>
+      className='w-full p-2 h-2/5 z-10'>
       <div
         id='self-information-container'
-        className='w-full h-max grid grid-cols-4 grid-rows-2 gap-2 z-10'>
+        className='w-full h-5/6 grid grid-cols-4 grid-rows-2 gap-y-10 z-10'>
         <div
           id='self-photo-container'
           className=' row-span-2'>
           <img
-            src='https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1721433600&semt=ais_user'
+            src={user?.profilePicture}
             className='rounded-full w-14 h-14'
           />
         </div>
         <div
           id='self-name-container'
           className='col-span-3 text-[#014769]'>
-          <p className='text-2xl italic font-bold'>John Doe</p>
+          <p className='text-2xl italic font-bold'>{user?.name}</p>
         </div>
         <div
           id='self-date-container'
@@ -194,15 +391,20 @@ const Phoneboard = () => {
           <img
             src='/component-images/Clock-Icon.svg'
             className='w-4 h-4 mr-1'
-          />{' '}
-          <p className='text-xs'>Completed on 24 Feb 2024</p>
+          />
+          <p className='text-xs'>
+            {' '}
+            {playerStats?.completionDate
+              ? 'Completed on ' + playerStats?.completionDate?.toString()
+              : 'Has yet completed'}
+          </p>
         </div>
       </div>
       <div
         id='candidate-point-container'
         className='bg-[#014769] w-full h-max z-10 rounded-2xl'>
         <h2 className='text-white font-bold text-base text-center '>
-          15000 Candidate Points
+          {user?.totalPoint} Candidate Points
         </h2>
       </div>
     </div>
@@ -220,35 +422,122 @@ const Phoneboard = () => {
           className='grid grid-cols-5'>
           <h4 className='self-card-activity'>Quest Done</h4>
           <h4 className='self-card-nonactivity'>:</h4>
-          <h4 className='self-card-nonactivity'>3/17</h4>
+          <h4 className='self-card-nonactivity'>
+            {playerStats?.questCompleted} / {playerStats?.totalQuest}
+          </h4>
         </div>
         <div
           id='activity-done-grid'
           className='grid grid-cols-5'>
           <h4 className='self-card-activity'>Story Activity Done</h4>
           <h4 className='self-card-nonactivity'>:</h4>
-          <h4 className='self-card-nonactivity'>3/17</h4>
+          <h4 className='self-card-nonactivity'>
+            {playerStats?.activityCompleted} / {playerStats?.totalActivity}
+          </h4>
         </div>
         <div
           id='crossword-done-grid'
           className='grid grid-cols-5'>
           <h4 className='self-card-activity'>Crossword Done</h4>
           <h4 className='self-card-nonactivity'>:</h4>
-          <h4 className='self-card-nonactivity'>3/17</h4>
+          <h4 className='self-card-nonactivity'>
+            {playerStats?.crosswordCompleted} / {playerStats?.totalCrossword}
+          </h4>
         </div>
-        <div
+        {/* <div
           id='task-done-grid'
           className='grid grid-cols-5'>
           <h4 className='self-card-activity'>Trivial Task Done</h4>
           <h4 className='self-card-nonactivity'>:</h4>
-          <h4 className='self-card-nonactivity'>3/17</h4>
-        </div>
+          <h4 className='self-card-nonactivity'>{playerStats.}/17</h4>
+        </div> */}
         <div
           id='campus-done-grid'
           className='grid grid-cols-5'>
           <h4 className='self-card-activity'>Campus Done</h4>
           <h4 className='self-card-nonactivity'>:</h4>
-          <h4 className='self-card-nonactivity'>3/17</h4>
+          <h4 className='self-card-nonactivity'>
+            {playerStats?.campusUnlocked} / {playerStats?.totalCampus}
+          </h4>
+        </div>
+      </div>
+    </div>
+  );
+
+  const phoneLoadingLeaderboardCardHeader = () => (
+    <div
+      id='card-header'
+      className='w-full p-2 h-1/5 z-10'>
+      <div
+        id='self-information-container'
+        className='w-full h-max grid grid-cols-4 grid-rows-2 gap-2 z-10'>
+        <div
+          id='self-photo-container'
+          className=' row-span-2 animate-pulse bg-slate-700'></div>
+        <div
+          id='self-name-container'
+          className='col-span-3 text-[#014769] animate-pulse bg-slate-700'>
+          <p className='text-2xl italic font-bold'></p>
+        </div>
+        <div
+          id='self-date-container'
+          className='col-span-3 text-[#014769] flex flex-row animate-pulse bg-slate-700'>
+          <img
+            src='/component-images/Clock-Icon.svg'
+            className='w-4 h-4 mr-1'
+          />{' '}
+          <p className='text-xs'></p>
+        </div>
+      </div>
+      <div
+        id='candidate-point-container'
+        className='bg-[#014769] w-full h-max z-10 rounded-2xl animate-pulse '>
+        <h2 className='text-white font-bold text-base text-center '></h2>
+      </div>
+    </div>
+  );
+
+  const phoneLoadingLeaderboardCardBody = () => (
+    <div
+      id='card-body-container'
+      className='w-11/12 z-10 h-3/5 drop-shadow-lg shadow-sm shadow-black bg-white mb-5 rounded-xl flex justify-center items-start'>
+      <div
+        id='information-grid'
+        className='w-5/6 h-max grid grid-cols-1 grid-flow-row mt-6 gap-2'>
+        <div
+          id='quest-done-grid'
+          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          <h4 className='self-card-activity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+        </div>
+        <div
+          id='activity-done-grid'
+          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          <h4 className='self-card-activity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+        </div>
+        <div
+          id='crossword-done-grid'
+          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          <h4 className='self-card-activity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+        </div>
+        {/* <div
+          id='task-done-grid'
+          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          <h4 className='self-card-activity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+        </div> */}
+        <div
+          id='campus-done-grid'
+          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          <h4 className='self-card-activity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
+          <h4 className='self-card-nonactivity'></h4>
         </div>
       </div>
     </div>
@@ -260,10 +549,14 @@ const Phoneboard = () => {
       className='bg-[#FFFCFC] w-11/12 h-5/6 drop-shadow-md shadow-sm flex flex-col relative rounded-xl items-center justify-between'>
       <div
         id='background-leaderboard'
-        className='bg-[#67BBE7] absolute top-0 w-full h-2/5 rounded-xl z-0'
+        className='bg-[#67BBE7] absolute top-0 w-full h-3/5 rounded-xl z-0'
       />
-      {phoneLeaderboardCardHeader()}
-      {phoneLeaderboardCardBody()}
+      {isLoadingStats
+        ? phoneLoadingLeaderboardCardHeader()
+        : phoneLeaderboardCardHeader()}
+      {isLoadingStats
+        ? phoneLoadingLeaderboardCardBody()
+        : phoneLeaderboardCardBody()}
     </div>
   );
 

@@ -15,7 +15,7 @@ const Navbar = (props: INavbarProps) => {
     _savedUser = GetUserData();
     contextData.checkExistingUser(_savedUser);
   }
-  const student = _savedUser ? _savedUser.data : contextData.user;
+  const student = _savedUser ? _savedUser : contextData.user;
   const navigate = useNavigate();
   
   const NavbarUserLogin = () => {

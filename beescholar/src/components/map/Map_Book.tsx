@@ -121,9 +121,9 @@ const MapBook = () => {
   const getData = async () => {
     setIsLoading(true);
     // fetch unlock campus
-    const user: any = Auth.user;
+    const user = Auth.user;
     await axios
-      .get(`http://127.0.0.1:8000/api/campus/${user.data.id}`)
+      .get(`http://127.0.0.1:8000/api/campus/${user?.id}`)
       .then((res) => {
         setUnlockedCampus(res.data.data);
         setIsLoading(false);
