@@ -23,12 +23,6 @@ export interface INPCInteraction{
     speed: number
 }
 
-export interface IUnlockCampus{
-    id: string,
-    campusName: string,
-    description: string,
-    mininumSemester: number
-}
 
 export interface ICampusRoom{
     id: string,

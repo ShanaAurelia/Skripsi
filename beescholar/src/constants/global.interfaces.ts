@@ -16,13 +16,22 @@ export interface IStudent {
 
 export interface ICharacter {
   id: string;
-  role: string;
+  roles: string[];
   name: string;
   campusId: string;
   description: string;
-  likes: string;
-  dislikes: string;
-  picture: string;
+  likes: string[];
+  dislikes: string[];
+  image: string;
+  gender: string;
+}
+
+
+export interface IUnlockCampus{
+  id: string,
+  campusName: string,
+  description: string,
+  mininumSemester: number
 }
 
 export interface IDialogue {

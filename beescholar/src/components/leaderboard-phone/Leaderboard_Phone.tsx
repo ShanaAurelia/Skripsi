@@ -324,14 +324,14 @@ const Phoneboard = () => {
         className='text-black font-semibold text-lg bg-[#67BBE7] rounded-xl pl-2 p-3 relative animate-pulse'>
         <div
           id='self-photo'
-          className='w-9 h-9 rounded-full absolute -right-3 top-2 border-2 border-black bg-slate-700 animate-pulse'></div>
+          className='w-9 h-9 rounded-full absolute -right-3 top-2 border-2 border-black bg-slate-300 animate-pulse'></div>
       </div>
       <div
         id='self-name'
-        className='text-black font-semibold text-lg rounded-xl col-span-2 p-3 bg-slate-700 animate-pulse'></div>
+        className='text-black font-semibold text-lg rounded-xl col-span-2 p-3 bg-slate-300 animate-pulse'></div>
       <div
         id='self-date'
-        className='text-[#014769] font-semibold text-lg rounded-xl col-span-2 p-3 bg-slate-700 animate-pulse'></div>
+        className='text-[#014769] font-semibold text-lg rounded-xl col-span-2 p-3 bg-slate-300 animate-pulse'></div>
     </>
   );
 
@@ -473,15 +473,15 @@ const Phoneboard = () => {
         className='w-full h-max grid grid-cols-4 grid-rows-2 gap-2 z-10'>
         <div
           id='self-photo-container'
-          className=' row-span-2 animate-pulse bg-slate-700'></div>
+          className=' row-span-2 animate-pulse bg-slate-300'></div>
         <div
           id='self-name-container'
-          className='col-span-3 text-[#014769] animate-pulse bg-slate-700'>
+          className='col-span-3 text-[#014769] animate-pulse bg-slate-300'>
           <p className='text-2xl italic font-bold'></p>
         </div>
         <div
           id='self-date-container'
-          className='col-span-3 text-[#014769] flex flex-row animate-pulse bg-slate-700'>
+          className='col-span-3 text-[#014769] flex flex-row animate-pulse bg-slate-300'>
           <img
             src='/component-images/Clock-Icon.svg'
             className='w-4 h-4 mr-1'
@@ -506,35 +506,35 @@ const Phoneboard = () => {
         className='w-5/6 h-max grid grid-cols-1 grid-flow-row mt-6 gap-2'>
         <div
           id='quest-done-grid'
-          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          className='grid grid-cols-5 animate-pulse bg-slate-300'>
           <h4 className='self-card-activity'></h4>
           <h4 className='self-card-nonactivity'></h4>
           <h4 className='self-card-nonactivity'></h4>
         </div>
         <div
           id='activity-done-grid'
-          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          className='grid grid-cols-5 animate-pulse bg-slate-300'>
           <h4 className='self-card-activity'></h4>
           <h4 className='self-card-nonactivity'></h4>
           <h4 className='self-card-nonactivity'></h4>
         </div>
         <div
           id='crossword-done-grid'
-          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          className='grid grid-cols-5 animate-pulse bg-slate-300'>
           <h4 className='self-card-activity'></h4>
           <h4 className='self-card-nonactivity'></h4>
           <h4 className='self-card-nonactivity'></h4>
         </div>
         {/* <div
           id='task-done-grid'
-          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          className='grid grid-cols-5 animate-pulse bg-slate-300'>
           <h4 className='self-card-activity'></h4>
           <h4 className='self-card-nonactivity'></h4>
           <h4 className='self-card-nonactivity'></h4>
         </div> */}
         <div
           id='campus-done-grid'
-          className='grid grid-cols-5 animate-pulse bg-slate-700'>
+          className='grid grid-cols-5 animate-pulse bg-slate-300'>
           <h4 className='self-card-activity'></h4>
           <h4 className='self-card-nonactivity'></h4>
           <h4 className='self-card-nonactivity'></h4>

@@ -10,7 +10,6 @@ import {
   INPCInteraction,
   ITask,
   ITrivialTask,
-  IUnlockCampus,
 } from './Map_Book.interfaces';
 import {
   DummyFollowTheDrum,
@@ -24,6 +23,7 @@ import Speech from '../speech/Speech';
 import Character from '../dialogue/Character';
 import axios from 'axios';
 import { useAuth } from '../../config/Context';
+import { IUnlockCampus } from '../../constants/global.interfaces';
 
 const MapBook = () => {
   const [activeLocation, setActiveLocation] = useState<string>('KMG');
