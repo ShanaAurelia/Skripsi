@@ -14,6 +14,7 @@ interface IUserContext {
   logout(): void;
   start(): void;
   checkExistingUser(payload: any): void;
+  updateUserData(): void;
 }
 
 export interface IAuthProviderProps {
@@ -33,6 +34,7 @@ const defaultValue: IUserContext = {
   logout: () => {},
   start: () => {},
   checkExistingUser: (payload: any) => {},
+  updateUserData: () => {},
 };
 
 function reducer(state: IUserContext, action: IUserContextPayload) {
@@ -53,6 +55,9 @@ function reducer(state: IUserContext, action: IUserContextPayload) {
 
     case 'check':
       return { ...state, user: action.payload, isAuthenticated: true };
+    
+    case 'update':
+      return{...state, user: action.payload, isAuthenticated: true};
 
     default:
       throw new Error('Unknown action in UserContext');
@@ -74,7 +79,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
         'http://127.0.0.1:8000/api/user/9ddd1c15-e451-40cf-918e-77fe666efeb1'
       )
       .then(function (response) {
-        console.log(response.data);
+        // console.log(response.data);
           dispatch({ type: 'login', payload: response.data.data });
           window.localStorage.setItem(
             'user-beescholar',
@@ -97,6 +102,19 @@ function AuthProvider({ children }: IAuthProviderProps) {
     navigate('/game/');
   }
 
+  async function updateUserData(){
+    await axios.get(`http://127.0.0.1:8000/api/user/${user?.id}`).then((res) => {
+      dispatch({ type: 'update', payload: res.data.data})
+      window.localStorage.removeItem('user-beescholar');
+      window.localStorage.setItem(
+        'user-beescholar',
+        JSON.stringify(res.data.data)
+      );
+    }).catch((error) => {
+      alert('ERROR UPDATING DATA!');
+    })
+  }
+
   function checkExistingUser(payload: any) {
     if (payload !== '' && user === undefined && isAuthenticated === false) {
       dispatch({ type: 'check', payload: payload });
@@ -112,11 +130,13 @@ function AuthProvider({ children }: IAuthProviderProps) {
         logout,
         start,
         checkExistingUser,
+        updateUserData
       }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
 
 function useAuth() {
   const context = useContext(AuthContext);

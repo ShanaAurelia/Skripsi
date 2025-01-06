@@ -87,6 +87,7 @@ const Speech = (dialogue: ISpeechProps) => {
               className='text w-5/6 text-xl font-medium text-black'>...</div>
             <button
               className='beescholar-button h-max p-2 pr-3 pl-3 rounded-xl flex justify-center items-center'
+              disabled={dialogue.isDisableNext}
               onClick={dialogue.handleNext}>
               <p className='font-semibold text-2xl text-center'>Next</p>
             </button>

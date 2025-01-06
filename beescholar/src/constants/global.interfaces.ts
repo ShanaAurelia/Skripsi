@@ -43,6 +43,13 @@ export interface IDialogue {
   characterName: string,
   characterImage?: string,
   background: string,
+  options?: ISpeechOption[]
+}
+
+export interface ISpeechOption{
+  optionId: string,
+  optionText: string,
+  nextSceneId: string,
 }
 
 export interface ISpeech {
@@ -50,13 +57,6 @@ export interface ISpeech {
   speed: number;
   characterId: string;
   characterExpression: string;
-}
-
-export interface ISpeechOption {
-  optionId: string;
-  text: string;
-  speechId: string;
-  nextSceneId: string;
 }
 
 export interface ICampus {

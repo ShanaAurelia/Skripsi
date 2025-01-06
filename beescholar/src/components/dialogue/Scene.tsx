@@ -11,6 +11,7 @@ import Character from './Character';
 import { useAuth } from '../../config/Context';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import '../../constants/global.css';
 
 // const initialDialogue:IDialogue = {
 //   index: 0,
@@ -30,6 +31,7 @@ const Scene = (props: IDialogueProps) => {
   const [endScene, setEndScene] = useState<boolean>(false);
   const [dialogue, setDialogue] = useState<IDialogue>();
   const user = useAuth().user;
+  const updateUserData = useAuth().updateUserData;
   const navigate = useNavigate();
   const { sceneStartId } = useParams();
 
@@ -49,7 +51,7 @@ const Scene = (props: IDialogueProps) => {
   const handleNextSpeech = () => {
     if (dialogue?.nextSceneId !== undefined && dialogue.nextSceneId !== null) {
       getDialogue(dialogue?.nextSceneId);
-    } else {
+    } else if(dialogue?.isEndScene) {
       handleProcessDialogue();
     }
   };
@@ -83,7 +85,12 @@ const Scene = (props: IDialogueProps) => {
         console.log(error);
         setIsError(true);
       });
+    updateUserData()
   };
+
+  const handleOptionDialogue = (nextSceneId: string) => {
+    getDialogue(nextSceneId);
+  }
 
   return (
     <div
@@ -128,9 +135,25 @@ const Scene = (props: IDialogueProps) => {
           speed={4}
           class={[]}
           isLoading={isLoading}
+          isDisableNext={(dialogue?.nextSceneId === null)}
           handleNext={handleNextSpeech}
         />
       </div>
+      {dialogue?.nextSceneId === null && !dialogue.isEndScene && (
+        <>
+        <div id='option' className='absolute z-50 w-full h-full'>
+          <div id='backdrop' className='bg-black opacity-60 w-full h-full absolute'>
+          </div>
+          <div id='option-container' className='w-full h-full relative flex flex-col justify-center items-center'>
+            {dialogue.options?.map((opt) => (
+              <div id='button-container' className='w-max h-max p-5 flex items-center justify-center'>
+                <button className='beescholar-button text-xl font-semibold p-5' onClick={() => handleOptionDialogue(opt.nextSceneId)}>{opt.optionText}</button>
+              </div>
+            ))}
+          </div>
+        </div>
+        </>
+      )}
     </div>
   );
 };

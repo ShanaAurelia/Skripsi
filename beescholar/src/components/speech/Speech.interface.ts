@@ -11,4 +11,5 @@ export interface ISpeechProps{
     handleNext(): void;
     character: string;
     isLoading: boolean;
+    isDisableNext: boolean;
 }
