@@ -49,7 +49,7 @@ function App() {
           >
             <Route index element={<Homepage />} />
             <Route path='home' element={<Homepage />} />
-            <Route path='story' element={<Story />} />
+            <Route path='story/:sceneStartId' element={<Story />} />
             <Route path='crossword' element={<CrosswordPage />} />
             <Route path='followthedrum' element={<FollowTheDrum />} />
             <Route path='profiles' element={<CharacterProfiles />} />

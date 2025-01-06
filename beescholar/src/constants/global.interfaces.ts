@@ -35,9 +35,14 @@ export interface IUnlockCampus{
 }
 
 export interface IDialogue {
-  index: number;
-  line: ISpeech;
-  choiceLine?: ISpeechOption;
+  sceneId: string
+  dialogueText: string,
+  isStartScene: boolean,
+  isEndScene: boolean,
+  nextSceneId: string,
+  characterName: string,
+  characterImage?: string,
+  background: string,
 }
 
 export interface ISpeech {

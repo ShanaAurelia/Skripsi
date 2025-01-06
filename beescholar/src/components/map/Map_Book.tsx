@@ -203,7 +203,8 @@ const MapBook = () => {
   };
 
   const handleNavigateStory = () => {
-    return navigate('/game/stage', { replace: true });
+    
+    return navigate(`/game/story/${currentActivityData?.startSceneId}`, { replace: true });
   };
 
   const handleInteractibleAction = () => {
