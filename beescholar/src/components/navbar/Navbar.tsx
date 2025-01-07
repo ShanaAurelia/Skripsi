@@ -1,23 +1,47 @@
-import React, { Component, useContext, useEffect, useState } from 'react';
+import React, {
+  Component,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { INavbarProps, INavbarState } from './Navbar.interface';
 import './Navbar.css';
 import '../../constants/global.css';
 import { useAuth } from '../../config/Context';
 import { dummyStudent } from '../../views/skeleton/Skeleton.constants';
 import { useNavigate } from 'react-router-dom';
-import { GetUserData } from '../../config/Utilities';
+import {
+  GetUserData,
+  HandleIsChangeMusic,
+  HandleMusicSource,
+  HandleMusicType,
+} from '../../config/Utilities';
 import { Modal } from '@mui/material';
 
 const Navbar = (props: INavbarProps) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [playMusic, setPlayMusic] = useState<boolean>();
+  const [currentMusic, setCurrentMusic] = useState<string>(HandleMusicType());
 
   useEffect(() => {
     setEmail('');
     setPassword('');
     setIsOpenModal(false);
   }, []);
+
+  useEffect(() => {
+    if (audioRef.current !== null && HandleIsChangeMusic()) {
+      audioRef.current.pause();
+      audioRef.current.load();
+      setCurrentMusic(HandleMusicType());
+      setTimeout(() => {
+        audioRef.current && audioRef.current.play();
+      }, 300);
+    }
+  }, [window.location.href]);
 
   const auth = useAuth();
   const contextData = useAuth();
@@ -27,6 +51,7 @@ const Navbar = (props: INavbarProps) => {
     contextData.checkExistingUser(_savedUser);
   }
   const student = _savedUser ? _savedUser : contextData.user;
+  const audioRef = useRef<HTMLAudioElement>(null);
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -43,6 +68,17 @@ const Navbar = (props: INavbarProps) => {
 
   const handleChangePassword = (input: string) => {
     setPassword(input);
+  };
+
+  const handleToggleMusic = () => {
+    if (audioRef.current !== null) {
+      if (playMusic) {
+        audioRef.current.play();
+      } else {
+        audioRef.current.pause();
+      }
+      setPlayMusic(!playMusic);
+    }
   };
 
   const NavbarUserLogin = () =>
@@ -116,6 +152,24 @@ const Navbar = (props: INavbarProps) => {
           )}
           <button
             id='logout-button-background'
+            className='nav-log-button-background mr-5'
+            onClick={() => handleToggleMusic()}>
+            <h3 className='nav-log-button-text'>
+              {playMusic ? 'MUSIC IS STOPPED' : 'MUSIC IS PLAYING'}
+            </h3>
+          </button>
+          <audio
+            ref={audioRef}
+            autoPlay
+            loop>
+            <source
+              src={currentMusic}
+              type='audio/ogg'
+            />
+          </audio>
+
+          <button
+            id='logout-button-background'
             className='nav-log-button-background'
             onClick={contextData.logout}>
             <h3 className='nav-log-button-text'>LOGOUT</h3>
@@ -123,11 +177,27 @@ const Navbar = (props: INavbarProps) => {
         </div>
       </div>
     );
-  // contextData.login(dummyStudent.email)}
   const NavbarNoUser = () => (
     <div className='nav-background'>
       <div className='container h-5/6 w-max flex flex-row  rounded-lg mt-auto mb-auto'></div>
       <div className='nav-log-container'>
+        <button
+          id='logout-button-background'
+          className='nav-log-button-background mr-5 '
+          onClick={() => handleToggleMusic()}>
+          <h3 className='nav-log-button-text'>
+          {playMusic ? 'MUSIC IS STOPPED' : 'MUSIC IS PLAYING'}
+          </h3>
+        </button>
+        <audio
+          ref={audioRef}
+          autoPlay={playMusic}
+          loop>
+          <source
+            src={currentMusic}
+            type='audio/ogg'
+          />
+        </audio>
         <button
           className='nav-log-button-background'
           onClick={() => setIsOpenModal(true)}>

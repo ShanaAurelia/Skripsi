@@ -43,7 +43,7 @@ export interface IDialogue {
   characterName: string,
   characterImage?: string,
   background: string,
-  options?: ISpeechOption[]
+  options?: ISpeechOption[],
 }
 
 export interface ISpeechOption{
@@ -66,6 +66,39 @@ export interface ICampus {
   description: string;
 }
 
+export interface IMinigameHeader {
+  minigameId: string,
+  minigameName: string,
+  minigameType: string,
+  quizType: string,
+  quizTopic: string,
+  hint: string,
+  instruction: string
+  quizQuestions: IQuizQuestion[];
+}
+
+export interface IMinigameData {
+
+}
+
+export interface IQuiz{
+  quizQuestions: IQuizQuestion[]
+}
+
+export interface IQuizQuestion{
+  questionId: string,
+  questionTitle: string,
+  questionType: string,
+  questionPoint: number,
+  characterName?: string,
+  characterImage?: string,
+  choices: IQuizChoice[]
+}
+
+export interface IQuizChoice{
+  choiceId: string,
+  choiceText: string
+}
 
 // FOR REACT-CROSSWORD
 export interface ICrosswordData {

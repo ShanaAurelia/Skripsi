@@ -92,12 +92,12 @@ const MapBook = () => {
         const _room = room.find(
           (r) => r.roomName === translateKMGMapId(popoverLocation || '')
         );
-        console.log(
-          'room: ',
-          _room?.roomName,
-          'popover: ',
-          translateKMGMapId(popoverLocation || '')
-        );
+        // console.log(
+        //   'room: ',
+        //   _room?.roomName,
+        //   'popover: ',
+        //   translateKMGMapId(popoverLocation || '')
+        // );
         if (_room) {
           var tempInteractibles: IActivityHeader[] = [];
           axios
@@ -210,7 +210,7 @@ const MapBook = () => {
   const handleInteractibleAction = () => {
     if (popoverLocation !== undefined) {
       const trigger = activity[0];
-      console.log(trigger);
+      // console.log(trigger);
       if (trigger !== undefined) {
         switch (trigger.activities[0].type) {
           case 'Trivial Task':

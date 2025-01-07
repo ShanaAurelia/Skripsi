@@ -9,19 +9,15 @@ export interface IStorycaseData{
 }
 
 export interface IStoryCaseSpeech{
-    dialogueBubble?: IStoryCaseBubbleSpeech,
-    speechOption?: IStoryCaseOption[]
+    dialogueBubble?: string,
+    speechOption?: ISpeechOption[]
+}
+
+export interface ISpeechOption{
+    choiceId: string,
+    choiceText: string
 }
 
 export interface IStorycase{
     data: IStorycaseData
-}
-
-export interface IStoryCaseBubbleSpeech{
-    text: string,
-    isSatisfactory?: boolean;
-}
-
-export interface IStoryCaseOption{
-    optionText: string
 }

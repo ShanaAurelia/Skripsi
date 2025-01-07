@@ -107,14 +107,14 @@ const Drum = (props: IDrumProps) => {
       } else {
         setFalseHit(falseHit + 1);
       }
-      console.log(
-        'hit: ',
-        drumPart,
-        ' pattern: ',
-        drumPattern.pattern[hitIndex],
-        ' at ',
-        hitIndex
-      );
+      // console.log(
+      //   'hit: ',
+      //   drumPart,
+      //   ' pattern: ',
+      //   drumPattern.pattern[hitIndex],
+      //   ' at ',
+      //   hitIndex
+      // );
       if (hitIndex >= patternIndex) {
         setPatternIndex(patternIndex + 1);
         setScore(calculateScore);
@@ -130,7 +130,7 @@ const Drum = (props: IDrumProps) => {
   const calculateScore = () => {
     const correctHitValue = correctHit * 100;
     const falseHitValue = falseHit * 75;
-    console.log('score: ', correctHitValue - falseHitValue);
+    // console.log('score: ', correctHitValue - falseHitValue);
     return correctHitValue - falseHitValue;
   };
 

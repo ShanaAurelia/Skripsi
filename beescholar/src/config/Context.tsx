@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useReducer } from 'react';
-import { IStudent } from '../constants/global.interfaces';
+import { IMinigameHeader, IStudent } from '../constants/global.interfaces';
 import { DummyStudent } from '../constants/dummy.constants';
 import { Navigate, redirect, useNavigate } from 'react-router-dom';
 import { dummyStudent } from '../views/skeleton/Skeleton.constants';
