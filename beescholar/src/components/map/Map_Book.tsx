@@ -157,7 +157,7 @@ const MapBook = () => {
 
   const handleInteractibleColor = (type: string) => {
     switch (type) {
-      case 'Main Quest':
+      case 'Story Quest':
         return 'bg-[#67BBE7]';
       default:
         return 'bg-[#F3931B]';
@@ -166,7 +166,7 @@ const MapBook = () => {
 
   const handleInteractibleTextColor = (type: string) => {
     switch (type) {
-      case 'Main Quest':
+      case 'Story Quest':
         return 'text-[#67BBE7]';
       default:
         return 'text-[#F3931B]';
@@ -203,8 +203,9 @@ const MapBook = () => {
   };
 
   const handleNavigateStory = () => {
-    
-    return navigate(`/game/story/${currentActivityData?.startSceneId}`, { replace: true });
+    return navigate(`/game/story/${currentActivityData?.startSceneId}`, {
+      replace: true,
+    });
   };
 
   const handleInteractibleAction = () => {
@@ -275,34 +276,41 @@ const MapBook = () => {
             <div
               id='todo-interactibles-list'
               className='w-full h-2/3 overflow-y-auto text-wrap flex flex-col items-center no-scrollbar '>
-              {activity.length > 0 && activity.map((i) => (
-                <div
-                  id={`${i.id}-container`}
-                  className={`${handleInteractibleColor(
-                    i.questTitle
-                  )} w-11/12 rounded-lg h-max flex flex-row relative mb-3 justify-evenly p-1`}>
-                  <div
-                    id={`${i.id}-icon-container`}
-                    className='flex justify-center items-center'>
-                    <div
-                      id={`${i.id}-icon`}
-                      className={`bg-white w-5 h-5 rounded-full flex justify-center items-center ${handleInteractibleTextColor(
-                        i.activities[0].type
-                      )}`}>
-                      {handleInteractibleIcon(i.activities[0].type)}
-                    </div>
-                  </div>
-                  <div
-                    id={`${i.id}-description-container`}
-                    className='w-10/12 h-full'>
-                    <h5 className='text-wrap text-lg font-medium text-white'>
-                      {i.description}
-                    </h5>
-                  </div>
-                </div>
-              ))}
+              {activity.length > 0 &&
+                activity.map((i) => (
+                  <>
+                    {i.activities.map((activity) => (
+                      <div
+                        id={`${activity.id}-container`}
+                        className={`${handleInteractibleColor(
+                          activity.type
+                        )} w-11/12 rounded-lg h-max flex flex-row relative mb-3 justify-evenly p-1`}>
+                        <div
+                          id={`${activity.id}-icon-container`}
+                          className='flex justify-center items-center'>
+                          <div
+                            id={`${activity.id}-icon`}
+                            className={`bg-white w-5 h-5 rounded-full flex justify-center items-center ${handleInteractibleTextColor(
+                              activity.type
+                            )}`}>
+                            {handleInteractibleIcon(activity.type)}
+                          </div>
+                        </div>
+                        <div
+                          id={`${activity.id}-description-container`}
+                          className='w-10/12 h-full'>
+                          <h5 className='text-wrap text-lg font-medium text-white'>
+                            {activity.description}
+                          </h5>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                ))}
               {activity.length === 0 && (
-                <p className='text-white font-semibold text-xl'>There is nothing to do here...</p>
+                <p className='text-white font-semibold text-xl'>
+                  There is nothing to do here...
+                </p>
               )}
             </div>
           )}
@@ -310,7 +318,7 @@ const MapBook = () => {
             <div
               id='todo-interactibles-list'
               className='w-full h-2/3 overflow-y-auto text-wrap flex flex-col items-center no-scrollbar text-center text-xl text-white font-semibold '>
-                fetching to-do data...
+              fetching to-do data...
             </div>
           )}
         </div>

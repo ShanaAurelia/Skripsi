@@ -30,6 +30,9 @@ const Navbar = (props: INavbarProps) => {
     setEmail('');
     setPassword('');
     setIsOpenModal(false);
+    if(audioRef.current !== null) {
+      audioRef.current.volume = 0.2
+    }
   }, []);
 
   useEffect(() => {

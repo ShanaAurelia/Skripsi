@@ -37,9 +37,10 @@ const Scene = (props: IDialogueProps) => {
   const [dialogue, setDialogue] = useState<IDialogue>();
   const [minigameData, setMinigameData] = useState<IMinigameHeader>();
   const [openMinigameModal, setOpenMinigameModal] = useState<boolean>();
-  const [openEndSceneModal, setOpenEndSceneModal] = useState<boolean>();
+  const [savedScene, setSavedScene] = useState<boolean>();
   const user = useAuth().user;
   const updateUserData = useAuth().updateUserData;
+  const updateSavedSceneId = useAuth().updateSavedSceneId;
   const navigate = useNavigate();
   const { sceneStartId } = useParams();
 
@@ -53,7 +54,12 @@ const Scene = (props: IDialogueProps) => {
     }
   }, []);
 
-  useEffect(() => {}, [dialogue]);
+  window.onbeforeunload = function() {
+    if (!savedScene) {
+      updateSavedSceneId(dialogue?.sceneId || '')
+      return "Progress might not be saved, are you sure to leave this page?"
+    }
+  }
 
   const handleNextSpeech = () => {
     if (dialogue?.nextSceneId !== undefined && dialogue.nextSceneId !== null) {
@@ -89,7 +95,7 @@ const Scene = (props: IDialogueProps) => {
     axios
       .post(`http://127.0.0.1:8000/api/process_scene/${dialogue?.sceneId}`)
       .then((res) => {
-        if (res.data.message === 'Scene successfully processed' && dialogue?.isEndScene) {
+        if (res.data.success === true && dialogue?.isEndScene) {
           setEndScene(true);
         }
       })
@@ -98,6 +104,7 @@ const Scene = (props: IDialogueProps) => {
         setIsError(true);
       });
     updateUserData();
+    updateSavedSceneId(dialogue?.sceneId || '');
   };
 
   const handleProcessMinigame = (minigameId: string) => {
@@ -266,10 +273,90 @@ const Scene = (props: IDialogueProps) => {
                       navigate(
                         `/game/${minigameData?.quizType
                           .toLowerCase()
-                          .replace(/\s+/g, '')}/${minigameData?.minigameId}/${minigameData?.quizQuestions[0].characterName}`,
+                          .replace(/\s+/g, '')}/${minigameData?.minigameId}/${
+                          minigameData?.quizQuestions[0].characterName
+                        }`,
                         { replace: true }
                       )
                     }>
+                    LETS GO
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+      {endScene && (
+        <Modal
+          open={endScene}
+          className='w-full h-full flex justify-center items-center'
+          disableScrollLock={true}>
+          <div
+            id='end-modal-container'
+            className='w-11/12 h-3/4 bg-[#C06C00] flex flex-col rounded-xl border-black border-4'>
+            <div
+              id='end-modal-title-container'
+              className='flex justify-center items-center w-full h-1/4 relative'>
+              <div
+                id='end-modal-title-box'
+                className='bg-[#F3931B] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
+                <h4 className='text-white font-semibold tracking-widest text-2xl'>
+                  STORY COMPLETED!
+                </h4>
+              </div>
+              {/* <button
+                id='close-modal-button'
+                className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
+                onClick={() => setOpenMinigameModal(false)}>
+                ❌
+              </button> */}
+            </div>
+            <div
+              id='end-modal-body-container'
+              className='w-full h-1/2 flex flex-row justify-evenly items-center'>
+              <div
+                id='profiles-picture'
+                className=' w-1/4 h-full flex justify-center items-center relative'>
+                <div
+                  id='profiles-squareframe'
+                  className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
+                />
+                <img
+                  src={
+                    '/characters/aset merch BINUS Support 3 - bahagia copy.png'
+                  }
+                  className='absolute w-full'
+                />
+              </div>
+              <div
+                id='end-modal-descriptions-container'
+                className='w-1/2 h-full flex flex-col justify-evenly relative'>
+                <div
+                  id='end-modal-descriptions'
+                  className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+                  <div
+                    id='end-modal-description-header'
+                    className='w-full h-1/4 text-center '>
+                    <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>
+                      YOU HAVE COMPLETED THE CURRENT SCENE
+                    </h5>
+                  </div>
+                  <div
+                    id='end-modal-description-body'
+                    className='w-full h-3/4 pt-3 flex justify-between flex-col'>
+                    <p className='text-black font-medium tracking-wide text-lg'>
+                      Search the campus for more storylines!
+                    </p>
+                  </div>
+                </div>
+                <div
+                  id='button-container'
+                  className='w-full h-max flex justify-end flex-row'>
+                  <button
+                    id='go-button'
+                    className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                    onClick={() => navigate(`/game/map`, { replace: true })}>
                     LETS GO
                   </button>
                 </div>

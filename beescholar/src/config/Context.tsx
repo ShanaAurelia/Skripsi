@@ -10,11 +10,13 @@ interface IUserContext {
   user: IStudent | undefined;
   isAuthenticated: boolean;
   isStarted: boolean;
+  savedSceneId: string;
   login(uid: string): void;
   logout(): void;
   start(): void;
   checkExistingUser(payload: any): void;
   updateUserData(): void;
+  updateSavedSceneId(sceneId: string): void;
 }
 
 export interface IAuthProviderProps {
@@ -23,6 +25,7 @@ export interface IAuthProviderProps {
 
 interface IUserContextPayload {
   payload?: IStudent;
+  sceneId?: string;
   type: string;
 }
 
@@ -30,11 +33,13 @@ const defaultValue: IUserContext = {
   user: undefined,
   isAuthenticated: false,
   isStarted: false,
+  savedSceneId:"",
   login: () => {},
   logout: () => {},
   start: () => {},
   checkExistingUser: (payload: any) => {},
   updateUserData: () => {},
+  updateSavedSceneId: (sceneId: string) => {}
 };
 
 function reducer(state: IUserContext, action: IUserContextPayload) {
@@ -55,9 +60,10 @@ function reducer(state: IUserContext, action: IUserContextPayload) {
 
     case 'check':
       return { ...state, user: action.payload, isAuthenticated: true };
-    
     case 'update':
-      return{...state, user: action.payload, isAuthenticated: true};
+      return {...state, user: action.payload, isAuthenticated: true};
+    case 'saveScene':
+      return {...state, user: action.payload, isAuthenticated: true};
 
     default:
       throw new Error('Unknown action in UserContext');
@@ -67,7 +73,7 @@ function reducer(state: IUserContext, action: IUserContextPayload) {
 const AuthContext = createContext<IUserContext>(defaultValue);
 
 function AuthProvider({ children }: IAuthProviderProps) {
-  const [{ user, isAuthenticated, isStarted }, dispatch] = useReducer(
+  const [{ user, isAuthenticated, isStarted, savedSceneId }, dispatch] = useReducer(
     reducer,
     defaultValue
   );
@@ -93,6 +99,9 @@ function AuthProvider({ children }: IAuthProviderProps) {
 
   function logout() {
     window.localStorage.removeItem('user-beescholar');
+    if(window.localStorage.getItem('story-beescholar') !== null){
+      window.localStorage.removeItem('story-beescholar')
+    }
     dispatch({ type: 'logout' });
     window.location.reload();
   }
@@ -115,6 +124,16 @@ function AuthProvider({ children }: IAuthProviderProps) {
     })
   }
 
+  function updateSavedSceneId(sceneId: string){
+    dispatch({ type: 'saveScene', sceneId})
+    if(sceneId !== "" && window.localStorage.getItem('story-beescholar') === undefined){
+      window.localStorage.setItem('story-beescholar', JSON.stringify(sceneId));
+    }else if( sceneId !== "" ){
+      window.localStorage.removeItem('story-beescholar')
+      window.localStorage.setItem('story-beescholar', JSON.stringify(sceneId));
+    }
+  }
+
   function checkExistingUser(payload: any) {
     if (payload !== '' && user === undefined && isAuthenticated === false) {
       dispatch({ type: 'check', payload: payload });
@@ -126,11 +145,13 @@ function AuthProvider({ children }: IAuthProviderProps) {
         user,
         isAuthenticated,
         isStarted,
+        savedSceneId,
         login,
         logout,
         start,
         checkExistingUser,
-        updateUserData
+        updateUserData,
+        updateSavedSceneId
       }}>
       {children}
     </AuthContext.Provider>
