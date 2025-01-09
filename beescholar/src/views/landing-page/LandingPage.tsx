@@ -23,7 +23,7 @@ const Mainpage = (props: IMainpageProps) => {
       id='mainpage'>
       <img
         className='h-full w-full object-fill opacity-70'
-        src='./backgrounds/dummy-mainpage.png'
+        src='./backgrounds/mainpage.png'
       />
       <div className='w-full h-1/4 justify-items-center absolute bottom-0 object-none'>
         <div
