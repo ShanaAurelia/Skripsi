@@ -95,7 +95,7 @@ const Homepage = () => {
           id='background-image-container'
           className='w-5/6 h-5/6 rounded-r-lg shadow-md shadow-black bg-black'>
           <img
-            src='/backgrounds/dummy-classroom.jpeg'
+            src='/backgrounds/background.png'
             className='w-full h-full opacity-60'
           />
         </div>
