@@ -82,7 +82,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
   async function login(uid: string) {
     await axios
       .get(
-        'http://127.0.0.1:8000/api/user/9df4f363-d4b6-4c29-a73a-2f4435c21aa2'
+        'http://127.0.0.1:8000/api/user/9df5790b-1338-4a04-9187-07589ecf5e41'
       )
       .then(function (response) {
         // console.log(response.data);

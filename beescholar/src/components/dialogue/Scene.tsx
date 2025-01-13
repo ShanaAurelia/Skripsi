@@ -131,15 +131,24 @@ const Scene = (props: IDialogueProps) => {
     const type = minigameData?.minigameType;
 
     switch (type) {
-      case 'Story Case':
+      case 'Quiz':
+        if(minigameData?.quizType === "Exam Preparation"){
+          return navigate(
+            `/game/stage/${minigameData?.minigameId}/${nextSceneId}`,
+            { replace: true }
+          );
+        }else{
+          return navigate(
+            `/game/storycase/${minigameData?.minigameId}/${minigameData?.quizQuestions[0].characterName}/${nextSceneId}`,
+            { replace: true }
+          );
+
+        }
+      case 'Drum Puzzle':
         return navigate(
-          `/game/storycase/${
-            minigameData?.minigameId
-          }/${minigameData?.quizQuestions[0].characterName}/${nextSceneId}`,
+          `/game/followthedrum/${minigameData?.minigameId}/${nextSceneId}`,
           { replace: true }
         );
-      case 'Drum Puzzle':
-        return navigate(`/game/followthedrum/${minigameData?.minigameId}/${nextSceneId}`, {replace: true})
     }
   };
 
@@ -150,7 +159,7 @@ const Scene = (props: IDialogueProps) => {
   return (
     <div
       id='dialogue-skeleton'
-      className='flex justify-center w-full h-full overflow-hidden relative'>
+      className='flex justify-center w-full h-full overflow-hidden relative flex-row'>
       <div
         id='dialogue-background'
         className='absolute overflow-hidden w-full h-full'>
@@ -161,7 +170,7 @@ const Scene = (props: IDialogueProps) => {
       </div>
       <div
         id='character-background'
-        className='z-10 w-full h-5/6 absolute bottom-0 flex flex-row justify-between'>
+        className='z-10 w-full h-3/4 flex flex-row justify-center items-center relative'>
         {/* {props.characters.map((char, idx) => (
           <Character
             src={char.image}
@@ -169,18 +178,15 @@ const Scene = (props: IDialogueProps) => {
             position={idx % 2 == 0 ? 'left' : 'right'}
           />
         ))} */}
-        <div
-          id='character'
-          className='w-1/4 h-1/2 absolute z-30'>
-          <img
-            src={dialogue?.characterImage}
-            className=''
-          />
-        </div>
+
+        <img
+          src={dialogue?.characterImage}
+          className=' bottom-0 w-2/5 h-min'
+        />
       </div>
       <div
         id='dialogue-background'
-        className='bg-black z-30 w-full h-1/3 absolute bottom-0'>
+        className='bg-black z-10 w-full h-1/4 absolute bottom-0'>
         <Speech
           key={`dlg-${dialogue?.sceneId}`}
           character={

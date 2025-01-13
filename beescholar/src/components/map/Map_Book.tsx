@@ -89,31 +89,13 @@ const MapBook = () => {
       setOpenPopover(true);
       if (room.length > 0) {
         setIsLoadingActivity(true);
-        const _room = room.find(
-          (r) => r.roomName === translateKMGMapId(popoverLocation || '')
-        );
         // console.log(
         //   'room: ',
         //   _room?.roomName,
         //   'popover: ',
         //   translateKMGMapId(popoverLocation || '')
         // );
-        if (_room) {
-          var tempInteractibles: IActivityHeader[] = [];
-          axios
-            .get(`http://127.0.0.1:8000/api/activity/${_room.id}`)
-            .then((res) => {
-              tempInteractibles.push(...res.data.data);
-            })
-            .catch((error) => {
-              setIsFailed(true);
-              console.log(error);
-            });
-          setActivity(tempInteractibles);
-        }
-        setTimeout(() => {
-          setIsLoadingActivity(false);
-        }, 500);
+        getActivityData();
       }
     }
   }, [popoverLocation]);
@@ -132,6 +114,28 @@ const MapBook = () => {
         setIsFailed(true);
         console.log(error);
       });
+  };
+
+  const getActivityData = async () => {
+    const _room = room.find(
+      (r) => r.roomName === translateKMGMapId(popoverLocation || '')
+    );
+    if (_room) {
+      var tempInteractibles: IActivityHeader[] = [];
+      await axios
+        .get(`http://127.0.0.1:8000/api/activity/${_room.id}`)
+        .then((res) => {
+          tempInteractibles.push(...res.data.data);
+        })
+        .catch((error) => {
+          setIsFailed(true);
+          console.log(error);
+        });
+      setActivity(tempInteractibles);
+    }
+    setTimeout(() => {
+      setIsLoadingActivity(false);
+    }, 500);
   };
 
   const translateCampusCodetoName = (name: string) => {
@@ -210,10 +214,11 @@ const MapBook = () => {
 
   const handleInteractibleAction = () => {
     if (popoverLocation !== undefined) {
-      const trigger = activity[0];
+      const trigger = activity[activity.length-1];
       // console.log(trigger);
+      const _selectedActivity = trigger.activities.find((a) => a.isCompleted === false && a.isRepeatable === false)
       if (trigger !== undefined) {
-        switch (trigger.activities[0].type) {
+        switch (_selectedActivity?.type) {
           case 'Trivial Task':
             handleSelectTrivialTask();
             return;
@@ -221,7 +226,9 @@ const MapBook = () => {
             setOpenInteraction(true);
             return;
           case 'Story Quest':
-            setCurrentActivityData(trigger.activities[0]);
+            setCurrentActivityData(
+              _selectedActivity
+            );
             setOpenMainQuestModal(true);
             return;
           default:
@@ -922,7 +929,7 @@ const MapBook = () => {
         className='w-11/12 h-3/4 bg-[#C06C00] flex flex-col rounded-xl border-black border-4 text-center m-5'>
         {' '}
         <h2 className='font-semibold tracking-widest text-2xl text-white'>
-          There is nothing to do here...
+          There is nothing to do here... You have completed all the activities in this place...
         </h2>
       </div>
     </Modal>

@@ -55,7 +55,7 @@ function App() {
             <Route path='profiles' element={<CharacterProfiles />} />
             <Route path='map' element={<CampusMap/>} />
             <Route path='leaderboard' element={<Leaderboard/>}/>
-            <Route path='stage' element={<Stage />} />
+            <Route path='stage/:minigameId/:nextSceneId' element={<Stage />} />
             <Route path='storycase/:minigameId/:characterName/:nextSceneId' element={<StoryCase />} />
             <Route path='*' element={<PageNotFound />} />
           </Route>

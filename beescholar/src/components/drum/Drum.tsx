@@ -144,15 +144,18 @@ const Drum = () => {
     const _payload = {
       minigameId: minigameId,
       point: calculateScore(),
-      patternAnswer: JSON.stringify({hit: drumPattern})
-    }
-    axios.post(`http://127.0.0.1:8000/api/submit/drum_puzzle`, _payload).then((res) => {
-      setOpenReport(true)
-    }).catch((error) => {
-      console.log(error);
-      setIsError(true)
-    })
-  }
+      patternAnswer: JSON.stringify({ hit: drumPattern }),
+    };
+    axios
+      .post(`http://127.0.0.1:8000/api/submit/drum_puzzle`, _payload)
+      .then((res) => {
+        setOpenReport(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsError(true);
+      });
+  };
 
   const validateDrumHit = (drumPart: string) => {
     if (disableStart) {
@@ -237,7 +240,8 @@ const Drum = () => {
             />
             <img
               src={
-                reportStatus === 'Completed'
+                minigameData?.minimumPassingPoint &&
+                score >= minigameData?.minimumPassingPoint
                   ? '/characters/aset merch BINUS Support 3 - bahagia copy.png'
                   : '/characters/aset merch BINUS Support 4 - pusing copy.png'
               }
@@ -283,24 +287,26 @@ const Drum = () => {
             <div
               id='button-container'
               className='w-full h-max flex justify-end flex-row'>
-              {minigameData?.minimumPassingPoint !== undefined && calculateScore() >= minigameData?.minimumPassingPoint && (
-                <button
-                  id='go-button'
-                  className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
-                  onClick={() =>
-                    navigate(`/game/story/${nextSceneId}`, { replace: true })
-                  }>
-                  LETS GO
-                </button>
-              )}
-              {minigameData?.minimumPassingPoint !== undefined && calculateScore() < minigameData?.minimumPassingPoint &&  (
-                <button
-                  id='go-button'
-                  className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
-                  onClick={() => navigate('/game/', { replace: true })}>
-                  Retry
-                </button>
-              )}
+              {minigameData?.minimumPassingPoint !== undefined &&
+                calculateScore() >= minigameData?.minimumPassingPoint && (
+                  <button
+                    id='go-button'
+                    className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                    onClick={() =>
+                      navigate(`/game/story/${nextSceneId}`, { replace: true })
+                    }>
+                    LETS GO
+                  </button>
+                )}
+              {minigameData?.minimumPassingPoint !== undefined &&
+                calculateScore() < minigameData?.minimumPassingPoint && (
+                  <button
+                    id='go-button'
+                    className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                    onClick={() => navigate('/game/', { replace: true })}>
+                    Retry
+                  </button>
+                )}
             </div>
           </div>
         </div>

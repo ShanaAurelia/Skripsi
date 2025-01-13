@@ -20,5 +20,5 @@ export interface IPlayerRank{
     profilePicture: string,
     completionDate?: string,
     totalPoint?: number,
-    crosswordDone?: number
+    crosswordDone?: number, rank:number
 }

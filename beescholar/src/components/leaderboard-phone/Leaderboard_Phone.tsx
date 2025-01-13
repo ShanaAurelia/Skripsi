@@ -153,6 +153,28 @@ const Phoneboard = () => {
     }
   };
 
+  const handlePlayerBoardRank = () => {
+    const opt = currentOption;
+    switch (opt) {
+      case 'Clear Time':
+        if (playerStoryLeaderboard?.completionDate !== null && playerStoryLeaderboard?.completionDate !== undefined) {
+          return playerStoryLeaderboard.rank;
+        } else {
+          return 'N/A';
+        }
+      case 'Crosswords':
+        return playerCrosswordLeaderboard?.rank;
+      case 'Total Points':
+        if(playerPointLeaderboard?.totalPoint !== undefined){
+          return playerPointLeaderboard.rank;
+        }else{
+          return "N/A"
+        }
+      default:
+        return 'N/A';
+    }
+  };
+
   const handleGlobalRankData = () => {
     switch(currentOption){
       case "Clear Time":
@@ -260,12 +282,12 @@ const Phoneboard = () => {
     </div>
   );
 
-  const phoneSelfLeaderboardRank = (playerData: string | undefined) => (
+  const phoneSelfLeaderboardRank = (playerData: string | undefined, playerRank: number | undefined | "N/A") => (
     <>
       <div
         id='self-rank'
         className='text-black font-semibold text-lg bg-[#67BBE7] rounded-xl pl-2 p-3 relative'>
-        399
+        {playerRank}
         <div
           id='self-photo'
           className='w-9 h-9 rounded-full absolute -right-3 top-2 border-2 border-black'>
@@ -358,7 +380,7 @@ const Phoneboard = () => {
           className='bg-[#FFFCFC] w-full h-full grid grid-cols-5 gap-2 rounded-xl'>
           {isLoadingBoard
             ? phoneLoadingPlayerCard()
-            : phoneSelfLeaderboardRank(handlePlayerBoard())}
+            : phoneSelfLeaderboardRank(handlePlayerBoard(), handlePlayerBoardRank())}
         </div>
       </div>
     </div>

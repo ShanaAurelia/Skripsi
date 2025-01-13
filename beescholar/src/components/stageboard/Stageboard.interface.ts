@@ -1,5 +1,6 @@
 export interface IMultipleChoice{
-    choice: string[];
+    choiceId: string,
+    choiceText: string
 }
 
 export interface IReordering{
@@ -7,13 +8,8 @@ export interface IReordering{
 }
 
 export interface IYesOrNo{
-    yesText: string;
-    noText: string;
-}
-
-export interface IAnswer{
-    number: number;
-    answer: string;
+    choiceId: string,
+    choiceText: string
 }
 
 export interface IQuestion{

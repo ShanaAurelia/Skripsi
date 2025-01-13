@@ -94,7 +94,19 @@ export interface IQuizQuestion{
   questionPoint: number,
   characterName?: string,
   characterImage?: string,
-  choices: IQuizChoice[]
+  choices: IQuizChoice[],
+  steps: IQuizSteps[]
+}
+
+export interface IQuizSteps{
+  stepId: string,
+  stepText: string
+}
+
+export interface IStepChoiceAnswers{
+  questionId: string,
+  questionOrder: number,
+  stepIds: string[]
 }
 
 export interface IQuizChoiceAnswers{

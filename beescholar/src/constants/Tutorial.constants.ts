@@ -53,3 +53,21 @@ export const TutorialData: ITutorialData[] = [
       'Stage is the final examination of a campus. During a Stage, player is asked to fill questions based on the question type.',
   },
 ];
+
+export const StageTutorialData: ITutorialData[] = [
+  {
+    title: 'Multiple Choice Questions',
+    description:
+      'To answer, choose one out of all available options! Read the questions and answers carefully, there might be a slight difference between them!',
+  },
+  {
+    title: 'Yes or No Questions',
+    description:
+      'After reading the statement, choose one out of two options! Make sure you choose the correct answer!',
+  },
+  {
+    title: 'Reordering Steps Questions',
+    description:
+      'Click the boxed to assign a number. The assigned number is the order of the steps! Make sure to assign the correct order to gain points!',
+  },
+]
