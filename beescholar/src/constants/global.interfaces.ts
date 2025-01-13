@@ -95,6 +95,12 @@ export interface IQuizQuestion{
   choices: IQuizChoice[]
 }
 
+export interface IQuizChoiceAnswers{
+  questionId: string,
+  choiceId: string,
+  questionOrder: number
+}
+
 export interface IQuizChoice{
   choiceId: string,
   choiceText: string

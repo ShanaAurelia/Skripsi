@@ -243,7 +243,7 @@ const MapBook = () => {
       case 'teacher-office':
         return 'Teacher Office';
       case 'classroom':
-        return 'Classroom';
+        return 'Class Room';
       case 'band-room':
         return 'Band Room';
       case 'hallway-horizontal':

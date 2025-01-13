@@ -368,7 +368,7 @@ const ProfilesBook = () => {
                       student.gender
                     )}`
               }
-              className='object-fill w-3/4 h-3/4'
+              className='object-fill w-3/4 h-3/4 rounded-full'
             />
           </button>
         </>
@@ -389,7 +389,7 @@ const ProfilesBook = () => {
                 : '')
             }
             onClick={() => handleProfileSelect(student)}>
-            <div className='object-fill w-3/4 h-3/4 bg-slate-300' />
+            <div className='object-fill w-3/4 h-3/4 bg-slate-300 rounded-full' />
           </button>
         </>
       ))}

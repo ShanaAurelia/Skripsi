@@ -38,6 +38,7 @@ const Scene = (props: IDialogueProps) => {
   const [minigameData, setMinigameData] = useState<IMinigameHeader>();
   const [openMinigameModal, setOpenMinigameModal] = useState<boolean>();
   const [savedScene, setSavedScene] = useState<boolean>();
+  const [nextSceneId, setNextSceneId] = useState<string>();
   const user = useAuth().user;
   const updateUserData = useAuth().updateUserData;
   const updateSavedSceneId = useAuth().updateSavedSceneId;
@@ -75,8 +76,13 @@ const Scene = (props: IDialogueProps) => {
       .then((res) => {
         if (res.data.message.minigameId !== undefined) {
           handleProcessMinigame(res.data.message.minigameId);
+          setNextSceneId(res.data.message.nextSceneId);
           handleProcessDialogue();
-        } else {
+        } 
+        else if(res.data.message.eventId !== undefined){
+          
+        }
+        else {
           var _dialogue = res.data.message;
           _dialogue.dialogueText = _dialogue.dialogueText.replaceAll(
             '[MC]',
@@ -119,6 +125,10 @@ const Scene = (props: IDialogueProps) => {
         setIsError(true);
       });
   };
+
+  const handleProcessEvent = (eventId: string) => {
+    axios.get(``)
+  }
 
   const handleOptionDialogue = (nextSceneId: string) => {
     getDialogue(nextSceneId);
@@ -275,7 +285,7 @@ const Scene = (props: IDialogueProps) => {
                           .toLowerCase()
                           .replace(/\s+/g, '')}/${minigameData?.minigameId}/${
                           minigameData?.quizQuestions[0].characterName
-                        }`,
+                        }/${nextSceneId}`,
                         { replace: true }
                       )
                     }>
@@ -323,7 +333,7 @@ const Scene = (props: IDialogueProps) => {
                   className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
                 />
                 <img
-                  src={
+                  src={ 
                     '/characters/aset merch BINUS Support 3 - bahagia copy.png'
                   }
                   className='absolute w-full'

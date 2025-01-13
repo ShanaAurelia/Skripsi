@@ -37,12 +37,16 @@ const Navbar = (props: INavbarProps) => {
 
   useEffect(() => {
     if (audioRef.current !== null && HandleIsChangeMusic()) {
-      audioRef.current.pause();
-      audioRef.current.load();
-      setCurrentMusic(HandleMusicType());
-      setTimeout(() => {
-        audioRef.current && audioRef.current.play();
-      }, 300);
+      if(!playMusic){
+        audioRef.current  && audioRef.current.pause();
+        audioRef.current.load();
+        setCurrentMusic(HandleMusicType());
+      }else{
+        audioRef.current.pause();
+        audioRef.current.load();
+        setCurrentMusic(HandleMusicType());
+          audioRef.current  && audioRef.current.play();
+        }
     }
   }, [window.location.href]);
 

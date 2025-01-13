@@ -6,7 +6,11 @@ import {
 } from '../../constants/dummy.constants';
 import './Storycase_Book.css';
 import '../../constants/global.css';
-import { IStorycase, IStoryCaseSpeech } from './Storycase.interfaces';
+import {
+  IStorycase,
+  IStoryCasePayload,
+  IStoryCaseSpeech,
+} from './Storycase.interfaces';
 import { useAuth } from '../../config/Context';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -14,10 +18,12 @@ import {
   IMinigameHeader,
   IQuiz,
   IQuizChoice,
+  IQuizChoiceAnswers,
   IQuizQuestion,
 } from '../../constants/global.interfaces';
 import { GetArticleLink, randomAlphaNumeric } from '../../config/Utilities';
 import { IQuestion } from '../stageboard/Stageboard.interface';
+import { Modal } from '@mui/material';
 
 const StorycaseBook = () => {
   // const [storyCaseData, setStoryCaseData] = useState<IStorycase>();
@@ -33,14 +39,25 @@ const StorycaseBook = () => {
   const [saveSpeech, setSaveSpeech] = useState<string[]>([]);
   const [saveAnswer, setSaveAnswer] = useState<string[]>([]);
   const [chosenOption, setChosenOption] = useState<string>('');
-  const [satisfied, setSatisfied] = useState<boolean>();
+  // const [satisfied, setSatisfied] = useState<boolean>();
+  const [isDone, setIsDone] = useState<boolean>(false);
+  const [openReport, setOpenReport] = useState<boolean>(false);
   const [initialLoad, setInitialLoad] = useState<boolean>(false);
   const [dialogueCount, setDialogueCount] = useState<number>(0);
   const [userAct, setUserAct] = useState<boolean>(false);
+  const [answerPayload, setAnswerPayload] = useState<IStoryCasePayload>();
+  const [quizChoiceAnswer, setQuizChoiceAnswer] = useState<
+    IQuizChoiceAnswers[]
+  >([]);
+  const [totalCorrect, setTotalCorrect] = useState<number>(0);
+  const [totalIncorrect, setTotalIncorrect] = useState<number>(0);
+  const [totalPoint, setTotalPoint] = useState<number>(0);
+  const [reportStatus, setReportStatus] = useState<string>();
+  const [loadingReport, setLoadingReport] = useState<boolean>(false);
 
   const Auth = useAuth();
   const navigate = useNavigate();
-  const { minigameId, characterName } = useParams();
+  const { minigameId, characterName, nextSceneId } = useParams();
 
   useEffect(() => {
     setLoading(true);
@@ -59,6 +76,8 @@ const StorycaseBook = () => {
       setLoading(false);
     }, 3000);
   }, [quizQuestions]);
+
+  useEffect(() => {}, [isDone]);
 
   useEffect(() => {
     setUserAct(false);
@@ -106,23 +125,60 @@ const StorycaseBook = () => {
   };
 
   const handleStoryCaseSpeechBubble = () => {
-    if (quizQuestions[dialogueCount] !== undefined) {
+    if (quizQuestions[dialogueCount] !== undefined && !isDone) {
       setCurrentQuestion(quizQuestions[dialogueCount].questionTitle);
       setCurrentOption(quizQuestions[dialogueCount].choices);
     }
   };
 
-  const handleNextDialogue = (opt: string) => {
-    setChosenOption(opt);
+  const handleNextDialogue = (opt: IQuizChoice) => {
+    const _quizChoiceAnswer: IQuizChoiceAnswers = {
+      choiceId: opt.choiceId,
+      questionId: quizQuestions[dialogueCount].questionId,
+      questionOrder: dialogueCount + 1,
+    };
+    if (quizChoiceAnswer.length === 0) {
+      setQuizChoiceAnswer([_quizChoiceAnswer]);
+    } else {
+      setQuizChoiceAnswer([...quizChoiceAnswer, _quizChoiceAnswer]);
+    }
+    setChosenOption(opt.choiceText);
     setUserAct(false);
     if (saveAnswer?.length === 0) {
-      setSaveAnswer([opt]);
+      setSaveAnswer([opt.choiceText]);
     } else {
-      setSaveAnswer([...saveAnswer, opt]);
+      setSaveAnswer([...saveAnswer, opt.choiceText]);
     }
     setTimeout(() => {
       setLoading(true);
-      setDialogueCount(dialogueCount + 1);
+      if (quizQuestions.length <= dialogueCount + 1) {
+        const _minigameId: string = minigameData?.minigameId || '';
+        const _payload: IStoryCasePayload = {
+          minigameId: _minigameId,
+          quizChoiceAnswers: [...quizChoiceAnswer, _quizChoiceAnswer],
+        };
+        setLoadingReport(true);
+        axios
+          .post('http://127.0.0.1:8000/api/submit/quiz', _payload)
+          .then((res) => {
+            // console.log(res);
+            const data = res.data.data;
+            setTotalCorrect(data.totalCorrect);
+            setTotalIncorrect(data.totalIncorrect);
+            setTotalPoint(data.totalPoint);
+            setReportStatus(data.status);
+          })
+          .catch((error) => {
+            console.log(error);
+            setIsError(true);
+          });
+        setIsDone(true);
+        setTimeout(() => {
+          setLoadingReport(false);
+        }, 500);
+      } else {
+        setDialogueCount(dialogueCount + 1);
+      }
     }, 1500);
     setTimeout(() => {
       setLoading(false);
@@ -163,7 +219,7 @@ const StorycaseBook = () => {
             <button
               id='option-container'
               className='beescholar-button p-1 w-11/12 h-min flex flex-row rounded-lg mb-3 items-center'
-              onClick={() => handleNextDialogue(opt.choiceText)}>
+              onClick={() => handleNextDialogue(opt)}>
               <div
                 id='option-index'
                 className='bg-[#d26b1c] w-11 h-10 flex justify-center items-center text-center rounded-full mr-3'>
@@ -271,7 +327,7 @@ const StorycaseBook = () => {
             className='bg-white h-3/4 w-2/3 border-[#F39F33] border-8'
           />
           <img
-            src={''}
+            src={quizData?.quizQuestions[0].characterImage}
             className='absolute w-3/4'
           />
         </div>
@@ -299,7 +355,9 @@ const StorycaseBook = () => {
         <div
           id='case-description'
           className='bg-[#4EB0E1] w-5/6 p-3 text-center'>
-          <p className='text-base font-medium text-white'>{}</p>
+          <p className='text-base font-medium text-white'>
+            {minigameData?.hint}
+          </p>
         </div>
         <div
           id='case-article-link'
@@ -414,7 +472,7 @@ const StorycaseBook = () => {
           </div>
         </div>
       ))}
-      {loading && (
+      {loading && !isDone && (
         <>
           <div
             id='speech-container'
@@ -438,7 +496,7 @@ const StorycaseBook = () => {
           </div>
         </>
       )}
-      {!loading && (
+      {!loading && !isDone && (
         <>
           <div
             id='speech-container'
@@ -509,18 +567,18 @@ const StorycaseBook = () => {
           )}
         </>
       )}
-      {satisfied === true && (
+      {isDone === true && (
         <div
           id='button-container'
           className='w-full h-full right-5 bottom-10 z-30 justify-end flex mt-5'>
           <button
             className='beescholar-success-button w-max h-min pr-2 pl-2 pb-1 pt-1 text-center font-bold tracking-widest text-2xl rounded-xl '
-            onClick={() => navigate('/game/', { replace: true })}>
+            onClick={() => setOpenReport(true)}>
             END CASE
           </button>
         </div>
       )}
-      {satisfied === false && (
+      {/* {satisfied === false && (
         <div
           id='button-container'
           className=' w-full h-full right-5 bottom-10 z-30 justify-end flex mt-5'>
@@ -530,7 +588,7 @@ const StorycaseBook = () => {
             RETRY CASE
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 
@@ -583,12 +641,111 @@ const StorycaseBook = () => {
     </div>
   );
 
+  const openReportModal = () => (
+    <Modal
+      open={openReport}
+      className='w-full h-full flex justify-center items-center'
+      disableScrollLock={true}>
+      <div
+        id='task-modal-container'
+        className='w-11/12 h-3/4 bg-[#C06C00] flex flex-col rounded-xl border-black border-4'>
+        <div
+          id='task-modal-title-container'
+          className='flex justify-center items-center w-full h-1/4 relative'>
+          <div
+            id='task-modal-title-box'
+            className='bg-[#F3931B] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
+            <h4 className='text-white font-semibold tracking-widest text-2xl'>
+              STORY CASE {reportStatus?.toUpperCase()}
+            </h4>
+          </div>
+          {/* <button
+                id='close-modal-button'
+                className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
+                onClick={() => setOpenReport(false)}>
+                ❌
+              </button> */}
+        </div>
+        <div
+          id='task-modal-body-container'
+          className='w-full h-1/2 flex flex-row justify-evenly items-center'>
+          <div
+            id='profiles-picture'
+            className=' w-1/4 h-full flex justify-center items-center relative'>
+            <div
+              id='profiles-squareframe'
+              className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
+            />
+            <img
+              src={reportStatus === "Completed" ? '/characters/aset merch BINUS Support 3 - bahagia copy.png' : "/characters/aset merch BINUS Support 4 - pusing copy.png"}
+              className='absolute w-full'
+            />
+          </div>
+          <div
+            id='task-modal-descriptions-container'
+            className='w-1/2 h-full flex flex-col justify-evenly relative'>
+            <div
+              id='task-modal-descriptions'
+              className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+              <div
+                id='task-modal-description-header'
+                className='w-full h-1/4 text-center '>
+                <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>
+                  STORY CASE RESULT
+                </h5>
+              </div>
+              {!loadingReport && (
+                <div
+                  id='task-modal-description-body'
+                  className='w-full h-3/4 pt-3 flex justify-between flex-col'>
+                  <>
+                    <p className='text-black font-medium tracking-wide text-lg'>
+                      Correct Answers : {totalCorrect}
+                    </p>
+                    <p className='text-black font-medium tracking-wide text-lg'>
+                      Incorrect Answers : {totalIncorrect}
+                    </p>
+                    <p className='text-black font-medium tracking-wide text-2xl'>
+                      Points Earned : {totalPoint}
+                    </p>
+                  </>
+                </div>
+              )}
+              {loadingReport && (
+                <div
+                id='task-modal-description-body'
+                className='w-full h-3/4 pt-3 flex justify-between flex-col bg-slate-300 animate-pulse'>
+              </div>
+              )}
+            </div>
+            <div
+              id='button-container'
+              className='w-full h-max flex justify-end flex-row'>
+             {reportStatus === "Completed" && (<button
+                id='go-button'
+                className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                onClick={() => navigate(`/game/story/${nextSceneId}`, { replace: true })}>
+                LETS GO
+              </button>)}
+              {reportStatus === "Failed" && (<button
+                id='go-button'
+                className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                onClick={() => navigate('/game/', { replace: true })}>
+                Retry
+              </button>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
+  );
+
   const renderBook = () => (
     <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center'>
       <div
         id='book-page-left'
         className='bg-white w-1/2 h-full drop-shadow-lg shadow-md shadow-black overflow-auto overflow-x-hidden relative'>
-        {loading ? loadingLeftPart() : renderLeftPart()}
+        {renderLeftPart()}
       </div>
       <div className='w-1/6 h-full absolute flex justify-center'>
         <div className='justify-center items-center flex z-10 absolute h-full w-min drop-shadow-lg shadow-md shadow-black'>
@@ -600,6 +757,7 @@ const StorycaseBook = () => {
         className=' bg-[#4EB0E1] h-full w-1/2 relative drop-shadow-lg shadow-md shadow-black'>
         {renderRightPart()}
       </div>
+      {openReport && openReportModal()}
     </div>
   );
 

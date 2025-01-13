@@ -99,12 +99,12 @@ const Homepage = () => {
             className='w-full h-full opacity-60'
           />
         </div>
-        <button
+        {/* <button
           id='crossword-available'
           className='absolute w-10 h-10 top-20 right-5 bg-white border-red-600 border-2 rounded-full items-center justify-center flex shadow-sm shadow-black'
           onClick={() => navigate('crossword', { replace: true })}>
           <h3 className='font-bold text-2xl'>‼️</h3>
-        </button>
+        </button> */}
       </div>
       {openTutorial && (
         <div

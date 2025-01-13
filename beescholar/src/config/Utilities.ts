@@ -65,10 +65,10 @@ export function HandleIsChangeMusic(){
 
 export function HandleMusicType(){
   const _href = window.location.href;
-  if(_href.includes('/story')){
+  if(_href.includes('/story/')){
     return HandleMusicSource('story');
   }
-  if(_href.includes('/followthedrum') || _href.includes('storycase') || _href.includes('/crossword')){
+  if(_href.includes('/followthedrum') || _href.includes('/storycase') || _href.includes('/crossword')){
     return HandleMusicSource('minigame')
   }
   if(_href.includes('/stage')){

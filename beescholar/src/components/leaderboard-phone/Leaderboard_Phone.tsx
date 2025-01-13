@@ -136,7 +136,7 @@ const Phoneboard = () => {
     switch (opt) {
       case 'Clear Time':
         if (playerStoryLeaderboard?.completionDate !== null && playerStoryLeaderboard?.completionDate !== undefined) {
-          return playerStoryLeaderboard?.completionDate.toDateString();
+          return playerStoryLeaderboard?.completionDate
         } else {
           return 'No Date Data';
         }
@@ -151,7 +151,6 @@ const Phoneboard = () => {
       default:
         return 'N/A';
     }
-    return 'N/A';
   };
 
   const handleGlobalRankData = () => {

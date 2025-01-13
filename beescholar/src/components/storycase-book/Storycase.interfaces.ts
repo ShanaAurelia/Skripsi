@@ -1,4 +1,4 @@
-import { ICharacter, IDialogue } from "../../constants/global.interfaces"
+import { ICharacter, IDialogue, IQuizChoiceAnswers } from "../../constants/global.interfaces"
 
 export interface IStorycaseData{
     id: string,
@@ -21,3 +21,10 @@ export interface ISpeechOption{
 export interface IStorycase{
     data: IStorycaseData
 }
+
+export interface IStoryCasePayload{
+    minigameId: string
+    quizChoiceAnswers: IQuizChoiceAnswers[]
+}
+
+
