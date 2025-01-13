@@ -125,14 +125,12 @@ const Scene = (props: IDialogueProps) => {
       });
   };
 
-  const handleProcessEvent = (eventId: string) => {};
-
   const handleNavigateMinigame = () => {
     const type = minigameData?.minigameType;
 
     switch (type) {
       case 'Quiz':
-        if(minigameData?.quizType === "Exam Preparation"){
+        if(minigameData?.quizType === "Stage"){
           return navigate(
             `/game/stage/${minigameData?.minigameId}/${nextSceneId}`,
             { replace: true }

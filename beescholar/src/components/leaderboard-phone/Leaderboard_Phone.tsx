@@ -9,22 +9,16 @@ import {
 } from '../../constants/dummy.constants';
 import '../../constants/global.css';
 import { useNavigate } from 'react-router-dom';
-import {
-  IPersonalStats,
-  IPlayerRank,
-} from './Leaderboard_Phone.interface';
+import { IPersonalStats, IPlayerRank } from './Leaderboard_Phone.interface';
 import axios from 'axios';
 import { useAuth } from '../../config/Context';
 
 const Phoneboard = () => {
   const [storyLeaderboard, setStoryLeaderboard] = useState<IPlayerRank[]>([]);
   const [pointLeaderboard, setPointLeaderboard] = useState<IPlayerRank[]>([]);
-  const [crosswordLeaderboard, setCrosswordLeaderboard] = useState<IPlayerRank[]>(
-    []
-  );
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [currentOption, setCurrentOption] = useState<
-    'Clear Time' | 'Crosswords' | 'Total Points'
+    'Clear Time' | 'Total Points'
   >('Clear Time');
   const [isLoadingStats, setIsLoadingStats] = useState<boolean>(false);
   const [isLoadingBoard, setIsLoadingBoard] = useState<boolean>(false);
@@ -34,8 +28,6 @@ const Phoneboard = () => {
     useState<IPlayerRank>();
   const [playerPointLeaderboard, setPlayerPointLeaderboard] =
     useState<IPlayerRank>();
-  const [playerCrosswordLeaderboard, setPlayerCrosswordLeaderboard] =
-    useState<IPlayerRank>();
 
   useEffect(() => {
     getData();
@@ -43,20 +35,7 @@ const Phoneboard = () => {
 
   useEffect(() => {
     getData();
-  }, [currentOption])
-
-  // useEffect(() => {
-  //   playerLeaderboard.forEach((rank) => {
-  //     switch (rank.leaderboard) {
-  //       case 'story':
-  //         return setPlayerStoryLeaderboard(rank);
-  //       case 'points':
-  //         return setPlayerPointLeaderboard(rank);
-  //       case 'crossword':
-  //         return setPlayerCrosswordLeaderboard(rank);
-  //     }
-  //   });
-  // }, [playerLeaderboard]);
+  }, [currentOption]);
 
   const navigate = useNavigate();
   const Auth = useAuth();
@@ -88,9 +67,7 @@ const Phoneboard = () => {
     getData();
   };
 
-  const handleChangeDropdown = (
-    opt: 'Clear Time' | 'Crosswords' | 'Total Points'
-  ) => {
+  const handleChangeDropdown = (opt: 'Clear Time' | 'Total Points') => {
     setCurrentOption(opt);
     setOpenDropdown(false);
   };
@@ -135,18 +112,19 @@ const Phoneboard = () => {
     const opt = currentOption;
     switch (opt) {
       case 'Clear Time':
-        if (playerStoryLeaderboard?.completionDate !== null && playerStoryLeaderboard?.completionDate !== undefined) {
-          return playerStoryLeaderboard?.completionDate
+        if (
+          playerStoryLeaderboard?.completionDate !== null &&
+          playerStoryLeaderboard?.completionDate !== undefined
+        ) {
+          return playerStoryLeaderboard?.completionDate;
         } else {
           return 'No Date Data';
         }
-      case 'Crosswords':
-        return playerCrosswordLeaderboard?.name.toString();
       case 'Total Points':
-        if(playerPointLeaderboard?.totalPoint !== undefined){
-          return playerPointLeaderboard?.totalPoint.toString() + "pts";
-        }else{
-          return "N/A pts"
+        if (playerPointLeaderboard?.totalPoint !== undefined) {
+          return playerPointLeaderboard?.totalPoint.toString() + 'pts';
+        } else {
+          return 'N/A pts';
         }
       default:
         return 'N/A';
@@ -157,18 +135,19 @@ const Phoneboard = () => {
     const opt = currentOption;
     switch (opt) {
       case 'Clear Time':
-        if (playerStoryLeaderboard?.completionDate !== null && playerStoryLeaderboard?.completionDate !== undefined) {
+        if (
+          playerStoryLeaderboard?.completionDate !== null &&
+          playerStoryLeaderboard?.completionDate !== undefined
+        ) {
           return playerStoryLeaderboard.rank;
         } else {
           return 'N/A';
         }
-      case 'Crosswords':
-        return playerCrosswordLeaderboard?.rank;
       case 'Total Points':
-        if(playerPointLeaderboard?.totalPoint !== undefined){
+        if (playerPointLeaderboard?.totalPoint !== undefined) {
           return playerPointLeaderboard.rank;
-        }else{
-          return "N/A"
+        } else {
+          return 'N/A';
         }
       default:
         return 'N/A';
@@ -176,15 +155,17 @@ const Phoneboard = () => {
   };
 
   const handleGlobalRankData = () => {
-    switch(currentOption){
-      case "Clear Time":
-        return storyLeaderboard.map((data, idx) => phoneGlobalLeaderboardRank(data, idx+1))
-      case "Crosswords":
-        return crosswordLeaderboard.map((data, idx) => phoneGlobalLeaderboardRank(data, idx+1))
-      case "Total Points":
-        return pointLeaderboard.map((data, idx) => phoneGlobalLeaderboardRank(data, idx+1))
+    switch (currentOption) {
+      case 'Clear Time':
+        return storyLeaderboard.map((data, idx) =>
+          phoneGlobalLeaderboardRank(data, idx + 1)
+        );
+      case 'Total Points':
+        return pointLeaderboard.map((data, idx) =>
+          phoneGlobalLeaderboardRank(data, idx + 1)
+        );
     }
-  }
+  };
 
   const phoneGlobalLeaderboardHeader = () => (
     <div
@@ -203,9 +184,8 @@ const Phoneboard = () => {
       <div
         id='date-header'
         className='text-white font-semibold text-base col-span-2'>
-        {currentOption === "Clear Time" && "Completed Date"}
-        {currentOption === "Crosswords" && "Crosswords Done"}
-        {currentOption === "Total Points" && "Total Points"}
+        {currentOption === 'Clear Time' && 'Completed Date'}
+        {currentOption === 'Total Points' && 'Total Points'}
       </div>
     </div>
   );
@@ -247,12 +227,6 @@ const Phoneboard = () => {
               className=' w-full bg-[#F3931B] flex-col flex absolute mt-5 p-2 rounded-lg'>
               <button
                 id='stats-button'
-                onClick={() => handleChangeDropdown('Crosswords')}
-                className='bg-white text-center font-semibold text-[#F3931B] flex justify-between items-center rounded-lg drop-shadow-sm shadow-sm shadow-black mb-2 pl-1 pr-1'>
-                <p className='text-sm'>Crosswords</p>
-              </button>
-              <button
-                id='stats-button'
                 onClick={() => handleChangeDropdown('Total Points')}
                 className='bg-white text-center font-semibold text-[#F3931B] flex justify-between items-center rounded-lg drop-shadow-sm shadow-sm shadow-black mb-2 pl-1 pr-1'>
                 <p className='text-sm'>Total Points</p>
@@ -282,7 +256,10 @@ const Phoneboard = () => {
     </div>
   );
 
-  const phoneSelfLeaderboardRank = (playerData: string | undefined, playerRank: number | undefined | "N/A") => (
+  const phoneSelfLeaderboardRank = (
+    playerData: string | undefined,
+    playerRank: number | undefined | 'N/A'
+  ) => (
     <>
       <div
         id='self-rank'
@@ -310,33 +287,38 @@ const Phoneboard = () => {
     </>
   );
 
-  const phoneGlobalLeaderboardRank = (playerData: IPlayerRank, rank: number) => (<>
-    <div
-      id='self-rank'
-      className='text-black font-semibold text-lg bg-[#67BBE7] rounded-xl pl-2 p-3 relative'>
-      {rank}
+  const phoneGlobalLeaderboardRank = (
+    playerData: IPlayerRank,
+    rank: number
+  ) => (
+    <>
       <div
-        id='self-photo'
-        className='w-9 h-9 rounded-full absolute -right-3 top-2 border-2 border-black'>
-        <img
-          src={playerData.profilePicture}
-          className='rounded-full w-max h-max'
-        />
+        id='self-rank'
+        className='text-black font-semibold text-lg bg-[#67BBE7] rounded-xl pl-2 p-3 relative'>
+        {rank}
+        <div
+          id='self-photo'
+          className='w-9 h-9 rounded-full absolute -right-3 top-2 border-2 border-black'>
+          <img
+            src={playerData.profilePicture}
+            className='rounded-full w-max h-max'
+          />
+        </div>
       </div>
-    </div>
-    <div
-      id='self-name'
-      className='text-black font-semibold text-lg rounded-xl col-span-2 p-3'>
-      {playerData.name}
-    </div>
-    <div
-      id='self-date'
-      className='text-[#014769] font-semibold text-lg rounded-xl col-span-2 p-3'>
-      {currentOption === "Clear Time" && playerData.completionDate?.toString()}
-      {currentOption === "Crosswords" && playerData.crosswordDone}
-      {currentOption === "Total Points" && playerData.totalPoint+"pts"}
-    </div>
-  </>);
+      <div
+        id='self-name'
+        className='text-black font-semibold text-lg rounded-xl col-span-2 p-3'>
+        {playerData.name}
+      </div>
+      <div
+        id='self-date'
+        className='text-[#014769] font-semibold text-lg rounded-xl col-span-2 p-3'>
+        {currentOption === 'Clear Time' &&
+          playerData.completionDate?.toString()}
+        {currentOption === 'Total Points' && playerData.totalPoint + 'pts'}
+      </div>
+    </>
+  );
 
   const phoneLoadingPlayerCard = () => (
     <>
@@ -380,7 +362,10 @@ const Phoneboard = () => {
           className='bg-[#FFFCFC] w-full h-full grid grid-cols-5 gap-2 rounded-xl'>
           {isLoadingBoard
             ? phoneLoadingPlayerCard()
-            : phoneSelfLeaderboardRank(handlePlayerBoard(), handlePlayerBoardRank())}
+            : phoneSelfLeaderboardRank(
+                handlePlayerBoard(),
+                handlePlayerBoardRank()
+              )}
         </div>
       </div>
     </div>
@@ -587,7 +572,7 @@ const Phoneboard = () => {
       className='w-full h-full flex flex-col p-5 justify-center'>
       <div
         id='phone-navigation-container'
-        className='w-full h-max flex justify-start items-start mb-2'>
+        className='w-full h-max flex justify-start items-start mb-2 mt-4'>
         <button onClick={() => navigate('/game/', { replace: true })}>
           <img src='/component-images/Back-Button.svg' />
         </button>
