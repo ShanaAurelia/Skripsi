@@ -55,12 +55,12 @@ const Scene = (props: IDialogueProps) => {
     }
   }, []);
 
-  window.onbeforeunload = function() {
+  window.onbeforeunload = function () {
     if (!savedScene) {
-      updateSavedSceneId(dialogue?.sceneId || '')
-      return "Progress might not be saved, are you sure to leave this page?"
+      updateSavedSceneId(dialogue?.sceneId || '');
+      return 'Progress might not be saved, are you sure to leave this page?';
     }
-  }
+  };
 
   const handleNextSpeech = () => {
     if (dialogue?.nextSceneId !== undefined && dialogue.nextSceneId !== null) {
@@ -70,19 +70,18 @@ const Scene = (props: IDialogueProps) => {
     }
   };
 
-  const getDialogue = async (nextSceneId: string) => {
+  const getDialogue = async (nextSceneId2: string) => {
     await axios
-      .get(`http://127.0.0.1:8000/api/scene/${nextSceneId}`)
+      .get(`http://127.0.0.1:8000/api/scene/${nextSceneId2}`)
       .then((res) => {
         if (res.data.message.minigameId !== undefined) {
           handleProcessMinigame(res.data.message.minigameId);
           setNextSceneId(res.data.message.nextSceneId);
           handleProcessDialogue();
-        } 
-        else if(res.data.message.eventId !== undefined){
-          
-        }
-        else {
+        } else {
+          if (res.data.message.eventId !== undefined) {
+            getDialogue(res.data.message.nextSceneId);
+          }
           var _dialogue = res.data.message;
           _dialogue.dialogueText = _dialogue.dialogueText.replaceAll(
             '[MC]',
@@ -126,9 +125,23 @@ const Scene = (props: IDialogueProps) => {
       });
   };
 
-  const handleProcessEvent = (eventId: string) => {
-    axios.get(``)
-  }
+  const handleProcessEvent = (eventId: string) => {};
+
+  const handleNavigateMinigame = () => {
+    const type = minigameData?.minigameType;
+
+    switch (type) {
+      case 'Story Case':
+        return navigate(
+          `/game/storycase/${
+            minigameData?.minigameId
+          }/${minigameData?.quizQuestions[0].characterName}/${nextSceneId}`,
+          { replace: true }
+        );
+      case 'Drum Puzzle':
+        return navigate(`/game/followthedrum/${minigameData?.minigameId}/${nextSceneId}`, {replace: true})
+    }
+  };
 
   const handleOptionDialogue = (nextSceneId: string) => {
     getDialogue(nextSceneId);
@@ -269,7 +282,9 @@ const Scene = (props: IDialogueProps) => {
                       {minigameData?.instruction}
                     </p>
                     <p className='text-black font-medium tracking-wide text-lg'>
-                      Hint: {minigameData?.hint}
+                      {minigameData?.minigameType === 'Drum Puzzle'
+                        ? 'Required Hit: ' + minigameData.totalHit
+                        : 'Hint: ' + minigameData?.hint}
                     </p>
                   </div>
                 </div>
@@ -279,16 +294,7 @@ const Scene = (props: IDialogueProps) => {
                   <button
                     id='go-button'
                     className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
-                    onClick={() =>
-                      navigate(
-                        `/game/${minigameData?.quizType
-                          .toLowerCase()
-                          .replace(/\s+/g, '')}/${minigameData?.minigameId}/${
-                          minigameData?.quizQuestions[0].characterName
-                        }/${nextSceneId}`,
-                        { replace: true }
-                      )
-                    }>
+                    onClick={() => handleNavigateMinigame()}>
                     LETS GO
                   </button>
                 </div>
@@ -333,7 +339,7 @@ const Scene = (props: IDialogueProps) => {
                   className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
                 />
                 <img
-                  src={ 
+                  src={
                     '/characters/aset merch BINUS Support 3 - bahagia copy.png'
                   }
                   className='absolute w-full'

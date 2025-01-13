@@ -3,7 +3,12 @@ import { IDrumPattern, IDrumProps } from './Drum.interface';
 import './Drum.css';
 import '../../constants/global.css';
 import { Modal } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  IMinigameData,
+  IMinigameHeader,
+} from '../../constants/global.interfaces';
+import axios from 'axios';
 // drum parts: Snare, Hi-Tom, Medium Tom, Floor Tom, Bass Drum, Ride Cymbal, Crash Cymbal, Hi-Hats (pake 5 drum main tanpa cymbal)
 /*
     Color Keywords:
@@ -16,9 +21,7 @@ import { useNavigate } from 'react-router-dom';
     pattern: https://www.drumeo.com/beat/13-easy-beginner-drum-beats/
 */
 
-const Drum = (props: IDrumProps) => {
-  const drumPattern = props.patternSet;
-
+const Drum = () => {
   const [drumPart, setDrumPart] = useState<string[]>([
     'Snare',
     'Hi-Tom',
@@ -33,14 +36,28 @@ const Drum = (props: IDrumProps) => {
   const [correctHit, setCorrectHit] = useState<number>(0);
   const [falseHit, setFalseHit] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
-  const [openModal, setOpenModal] = useState<boolean>(false);
   const [disableStart, setDisableStart] = useState<boolean>(false);
   const [goRun, setGoRun] = useState<boolean>(false);
   const [disableDrum, setDisableDrum] = useState<boolean>();
   const [colorAnimation, setColorAnimation] = useState('');
   const [colorKey, setColorKey] = useState<number>();
   const [onRetry, setOnRetry] = useState<boolean>(false);
+  const [minigameData, setMinigameData] = useState<IMinigameHeader>();
+  const [isError, setIsError] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [drumPattern, setDrumPattern] = useState<string[]>([]);
+  const { minigameId, nextSceneId } = useParams();
+
+  const [openReport, setOpenReport] = useState<boolean>(false);
+  const [totalPoint, setTotalPoint] = useState<number>(0);
+  const [reportStatus, setReportStatus] = useState<string>();
+  const [loadingReport, setLoadingReport] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setLoading(true);
+    getData();
+  }, []);
 
   useEffect(() => {
     setHitIndex(0);
@@ -53,7 +70,7 @@ const Drum = (props: IDrumProps) => {
     setDisableDrum(false);
     setColorKey(0);
     setScore(0);
-    setOpenModal(false);
+    setOpenReport(false);
     setOnRetry(false);
   }, [onRetry && (correctHit > 0 || falseHit > 0)]);
 
@@ -63,6 +80,29 @@ const Drum = (props: IDrumProps) => {
       setColorAnimation('');
     }, 300);
   }, [colorKey, disableStart === true]);
+
+  const getData = async () => {
+    await axios
+      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`)
+      .then((res) => {
+        setMinigameData(res.data.message);
+        handleCreateRandomPatterns(res.data.message.totalHit);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsError(true);
+      });
+    setLoading(false);
+  };
+
+  const handleCreateRandomPatterns = (hit: number) => {
+    const patterns = ['S', 'HT', 'MT', 'FT', 'BD'];
+    const generatedPatterns = Array.from(
+      { length: hit },
+      () => patterns[Math.floor(Math.random() * patterns.length)]
+    );
+    setDrumPattern(generatedPatterns);
+  };
 
   const patternColorTranslator = (pattern: string) => {
     if (pattern === 'S') {
@@ -85,24 +125,38 @@ const Drum = (props: IDrumProps) => {
     setGoRun(false);
     var savedI = 0;
     for (var i = 0; i <= patternIndex; i++) {
-      const color = patternColorTranslator(drumPattern.pattern[i]);
+      const color = patternColorTranslator(drumPattern[i]);
       setTimeout(() => {
         setCurrentColor(color);
         setColorKey(Math.random());
         // console.log('color: (in 1.5s)', color, patternIndex, hitIndex);
       }, (i + 1) * 1000);
-      savedI++
+      savedI++;
     }
     setDisableStart(true);
     setTimeout(() => {
-      setGoRun(true)
-    }, (savedI+1)*1000);
+      setGoRun(true);
+    }, (savedI + 1) * 1000);
     setHitIndex(0);
   };
 
+  const handleFinish = () => {
+    const _payload = {
+      minigameId: minigameId,
+      point: calculateScore(),
+      patternAnswer: JSON.stringify({hit: drumPattern})
+    }
+    axios.post(`http://127.0.0.1:8000/api/submit/drum_puzzle`, _payload).then((res) => {
+      setOpenReport(true)
+    }).catch((error) => {
+      console.log(error);
+      setIsError(true)
+    })
+  }
+
   const validateDrumHit = (drumPart: string) => {
     if (disableStart) {
-      if (drumPattern.pattern[hitIndex] === drumPart) {
+      if (drumPattern[hitIndex] === drumPart) {
         setCorrectHit(correctHit + 1);
       } else {
         setFalseHit(falseHit + 1);
@@ -128,8 +182,8 @@ const Drum = (props: IDrumProps) => {
   };
 
   const calculateScore = () => {
-    const correctHitValue = correctHit * 100;
-    const falseHitValue = falseHit * 75;
+    const correctHitValue = correctHit * 5;
+    const falseHitValue = falseHit * 2;
     // console.log('score: ', correctHitValue - falseHitValue);
     return correctHitValue - falseHitValue;
   };
@@ -145,6 +199,114 @@ const Drum = (props: IDrumProps) => {
       </Modal>
     );
   };
+
+  const openReportModal = () => (
+    <Modal
+      open={openReport}
+      className='w-full h-full flex justify-center items-center'
+      disableScrollLock={true}>
+      <div
+        id='task-modal-container'
+        className='w-11/12 h-3/4 bg-[#C06C00] flex flex-col rounded-xl border-black border-4'>
+        <div
+          id='task-modal-title-container'
+          className='flex justify-center items-center w-full h-1/4 relative'>
+          <div
+            id='task-modal-title-box'
+            className='bg-[#F3931B] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
+            <h4 className='text-white font-semibold tracking-widest text-2xl'>
+              DRUM PUZZLE {reportStatus?.toUpperCase()}
+            </h4>
+          </div>
+          {/* <button
+                  id='close-modal-button'
+                  className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
+                  onClick={() => setOpenReport(false)}>
+                  ❌
+                </button> */}
+        </div>
+        <div
+          id='task-modal-body-container'
+          className='w-full h-1/2 flex flex-row justify-evenly items-center'>
+          <div
+            id='profiles-picture'
+            className=' w-1/4 h-full flex justify-center items-center relative'>
+            <div
+              id='profiles-squareframe'
+              className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
+            />
+            <img
+              src={
+                reportStatus === 'Completed'
+                  ? '/characters/aset merch BINUS Support 3 - bahagia copy.png'
+                  : '/characters/aset merch BINUS Support 4 - pusing copy.png'
+              }
+              className='absolute w-full'
+            />
+          </div>
+          <div
+            id='task-modal-descriptions-container'
+            className='w-1/2 h-full flex flex-col justify-evenly relative'>
+            <div
+              id='task-modal-descriptions'
+              className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+              <div
+                id='task-modal-description-header'
+                className='w-full h-1/4 text-center '>
+                <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>
+                  FOLLOW THE DRUM RESULT
+                </h5>
+              </div>
+              {!loadingReport && (
+                <div
+                  id='task-modal-description-body'
+                  className='w-full h-3/4 pt-3 flex justify-between flex-col'>
+                  <>
+                    <p className='text-black font-medium tracking-wide text-lg'>
+                      Correct Hit : {correctHit}
+                    </p>
+                    <p className='text-black font-medium tracking-wide text-lg'>
+                      Incorrect Hit : {falseHit}
+                    </p>
+                    <p className='text-black font-medium tracking-wide text-2xl'>
+                      Points Earned : {calculateScore()}
+                    </p>
+                  </>
+                </div>
+              )}
+              {loadingReport && (
+                <div
+                  id='task-modal-description-body'
+                  className='w-full h-3/4 pt-3 flex justify-between flex-col bg-slate-300 animate-pulse'></div>
+              )}
+            </div>
+            <div
+              id='button-container'
+              className='w-full h-max flex justify-end flex-row'>
+              {minigameData?.minimumPassingPoint !== undefined && calculateScore() >= minigameData?.minimumPassingPoint && (
+                <button
+                  id='go-button'
+                  className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                  onClick={() =>
+                    navigate(`/game/story/${nextSceneId}`, { replace: true })
+                  }>
+                  LETS GO
+                </button>
+              )}
+              {minigameData?.minimumPassingPoint !== undefined && calculateScore() < minigameData?.minimumPassingPoint &&  (
+                <button
+                  id='go-button'
+                  className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                  onClick={() => navigate('/game/', { replace: true })}>
+                  Retry
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
+  );
 
   return (
     <div
@@ -181,14 +343,15 @@ const Drum = (props: IDrumProps) => {
           <button
             className={
               'beescholar-button p-4 pl-5 pr-5 font-semibold drop-shadow-xl shadow-lg shadow-black ' +
-              (disableStart ? 'cursor-wait ' : ' ') + (goRun? 'bg-[#76B743]':' ')
+              (disableStart ? 'cursor-wait ' : ' ') +
+              (goRun ? 'bg-[#76B743]' : ' ')
             }
             onClick={() => {
-              patternIndex + 1 > drumPattern.pattern.length
-                ? setOpenModal(true)
+              patternIndex + 1 > drumPattern.length
+                ? handleFinish()
                 : startPattern();
             }}>
-            {patternIndex + 1 > drumPattern.pattern.length
+            {patternIndex + 1 > drumPattern.length
               ? 'Finish'
               : disableStart
               ? goRun
@@ -267,90 +430,7 @@ const Drum = (props: IDrumProps) => {
           </button>
         </div>
       </div>
-      {openModal && (
-        <Modal
-          open={openModal}
-          onClose={() => navigate('/game/', { replace: true })}>
-          <div
-            id='modal-container'
-            className='absolute bg-[#81C7E9] h-screen w-screen justify-evenly flex'>
-            <div
-              id='modal-body'
-              className='modal-background bg-white h-max w-max object-contain'>
-              <h2
-                id='modal-title'
-                className='font-mono text-xl text-center'>
-                {score >= drumPattern.minimumScore
-                  ? 'Congratulations!'
-                  : 'Oh No...'}
-              </h2>
-              <h5
-                id='modal-text'
-                className='font-sans text-lg text-center'>
-                {score >= drumPattern.minimumScore
-                  ? 'You have completed the Minigame!'
-                  : 'Your score is not enough to complete this Minigame'}
-              </h5>
-              {score < drumPattern.minimumScore && (
-                <h5
-                  id='modal-text-minimum'
-                  className='font-sans text-lg text-center text-red-700'>
-                  Required Score: {props.patternSet.minimumScore} and above.
-                </h5>
-              )}
-              <div
-                id='modal-score'
-                className='bg-amber-400 border border-spacing-1'>
-                <h3
-                  id='score'
-                  className='font-sans text-xl text-center'>
-                  Total Score: {score}
-                </h3>
-              </div>
-              <div
-                id='ecp-score'
-                className='bg-yellow-400 border border-spacing-1'>
-                <h3
-                  id='ecp-points'
-                  className='font-sans text-xl text-center'>
-                  Earned Candidate Points: {Math.round(score / 100)}
-                </h3>
-              </div>
-              {score >= drumPattern.minimumScore ? (
-                <div
-                  id='button-container'
-                  className='flex justify-center bottom-0'>
-                  <button
-                    id='finish-button'
-                    className='bg-green-500 button-end'
-                    onClick={() => navigate('/game/', { replace: true })}>
-                    Finish Minigame
-                  </button>
-                  <button
-                    id='fail-button'
-                    className='bg-orange-500 button-end'
-                    onClick={() => setOnRetry(true)}>
-                    Try Again
-                  </button>
-                </div>
-              ) : (
-                <div
-                  id='button-container'
-                  className='flex justify-center bottom-0'>
-                  <button
-                    id='fail-button'
-                    className='bg-red-500 button-end'
-                    onClick={() => {
-                      setOnRetry(true);
-                    }}>
-                    Retry Minigame
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </Modal>
-      )}
+      {openReport && openReportModal()}
     </div>
   );
 };

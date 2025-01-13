@@ -51,7 +51,7 @@ function App() {
             <Route path='home' element={<Homepage />} />
             <Route path='story/:sceneStartId' element={<Story />} />
             <Route path='crossword' element={<CrosswordPage />} />
-            <Route path='followthedrum/:minigameId' element={<FollowTheDrum />} />
+            <Route path='followthedrum/:minigameId/:nextSceneId' element={<FollowTheDrum />} />
             <Route path='profiles' element={<CharacterProfiles />} />
             <Route path='map' element={<CampusMap/>} />
             <Route path='leaderboard' element={<Leaderboard/>}/>

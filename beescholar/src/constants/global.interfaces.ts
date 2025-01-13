@@ -71,10 +71,12 @@ export interface IMinigameHeader {
   minigameName: string,
   minigameType: string,
   quizType: string,
-  quizTopic: string,
-  hint: string,
+  quizTopic?: string,
+  hint?: string,
   instruction: string
   quizQuestions: IQuizQuestion[];
+  totalHit?: number,
+  minimumPassingPoint: number
 }
 
 export interface IMinigameData {
