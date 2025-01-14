@@ -51,9 +51,11 @@ const CrosswordPage = (props: ICrosswordProps) => {
 
   useEffect(() => {
     getData();
+    cref.current?.reset();
   }, []);
 
   useEffect(() => {
+    cref.current?.reset();
     setCrosswordData(handleProcessCrosswordData());
     setTimeout(() => {
       setIsLoading(false);
