@@ -23,30 +23,31 @@ const Navbar = (props: INavbarProps) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [playMusic, setPlayMusic] = useState<boolean>();
+  const [playMusic, setPlayMusic] = useState<boolean>(true);
   const [currentMusic, setCurrentMusic] = useState<string>(HandleMusicType());
 
   useEffect(() => {
     setEmail('');
     setPassword('');
     setIsOpenModal(false);
-    if(audioRef.current !== null) {
-      audioRef.current.volume = 0.2
+    if (audioRef.current !== null) {
+      audioRef.current.volume = 0.2;
     }
   }, []);
 
   useEffect(() => {
     if (audioRef.current !== null && HandleIsChangeMusic()) {
-      if(!playMusic){
-        audioRef.current  && audioRef.current.pause();
+      if (!playMusic) {
+        audioRef.current && audioRef.current.pause();
         audioRef.current.load();
         setCurrentMusic(HandleMusicType());
-      }else{
+        audioRef.current.pause();
+      } else {
         audioRef.current.pause();
         audioRef.current.load();
         setCurrentMusic(HandleMusicType());
-          audioRef.current  && audioRef.current.play();
-        }
+        audioRef.current && audioRef.current.play();
+      }
     }
   }, [window.location.href]);
 
@@ -62,10 +63,12 @@ const Navbar = (props: INavbarProps) => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    setEmail('');
-    setPassword('');
+    const _payload = {
+      email: email,
+      password: password,
+    };
     setTimeout(() => {
-      contextData.login(email);
+      contextData.login(_payload);
     }, 500);
   };
 
@@ -193,7 +196,7 @@ const Navbar = (props: INavbarProps) => {
           className='nav-log-button-background mr-5 '
           onClick={() => handleToggleMusic()}>
           <h3 className='nav-log-button-text'>
-          {playMusic ? 'MUSIC IS STOPPED' : 'MUSIC IS PLAYING'}
+            {playMusic ? 'MUSIC IS STOPPED' : 'MUSIC IS PLAYING'}
           </h3>
         </button>
         <audio

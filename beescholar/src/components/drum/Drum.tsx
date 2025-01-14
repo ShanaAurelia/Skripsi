@@ -9,6 +9,7 @@ import {
   IMinigameHeader,
 } from '../../constants/global.interfaces';
 import axios from 'axios';
+import { useAuth } from '../../config/Context';
 // drum parts: Snare, Hi-Tom, Medium Tom, Floor Tom, Bass Drum, Ride Cymbal, Crash Cymbal, Hi-Hats (pake 5 drum main tanpa cymbal)
 /*
     Color Keywords:
@@ -53,6 +54,8 @@ const Drum = () => {
   const [reportStatus, setReportStatus] = useState<string>();
   const [loadingReport, setLoadingReport] = useState<boolean>(false);
   const navigate = useNavigate();
+  const Auth = useAuth();
+  const user = useAuth().user;
 
   useEffect(() => {
     setLoading(true);
@@ -81,9 +84,15 @@ const Drum = () => {
     }, 300);
   }, [colorKey, disableStart === true]);
 
+  useEffect(() => {
+    setScore(calculateScore())
+  }, [correctHit, falseHit])
+
   const getData = async () => {
     await axios
-      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`)
+      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
       .then((res) => {
         setMinigameData(res.data.message);
         handleCreateRandomPatterns(res.data.message.totalHit);
@@ -147,7 +156,9 @@ const Drum = () => {
       patternAnswer: JSON.stringify({ hit: drumPattern }),
     };
     axios
-      .post(`http://127.0.0.1:8000/api/submit/drum_puzzle`, _payload)
+      .post(`http://127.0.0.1:8000/api/submit/drum_puzzle`, _payload, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
       .then((res) => {
         setOpenReport(true);
       })
@@ -155,6 +166,11 @@ const Drum = () => {
         console.log(error);
         setIsError(true);
       });
+  };
+
+  const handleEndPuzzle = () => {
+    Auth.updateUserData();
+    return navigate(`/game/story/${nextSceneId}`, { replace: true });
   };
 
   const validateDrumHit = (drumPart: string) => {
@@ -174,7 +190,7 @@ const Drum = () => {
       // );
       if (hitIndex >= patternIndex) {
         setPatternIndex(patternIndex + 1);
-        setScore(calculateScore);
+        setScore(calculateScore());
         setDisableStart(false);
         setGoRun(false);
         setCurrentColor('white');
@@ -185,10 +201,20 @@ const Drum = () => {
   };
 
   const calculateScore = () => {
-    const correctHitValue = correctHit * 5;
-    const falseHitValue = falseHit * 2;
-    // console.log('score: ', correctHitValue - falseHitValue);
-    return correctHitValue - falseHitValue;
+    let additionalVariable:number = 1;
+    if(minigameData !== undefined){
+      additionalVariable = minigameData.maximumPointReward / (minigameData.totalHit*3)
+    }
+      const correctHitValue =
+        correctHit * additionalVariable;
+      const falseHitValue =
+        falseHit * additionalVariable;
+      const _score = Math.round(correctHitValue - falseHitValue);
+      if(_score < 0){
+        return 0;
+      }else{
+        return _score
+      }
   };
 
   const noPatternModal = () => {
@@ -240,8 +266,8 @@ const Drum = () => {
             />
             <img
               src={
-                minigameData?.minimumPassingPoint &&
-                score >= minigameData?.minimumPassingPoint
+                (minigameData?.minimumPassingPoint !== undefined &&
+                score >= minigameData?.minimumPassingPoint)
                   ? '/characters/aset merch BINUS Support 3 - bahagia copy.png'
                   : '/characters/aset merch BINUS Support 4 - pusing copy.png'
               }
@@ -273,7 +299,7 @@ const Drum = () => {
                       Incorrect Hit : {falseHit}
                     </p>
                     <p className='text-black font-medium tracking-wide text-2xl'>
-                      Points Earned : {calculateScore()}
+                      Points Earned : {score}
                     </p>
                   </>
                 </div>
@@ -288,18 +314,16 @@ const Drum = () => {
               id='button-container'
               className='w-full h-max flex justify-end flex-row'>
               {minigameData?.minimumPassingPoint !== undefined &&
-                calculateScore() >= minigameData?.minimumPassingPoint && (
+                score >= minigameData?.minimumPassingPoint && (
                   <button
                     id='go-button'
                     className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
-                    onClick={() =>
-                      navigate(`/game/story/${nextSceneId}`, { replace: true })
-                    }>
+                    onClick={() => handleEndPuzzle()}>
                     LETS GO
                   </button>
                 )}
               {minigameData?.minimumPassingPoint !== undefined &&
-                calculateScore() < minigameData?.minimumPassingPoint && (
+                score < minigameData?.minimumPassingPoint && (
                   <button
                     id='go-button'
                     className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'

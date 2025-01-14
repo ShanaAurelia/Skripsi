@@ -58,6 +58,7 @@ const Scene = (props: IDialogueProps) => {
   window.onbeforeunload = function () {
     if (!savedScene) {
       updateSavedSceneId(dialogue?.sceneId || '');
+      handleProcessDialogue();
       return 'Progress might not be saved, are you sure to leave this page?';
     }
   };
@@ -72,15 +73,38 @@ const Scene = (props: IDialogueProps) => {
 
   const getDialogue = async (nextSceneId2: string) => {
     await axios
-      .get(`http://127.0.0.1:8000/api/scene/${nextSceneId2}`)
+      .get(`http://127.0.0.1:8000/api/scene/${nextSceneId2}`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
       .then((res) => {
-        if (res.data.message.minigameId !== undefined) {
-          handleProcessMinigame(res.data.message.minigameId);
-          setNextSceneId(res.data.message.nextSceneId);
-          handleProcessDialogue();
+        const _data = res.data.message;
+        if (_data.minigameId !== undefined) {
+          if (_data.sceneType === 'Minigame' && _data.isEndScene === true) {
+            axios
+              .post(
+                `http://127.0.0.1:8000/api/process_scene/${_data.sceneId}`,
+                '',
+                { headers: { Authorization: `Bearer ${user?.token}` } }
+              )
+              .then((res) => {
+                if (res.data.success === true) {
+                  handleProcessMinigame(_data.minigameId)
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                setIsError(true);
+              });
+            updateUserData();
+            updateSavedSceneId(_data.sceneId || '');
+          } else {
+            handleProcessMinigame(_data.minigameId);
+            setNextSceneId(_data.nextSceneId);
+            handleProcessDialogue();
+          }
         } else {
-          if (res.data.message.eventId !== undefined) {
-            getDialogue(res.data.message.nextSceneId);
+          if (_data.eventId !== undefined) {
+            getDialogue(_data.nextSceneId);
           }
           var _dialogue = res.data.message;
           _dialogue.dialogueText = _dialogue.dialogueText.replaceAll(
@@ -98,7 +122,11 @@ const Scene = (props: IDialogueProps) => {
 
   const handleProcessDialogue = () => {
     axios
-      .post(`http://127.0.0.1:8000/api/process_scene/${dialogue?.sceneId}`)
+      .post(
+        `http://127.0.0.1:8000/api/process_scene/${dialogue?.sceneId}`,
+        '',
+        { headers: { Authorization: `Bearer ${user?.token}` } }
+      )
       .then((res) => {
         if (res.data.success === true && dialogue?.isEndScene) {
           setEndScene(true);
@@ -114,7 +142,9 @@ const Scene = (props: IDialogueProps) => {
 
   const handleProcessMinigame = (minigameId: string) => {
     axios
-      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`)
+      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
       .then((res) => {
         setMinigameData(res.data.message);
         setOpenMinigameModal(true);
@@ -130,23 +160,24 @@ const Scene = (props: IDialogueProps) => {
 
     switch (type) {
       case 'Quiz':
-        if(minigameData?.quizType === "Stage"){
+        if (minigameData?.quizType === 'Stage') {
           return navigate(
             `/game/stage/${minigameData?.minigameId}/${nextSceneId}`,
             { replace: true }
           );
-        }else{
+        } else {
           return navigate(
             `/game/storycase/${minigameData?.minigameId}/${minigameData?.quizQuestions[0].characterName}/${nextSceneId}`,
             { replace: true }
           );
-
         }
       case 'Drum Puzzle':
         return navigate(
           `/game/followthedrum/${minigameData?.minigameId}/${nextSceneId}`,
           { replace: true }
         );
+      case 'Crossword':
+        return navigate(`/game/crossword/${minigameData?.minigameId}`);
     }
   };
 
@@ -188,9 +219,9 @@ const Scene = (props: IDialogueProps) => {
         <Speech
           key={`dlg-${dialogue?.sceneId}`}
           character={
-            dialogue?.characterName.replace('[MC]', user?.name || '') || 'ERR!'
+            dialogue?.characterName.replace('[MC]', user?.name || '') || ''
           }
-          line={dialogue?.dialogueText || 'Failed to fetch dialogue data'}
+          line={dialogue?.dialogueText || ''}
           speed={4}
           class={[]}
           isLoading={isLoading}
@@ -226,6 +257,7 @@ const Scene = (props: IDialogueProps) => {
       )}
       {openMinigameModal && (
         <Modal
+          key={Math.random()}
           open={openMinigameModal}
           className='w-full h-full flex justify-center items-center'
           disableScrollLock={true}>
@@ -239,7 +271,7 @@ const Scene = (props: IDialogueProps) => {
                 id='task-modal-title-box'
                 className='bg-[#F3931B] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
                 <h4 className='text-white font-semibold tracking-widest text-2xl'>
-                  {'Minigame: ' + minigameData?.quizType}
+                  MINIGAME
                 </h4>
               </div>
               <button
@@ -309,6 +341,7 @@ const Scene = (props: IDialogueProps) => {
       )}
       {endScene && (
         <Modal
+          key={Math.random()}
           open={endScene}
           className='w-full h-full flex justify-center items-center'
           disableScrollLock={true}>

@@ -19,6 +19,7 @@ import axios from 'axios';
 import { Modal } from '@mui/material';
 import { StageTutorialData } from '../../constants/Tutorial.constants';
 import { ITutorialData } from '../tutorial/Tutorial.interface';
+import { useAuth } from '../../config/Context';
 
 const Stageboard = () => {
   // for stage
@@ -50,7 +51,7 @@ const Stageboard = () => {
   const [totalCorrect, setTotalCorrect] = useState<number>();
   const [totalIncorrect, setTotalIncorrect] = useState<number>();
   const [totalPoint, setTotalPoint] = useState<number>();
-  const [status, setStatus] = useState<string>()
+  const [status, setStatus] = useState<string>();
   const { minigameId, nextSceneId } = useParams();
   // for tutorial
   const [activeTutorialData, setActiveTutorialData] = useState<ITutorialData>(
@@ -59,6 +60,7 @@ const Stageboard = () => {
   const tutorialData = StageTutorialData;
 
   const navigate = useNavigate();
+  const user = useAuth().user;
 
   useEffect(() => {
     setIsLoading(true);
@@ -118,7 +120,9 @@ const Stageboard = () => {
 
   const getData = async () => {
     await axios
-      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`)
+      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
       .then((res) => {
         setMinigameData(res.data.message);
         setStageData(res.data.message.quizQuestions);
@@ -236,11 +240,13 @@ const Stageboard = () => {
       quizStepAnswers: stepAnswers,
     };
     await axios
-      .post('http://127.0.0.1:8000/api/submit/quiz', _payload)
+      .post('http://127.0.0.1:8000/api/submit/quiz', _payload, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
       .then((res) => {
         setLoadingReport(true);
         setOpenReport(true);
-        const _data = res.data.data
+        const _data = res.data.data;
         setTotalCorrect(_data.totalCorrect);
         setTotalIncorrect(_data.totalIncorrect);
         setStatus(_data.status);
@@ -250,7 +256,7 @@ const Stageboard = () => {
         console.log(error);
         setIsError(true);
       });
-    setLoadingReport(false)
+    setLoadingReport(false);
   };
 
   const LoadingSvg = () => (
@@ -578,7 +584,9 @@ const Stageboard = () => {
             id='beescholar-notes'
             className='border-dashed border-2 border-black w-3/4 h-max flex justify-center items-center self-end pl-2 pr-2 pt-1 pb-1'>
             <p className='text-xl font-medium tracking-widest'>
-              {status === 'Completed'?"You have done well. Keep up the good work.": "Practice more to get the best results!"}
+              {status === 'Completed'
+                ? 'You have done well. Keep up the good work.'
+                : 'Practice more to get the best results!'}
             </p>
           </div>
           <div
@@ -590,22 +598,30 @@ const Stageboard = () => {
             <div
               id='score-point-container'
               className='border-black border-4 pt-2 pb-2 pl-3 pr-3 flex justify-center items-center'>
-              <h5 className='text-2xl font-black tracking-wide'>{totalPoint}</h5>
+              <h5 className='text-2xl font-black tracking-wide'>
+                {totalPoint}
+              </h5>
               <p className='text-md font-semibold mt-2'>pts</p>
             </div>
           </div>
         </div>
       </div>
-      {status === 'Completed' && <button
-        className='beescholar-button pl-2 pr-2 pt-1 pb-1  rounded-lg b text-lg font-semibold tracking-wide drop-shadow-lg shadow-sm shadow-black'
-        onClick={() => navigate(`/game/story/${nextSceneId}`, { replace: true })}>
-        Continue
-      </button>}
-      {status === 'Failed' && <button
-        className='beescholar-button pl-2 pr-2 pt-1 pb-1  rounded-lg b text-lg font-semibold tracking-wide drop-shadow-lg shadow-sm shadow-black'
-        onClick={() => navigate(`/game/`, { replace: true })}>
-        Back to Homepage
-      </button>}
+      {status === 'Completed' && (
+        <button
+          className='beescholar-button pl-2 pr-2 pt-1 pb-1  rounded-lg b text-lg font-semibold tracking-wide drop-shadow-lg shadow-sm shadow-black'
+          onClick={() =>
+            navigate(`/game/story/${nextSceneId}`, { replace: true })
+          }>
+          Continue
+        </button>
+      )}
+      {status === 'Failed' && (
+        <button
+          className='beescholar-button pl-2 pr-2 pt-1 pb-1  rounded-lg b text-lg font-semibold tracking-wide drop-shadow-lg shadow-sm shadow-black'
+          onClick={() => navigate(`/game/`, { replace: true })}>
+          Back to Homepage
+        </button>
+      )}
     </>
   );
 

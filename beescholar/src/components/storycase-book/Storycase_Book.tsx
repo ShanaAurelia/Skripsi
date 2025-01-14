@@ -56,6 +56,7 @@ const StorycaseBook = () => {
   const [loadingReport, setLoadingReport] = useState<boolean>(false);
 
   const Auth = useAuth();
+  const user = Auth.user;
   const navigate = useNavigate();
   const { minigameId, characterName, nextSceneId } = useParams();
 
@@ -113,7 +114,9 @@ const StorycaseBook = () => {
 
   const getData = async () => {
     await axios
-      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`)
+      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
       .then((res) => {
         setMinigameData(res.data.message);
         setQuizData(res.data.message);
@@ -129,6 +132,11 @@ const StorycaseBook = () => {
       setCurrentQuestion(quizQuestions[dialogueCount].questionTitle);
       setCurrentOption(quizQuestions[dialogueCount].choices);
     }
+  };
+
+  const handleEndCase = () => {
+    Auth.updateUserData();
+    return navigate(`/game/story/${nextSceneId}`, { replace: true });
   };
 
   const handleNextDialogue = (opt: IQuizChoice) => {
@@ -159,7 +167,9 @@ const StorycaseBook = () => {
         };
         setLoadingReport(true);
         axios
-          .post('http://127.0.0.1:8000/api/submit/quiz', _payload)
+          .post('http://127.0.0.1:8000/api/submit/quiz', _payload, {
+            headers: { Authorization: `Bearer ${user?.token}` },
+          })
           .then((res) => {
             // console.log(res);
             const data = res.data.data;
@@ -677,7 +687,11 @@ const StorycaseBook = () => {
               className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
             />
             <img
-              src={reportStatus === "Completed" ? '/characters/aset merch BINUS Support 3 - bahagia copy.png' : "/characters/aset merch BINUS Support 4 - pusing copy.png"}
+              src={
+                reportStatus === 'Completed'
+                  ? '/characters/aset merch BINUS Support 3 - bahagia copy.png'
+                  : '/characters/aset merch BINUS Support 4 - pusing copy.png'
+              }
               className='absolute w-full'
             />
           </div>
@@ -708,31 +722,39 @@ const StorycaseBook = () => {
                     <p className='text-black font-medium tracking-wide text-2xl'>
                       Points Earned : {totalPoint}
                     </p>
+                    {reportStatus === 'Failed' && (
+                      <p className='text-black font-medium tracking-wide text-2xl'>
+                      You can retry the minigame from 'Continue Story'
+                    </p>
+                    )}
                   </>
                 </div>
               )}
               {loadingReport && (
                 <div
-                id='task-modal-description-body'
-                className='w-full h-3/4 pt-3 flex justify-between flex-col bg-slate-300 animate-pulse'>
-              </div>
+                  id='task-modal-description-body'
+                  className='w-full h-3/4 pt-3 flex justify-between flex-col bg-slate-300 animate-pulse'></div>
               )}
             </div>
             <div
               id='button-container'
               className='w-full h-max flex justify-end flex-row'>
-             {reportStatus === "Completed" && (<button
-                id='go-button'
-                className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
-                onClick={() => navigate(`/game/story/${nextSceneId}`, { replace: true })}>
-                LETS GO
-              </button>)}
-              {reportStatus === "Failed" && (<button
-                id='go-button'
-                className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
-                onClick={() => navigate('/game/', { replace: true })}>
-                Retry
-              </button>)}
+              {reportStatus === 'Completed' && (
+                <button
+                  id='go-button'
+                  className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                  onClick={() => handleEndCase()}>
+                  LETS GO
+                </button>
+              )}
+              {reportStatus === 'Failed' && (
+                <button
+                  id='go-button'
+                  className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                  onClick={() => navigate('/game/', { replace: true })}>
+                  Back to Home 
+                </button>
+              )}
             </div>
           </div>
         </div>

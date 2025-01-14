@@ -12,6 +12,7 @@ export interface IStudent {
   email: string;
   gender: string;
   profilePicture: string;
+  token: string
 }
 
 export interface ICharacter {
@@ -75,8 +76,9 @@ export interface IMinigameHeader {
   hint?: string,
   instruction: string
   quizQuestions: IQuizQuestion[];
-  totalHit?: number,
-  minimumPassingPoint: number
+  totalHit: number,
+  minimumPassingPoint: number,
+  maximumPointReward: number,
 }
 
 export interface IMinigameData {

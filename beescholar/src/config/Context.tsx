@@ -11,7 +11,7 @@ interface IUserContext {
   isAuthenticated: boolean;
   isStarted: boolean;
   savedSceneId: string;
-  login(uid: string): void;
+  login(payload: { email: string; password: string }): void;
   logout(): void;
   start(): void;
   checkExistingUser(payload: any): void;
@@ -33,13 +33,13 @@ const defaultValue: IUserContext = {
   user: undefined,
   isAuthenticated: false,
   isStarted: false,
-  savedSceneId:"",
+  savedSceneId: '',
   login: () => {},
   logout: () => {},
   start: () => {},
   checkExistingUser: (payload: any) => {},
   updateUserData: () => {},
-  updateSavedSceneId: (sceneId: string) => {}
+  updateSavedSceneId: (sceneId: string) => {},
 };
 
 function reducer(state: IUserContext, action: IUserContextPayload) {
@@ -61,10 +61,9 @@ function reducer(state: IUserContext, action: IUserContextPayload) {
     case 'check':
       return { ...state, user: action.payload, isAuthenticated: true };
     case 'update':
-      return {...state, user: action.payload, isAuthenticated: true};
+      return { ...state, user: action.payload, isAuthenticated: true };
     case 'saveScene':
-      return {...state, user: action.payload, isAuthenticated: true};
-
+      return { ...state, user: action.payload, isAuthenticated: true };
     default:
       throw new Error('Unknown action in UserContext');
   }
@@ -73,37 +72,59 @@ function reducer(state: IUserContext, action: IUserContextPayload) {
 const AuthContext = createContext<IUserContext>(defaultValue);
 
 function AuthProvider({ children }: IAuthProviderProps) {
-  const [{ user, isAuthenticated, isStarted, savedSceneId }, dispatch] = useReducer(
-    reducer,
-    defaultValue
-  );
+  const [{ user, isAuthenticated, isStarted, savedSceneId }, dispatch] =
+    useReducer(reducer, defaultValue);
   const navigate = useNavigate();
 
-  async function login(uid: string) {
+  async function login(payload: { email: string; password: string }) {
+    let userId;
+    let bearerToken: string = '';
     await axios
-      .get(
-        'http://127.0.0.1:8000/api/user/9df5790b-1338-4a04-9187-07589ecf5e41'
-      )
+      .post('http://127.0.0.1:8000/api/login', payload)
       .then(function (response) {
         // console.log(response.data);
-          dispatch({ type: 'login', payload: response.data.data });
-          window.localStorage.setItem(
-            'user-beescholar',
-            JSON.stringify(response.data.data)
-          );
+        userId = response.data.user.id;
+        bearerToken = response.data.token;
       })
-      .catch(function (error){
-          alert('Your credentials did not match our database!');
+      .catch(function (error) {
+        alert('Your credentials did not match our database!');
+      });
+    await axios
+      .get(`http://127.0.0.1:8000/api/user`, {
+        headers: { Authorization: `Bearer ${bearerToken}` },
+      })
+      .then((res) => {
+        dispatch({
+          type: 'login',
+          payload: { ...res.data.data, token: bearerToken },
+        });
+        window.localStorage.setItem(
+          'user-beescholar',
+          JSON.stringify({ ...res.data.data, token: bearerToken })
+        );
+      })
+      .catch((error) => {
+        alert(error);
       });
   }
 
-  function logout() {
+  async function logout() {
+    console.log(user?.token);
+    await axios
+      .post('http://127.0.0.1:8000/api/logout', '', {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
+      .then((res) => {
+        alert(res.data.message);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     window.localStorage.removeItem('user-beescholar');
-    if(window.localStorage.getItem('story-beescholar') !== null){
-      window.localStorage.removeItem('story-beescholar')
+    if (window.localStorage.getItem('story-beescholar') !== null) {
+      window.localStorage.removeItem('story-beescholar');
     }
     dispatch({ type: 'logout' });
-    window.location.reload();
   }
 
   function start() {
@@ -111,25 +132,33 @@ function AuthProvider({ children }: IAuthProviderProps) {
     navigate('/game/');
   }
 
-  async function updateUserData(){
-    await axios.get(`http://127.0.0.1:8000/api/user/${user?.id}`).then((res) => {
-      dispatch({ type: 'update', payload: res.data.data})
-      window.localStorage.removeItem('user-beescholar');
-      window.localStorage.setItem(
-        'user-beescholar',
-        JSON.stringify(res.data.data)
-      );
-    }).catch((error) => {
-      alert('ERROR UPDATING DATA!');
-    })
+  async function updateUserData() {
+    await axios
+      .get(`http://127.0.0.1:8000/api/user/`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
+      .then((res) => {
+        dispatch({ type: 'update', payload: { ...res.data.data, token: user?.token } });
+        window.localStorage.removeItem('user-beescholar');
+        window.localStorage.setItem(
+          'user-beescholar',
+          JSON.stringify({ ...res.data.data, token: user?.token })
+        );
+      })
+      .catch((error) => {
+        alert('ERROR UPDATING DATA!');
+      });
   }
 
-  function updateSavedSceneId(sceneId: string){
-    dispatch({ type: 'saveScene', sceneId})
-    if(sceneId !== "" && window.localStorage.getItem('story-beescholar') === undefined){
+  function updateSavedSceneId(sceneId: string) {
+    dispatch({ type: 'saveScene', sceneId });
+    if (
+      sceneId !== '' &&
+      window.localStorage.getItem('story-beescholar') === undefined
+    ) {
       window.localStorage.setItem('story-beescholar', JSON.stringify(sceneId));
-    }else if( sceneId !== "" ){
-      window.localStorage.removeItem('story-beescholar')
+    } else if (sceneId !== '') {
+      window.localStorage.removeItem('story-beescholar');
       window.localStorage.setItem('story-beescholar', JSON.stringify(sceneId));
     }
   }
@@ -139,6 +168,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
       dispatch({ type: 'check', payload: payload });
     }
   }
+
   return (
     <AuthContext.Provider
       value={{
@@ -151,13 +181,12 @@ function AuthProvider({ children }: IAuthProviderProps) {
         start,
         checkExistingUser,
         updateUserData,
-        updateSavedSceneId
+        updateSavedSceneId,
       }}>
       {children}
     </AuthContext.Provider>
   );
 }
-
 
 function useAuth() {
   const context = useContext(AuthContext);

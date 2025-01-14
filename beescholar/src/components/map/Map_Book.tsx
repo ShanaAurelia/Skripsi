@@ -41,6 +41,9 @@ const MapBook = () => {
   const [isLoadingActivity, setIsLoadingActivity] = useState<boolean>(false);
   const [currentActivityData, setCurrentActivityData] =
     useState<IActivityData>();
+
+  const [currentActivityHeader, setCurrentActivityHeader] =
+    useState<IActivityHeader>();
   const [isFailed, setIsFailed] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [popoverLocation, setPopoverLocation] = useState<string>();
@@ -62,7 +65,9 @@ const MapBook = () => {
     // fetch campus rooms
     if (unlockedCampus.length > 0) {
       axios
-        .get(`http://127.0.0.1:8000/api/room/${unlockedCampus[0].id}`)
+        .get(`http://127.0.0.1:8000/api/room/${unlockedCampus[0].id}`, {
+          headers: { Authorization: `Bearer ${Auth.user?.token}` },
+        })
         .then((res) => {
           var tempRoomData: ICampusRoom[] = [];
           res.data.data.map((data: any) => {
@@ -105,7 +110,9 @@ const MapBook = () => {
     // fetch unlock campus
     const user = Auth.user;
     await axios
-      .get(`http://127.0.0.1:8000/api/campus/${user?.id}`)
+      .get(`http://127.0.0.1:8000/api/campus`, {
+        headers: { Authorization: `Bearer ${Auth.user?.token}` },
+      })
       .then((res) => {
         setUnlockedCampus(res.data.data);
         setIsLoading(false);
@@ -123,7 +130,9 @@ const MapBook = () => {
     if (_room) {
       var tempInteractibles: IActivityHeader[] = [];
       await axios
-        .get(`http://127.0.0.1:8000/api/activity/${_room.id}`)
+        .get(`http://127.0.0.1:8000/api/activity/${_room.id}`, {
+          headers: { Authorization: `Bearer ${Auth.user?.token}` },
+        })
         .then((res) => {
           tempInteractibles.push(...res.data.data);
         })
@@ -131,6 +140,7 @@ const MapBook = () => {
           setIsFailed(true);
           console.log(error);
         });
+      console.log(tempInteractibles);
       setActivity(tempInteractibles);
     }
     setTimeout(() => {
@@ -159,7 +169,10 @@ const MapBook = () => {
     setActiveLocation(location);
   };
 
-  const handleInteractibleColor = (type: string) => {
+  const handleInteractibleColor = (type: string, isCompleted: boolean) => {
+    if (isCompleted === true) {
+      return 'bg-[#88d34e]';
+    }
     switch (type) {
       case 'Story Quest':
         return 'bg-[#67BBE7]';
@@ -177,7 +190,10 @@ const MapBook = () => {
     }
   };
 
-  const handleInteractibleIcon = (type: string) => {
+  const handleInteractibleIcon = (type: string, isCompleted: boolean) => {
+    if (isCompleted === true) {
+      return '✔';
+    }
     switch (type) {
       case 'Interaction':
         return '!';
@@ -186,24 +202,10 @@ const MapBook = () => {
     }
   };
 
-  const handleSelectTrivialTask = () => {
-    if (popoverLocation)
-      setTaskModalData(
-        taskList?.tasks.find(
-          (task) => task.location === translateKMGMapId(popoverLocation)
-        )
-      );
-    setTimeout(() => {
-      setOpenTaskModal(true);
-    }, 500);
-  };
-
   const handleNavigateTrivialTask = () => {
-    if (taskModalData?.type === 'Follow the Drum') {
-      return navigate('/game/followthedrum', { replace: true });
-    } else {
-      return navigate('/game/storycase', { replace: true });
-    }
+    return navigate(`/game/story/${currentActivityHeader?.startSceneId}`, {
+      replace: true,
+    });
   };
 
   const handleNavigateStory = () => {
@@ -213,22 +215,21 @@ const MapBook = () => {
   };
 
   const handleInteractibleAction = () => {
-    if (popoverLocation !== undefined) {
-      const trigger = activity[activity.length-1];
-      // console.log(trigger);
-      const _selectedActivity = trigger.activities.find((a) => a.isCompleted === false && a.isRepeatable === false)
+    const _incompletedActivity = activity.filter(
+      (act) => act.isCompleted !== undefined && act.isCompleted === false
+    );
+    if (popoverLocation !== undefined && _incompletedActivity.length === 0) {
+      const trigger = activity.filter((act) => act.activities !== undefined);
+      const _selectedQuest = trigger.findLast((a) =>
+        a.activities.find((act) => act.isCompleted === false)
+      );
+      const _selectedActivity = _selectedQuest?.activities.findLast(
+        (act) => act.isCompleted === false
+      );
       if (trigger !== undefined) {
         switch (_selectedActivity?.type) {
-          case 'Trivial Task':
-            handleSelectTrivialTask();
-            return;
-          case 'Interaction':
-            setOpenInteraction(true);
-            return;
           case 'Story Quest':
-            setCurrentActivityData(
-              _selectedActivity
-            );
+            setCurrentActivityData(_selectedActivity);
             setOpenMainQuestModal(true);
             return;
           default:
@@ -237,6 +238,22 @@ const MapBook = () => {
         }
       } else {
         setNoInteractibleModalOpen(true);
+      }
+    } else {
+      const _selectedActivity = _incompletedActivity.find(
+        (a) => a.isRepeatable === false
+      );
+      switch (_selectedActivity?.type) {
+        case 'Trivial Task':
+          setCurrentActivityHeader(_selectedActivity);
+          setOpenTaskModal(true);
+          return;
+        case 'Interaction':
+          setOpenInteraction(true);
+          return;
+        default:
+          setNoInteractibleModalOpen(true);
+          return;
       }
     }
   };
@@ -250,7 +267,7 @@ const MapBook = () => {
       case 'teacher-office':
         return 'Teacher Office';
       case 'classroom':
-        return 'Class Room';
+        return 'Classroom';
       case 'band-room':
         return 'Band Room';
       case 'hallway-horizontal':
@@ -286,32 +303,61 @@ const MapBook = () => {
               {activity.length > 0 &&
                 activity.map((i) => (
                   <>
-                    {i.activities.map((activity) => (
+                    {i.activities !== undefined &&
+                      i.activities.map((activity) => (
+                        <div
+                          id={`${activity.id}-container`}
+                          className={`${handleInteractibleColor(
+                            activity.type,
+                            activity.isCompleted
+                          )} w-11/12 rounded-lg h-max flex flex-row relative mb-3 justify-evenly p-1`}>
+                          <div
+                            id={`${activity.id}-icon-container`}
+                            className='flex justify-center items-center'>
+                            <div
+                              id={`${activity.id}-icon`}
+                              className={`bg-white w-5 h-5 rounded-full flex justify-center items-center ${handleInteractibleTextColor(
+                                activity.type
+                              )}`}>
+                              {handleInteractibleIcon(activity.type, activity.isCompleted)}
+                            </div>
+                          </div>
+                          <div
+                            id={`${activity.id}-description-container`}
+                            className='w-10/12 h-full'>
+                            <h5 className='text-wrap text-lg font-medium text-white'>
+                              {activity.description}
+                            </h5>
+                          </div>
+                        </div>
+                      ))}
+                    {i.type !== undefined && (
                       <div
-                        id={`${activity.id}-container`}
+                        id={`${i.id}-container`}
                         className={`${handleInteractibleColor(
-                          activity.type
+                          i.type,
+                          i.isCompleted || false
                         )} w-11/12 rounded-lg h-max flex flex-row relative mb-3 justify-evenly p-1`}>
                         <div
-                          id={`${activity.id}-icon-container`}
+                          id={`${i.id}-icon-container`}
                           className='flex justify-center items-center'>
                           <div
-                            id={`${activity.id}-icon`}
+                            id={`${i.id}-icon`}
                             className={`bg-white w-5 h-5 rounded-full flex justify-center items-center ${handleInteractibleTextColor(
-                              activity.type
+                              i.type
                             )}`}>
-                            {handleInteractibleIcon(activity.type)}
+                            {handleInteractibleIcon(i.type, i.isCompleted||false)}
                           </div>
                         </div>
                         <div
-                          id={`${activity.id}-description-container`}
+                          id={`${i.id}-description-container`}
                           className='w-10/12 h-full'>
                           <h5 className='text-wrap text-lg font-medium text-white'>
-                            {activity.description}
+                            {i.description}
                           </h5>
                         </div>
                       </div>
-                    ))}
+                    )}
                   </>
                 ))}
               {activity.length === 0 && (
@@ -896,10 +942,10 @@ const MapBook = () => {
                 id='task-modal-description-body'
                 className='w-full h-3/4 pt-3 flex justify-between flex-col'>
                 <p className='text-black font-medium tracking-wide text-lg'>
-                  {taskModalData?.description}
+                  {currentActivityHeader?.description}
                 </p>
                 <p className='text-black font-medium tracking-wide text-lg'>
-                  Minigame: {taskModalData?.type}
+                  Minigame Name: {currentActivityHeader?.name}
                 </p>
               </div>
             </div>
@@ -977,7 +1023,8 @@ const MapBook = () => {
                 id='task-modal-description-body'
                 className='w-full h-3/4 pt-3 flex justify-between flex-col'>
                 <p className='text-black font-medium tracking-wide text-lg'>
-                  There is nothing to do here... you have completed the current available activities / quests here.
+                  There is nothing to do here... you have completed the current
+                  available activities / quests here.
                 </p>
                 <p className='text-black font-medium tracking-wide text-lg'>
                   Hint: Search other rooms to find new activities and quests.

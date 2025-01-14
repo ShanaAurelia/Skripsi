@@ -52,7 +52,9 @@ const ProfilesBook = () => {
 
   const getData = () => {
     axios
-      .get(`http://127.0.0.1:8000/api/campus/${user?.id}`)
+      .get(`http://127.0.0.1:8000/api/campus`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
       .then((res) => {
         setCampusUnlocked(res.data.data);
       })
@@ -69,7 +71,9 @@ const ProfilesBook = () => {
       );
       if (_campus) {
         axios
-          .get(`http://127.0.0.1:8000/api/characters/${_campus.campusName}`)
+          .get(`http://127.0.0.1:8000/api/characters/${_campus.campusName}`, {
+            headers: { Authorization: `Bearer ${user?.token}` },
+          })
           .then((res) => {
             setStudents(res.data.data);
           })

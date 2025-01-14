@@ -14,6 +14,7 @@ export interface ITrivialTask{
     type: string;
     description: string;
     location: string;
+    name: string
 }
 
 export interface INPCInteraction{
@@ -38,7 +39,12 @@ export interface IActivityHeader{
     description: string,
     questTitle: string,
     roomName?: string,
-    activities: IActivityData[]
+    activities: IActivityData[],
+    type?: string,
+    isCompleted?: boolean
+    isRepeatable?: boolean
+    name: string,
+    startSceneId: string
 }
 
 export interface IActivityData{
