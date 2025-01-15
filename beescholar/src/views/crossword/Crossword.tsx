@@ -51,14 +51,13 @@ const CrosswordPage = (props: ICrosswordProps) => {
 
   useEffect(() => {
     getData();
-    cref.current?.reset();
   }, []);
 
   useEffect(() => {
-    cref.current?.reset();
     setCrosswordData(handleProcessCrosswordData());
     setTimeout(() => {
       setIsLoading(false);
+      cref.current?.reset();
     }, 1500);
   }, [rawCrossword]);
 
@@ -133,7 +132,8 @@ const CrosswordPage = (props: ICrosswordProps) => {
   };
 
   const handleEndCrossword = () => {
-    return navigate(`/game/`, { replace: true });
+    cref.current?.reset();
+    return navigate(`/game/map`, { replace: true });
   };
 
   const handleRetryCrossword = () => {
@@ -171,16 +171,17 @@ const CrosswordPage = (props: ICrosswordProps) => {
               <div
                 id='submit-button'
                 className=' p-12 flex flex-row justify-evenly'>
-                <button
+                {/* <button
                   className='beescholar-button p-2 pl-3 pr-3 font-semibold text-lg rounded-2xl'
                   onClick={() => {
                     cref.current?.reset();
-                    navigate('/game/');
+                    navigate('/game/map');
                   }}>
                   Back
-                </button>
+                </button> */}
                 <button
                   className='beescholar-button p-2 pl-3 pr-3 font-semibold text-lg rounded-2xl '
+                  disabled={!isCrosswordComplete}
                   onClick={() => {
                     setOpenModal(true);
                   }}>

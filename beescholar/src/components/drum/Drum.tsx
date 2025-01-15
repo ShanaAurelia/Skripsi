@@ -328,7 +328,7 @@ const Drum = () => {
                     id='go-button'
                     className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
                     onClick={() => navigate('/game/', { replace: true })}>
-                    Retry
+                    Back to Homepage
                   </button>
                 )}
             </div>

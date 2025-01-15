@@ -353,7 +353,7 @@ const StorycaseBook = () => {
             id='case-container'
             className='w-1/2 h-1/2 flex justify-center items-center m-5 border-8 border-[#81C7E9] rounded-lg'>
             <h3 className='text-black font-bold text-4xl tracking-widest'>
-              {randomAlphaNumeric(2)}
+              01
             </h3>
           </div>
           <div></div>
@@ -385,7 +385,7 @@ const StorycaseBook = () => {
               href={minigameData?.hint}
               target='_blank'
               className='font-medium underline-offset-1 underline'>
-              {GetArticleLink(minigameData?.quizTopic || '')}
+              this link
             </a>{' '}
             for help in this case.
           </p>

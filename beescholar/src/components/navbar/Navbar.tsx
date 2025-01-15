@@ -18,38 +18,39 @@ import {
   HandleMusicType,
 } from '../../config/Utilities';
 import { Modal } from '@mui/material';
+import useSound from 'use-sound';
 
 const Navbar = (props: INavbarProps) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [playMusic, setPlayMusic] = useState<boolean>(true);
+  const [playMusic, setPlayMusic] = useState<boolean>(false);
   const [currentMusic, setCurrentMusic] = useState<string>(HandleMusicType());
+  const [play, {stop}] = useSound(HandleMusicType(), {volume: 0.1})
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     setEmail('');
     setPassword('');
     setIsOpenModal(false);
-    if (audioRef.current !== null) {
-      audioRef.current.volume = 0.2;
-    }
+    play();
   }, []);
 
-  useEffect(() => {
-    if (audioRef.current !== null && HandleIsChangeMusic()) {
-      if (!playMusic) {
-        audioRef.current && audioRef.current.pause();
-        audioRef.current.load();
-        setCurrentMusic(HandleMusicType());
-        audioRef.current.pause();
-      } else {
-        audioRef.current.pause();
-        audioRef.current.load();
-        setCurrentMusic(HandleMusicType());
-        audioRef.current && audioRef.current.play();
-      }
-    }
-  }, [window.location.href]);
+  // useEffect(() => {
+  //   if (audioRef.current !== null && HandleIsChangeMusic()) {
+  //     if (!playMusic) {
+  //       audioRef.current && audioRef.current.pause();
+  //       audioRef.current.load();
+  //       setCurrentMusic(HandleMusicType());
+  //       audioRef.current.pause();
+  //     } else {
+  //       audioRef.current.pause();
+  //       audioRef.current.load();
+  //       setCurrentMusic(HandleMusicType());
+  //       audioRef.current && audioRef.current.play();
+  //     }
+  //   }
+  // }, [window.location.href]);
 
   const auth = useAuth();
   const contextData = useAuth();
@@ -59,7 +60,6 @@ const Navbar = (props: INavbarProps) => {
     contextData.checkExistingUser(_savedUser);
   }
   const student = _savedUser ? _savedUser : contextData.user;
-  const audioRef = useRef<HTMLAudioElement>(null);
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -81,13 +81,12 @@ const Navbar = (props: INavbarProps) => {
   };
 
   const handleToggleMusic = () => {
-    if (audioRef.current !== null) {
-      if (playMusic) {
-        audioRef.current.play();
-      } else {
-        audioRef.current.pause();
-      }
-      setPlayMusic(!playMusic);
+    if(playMusic === true){
+      stop()
+      setPlayMusic(!playMusic)
+    }else{
+      play()
+      setPlayMusic(!playMusic)
     }
   };
 
@@ -165,19 +164,9 @@ const Navbar = (props: INavbarProps) => {
             className='nav-log-button-background mr-5'
             onClick={() => handleToggleMusic()}>
             <h3 className='nav-log-button-text'>
-              {playMusic ? 'MUSIC IS STOPPED' : 'MUSIC IS PLAYING'}
+              {playMusic ? 'MUSIC IS PLAYING' : 'MUSIC IS STOPPED'}
             </h3>
           </button>
-          <audio
-            ref={audioRef}
-            autoPlay
-            loop>
-            <source
-              src={currentMusic}
-              type='audio/ogg'
-            />
-          </audio>
-
           <button
             id='logout-button-background'
             className='nav-log-button-background'
@@ -196,18 +185,9 @@ const Navbar = (props: INavbarProps) => {
           className='nav-log-button-background mr-5 '
           onClick={() => handleToggleMusic()}>
           <h3 className='nav-log-button-text'>
-            {playMusic ? 'MUSIC IS STOPPED' : 'MUSIC IS PLAYING'}
+            {playMusic ? 'MUSIC IS PLAYING' : 'MUSIC IS STOPPED'}
           </h3>
         </button>
-        <audio
-          ref={audioRef}
-          autoPlay={playMusic}
-          loop>
-          <source
-            src={currentMusic}
-            type='audio/ogg'
-          />
-        </audio>
         <button
           className='nav-log-button-background'
           onClick={() => setIsOpenModal(true)}>
