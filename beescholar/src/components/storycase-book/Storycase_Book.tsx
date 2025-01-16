@@ -115,7 +115,7 @@ const StorycaseBook = () => {
   const getData = async () => {
     await axios
       .get(`http://167.71.207.1/api/minigame/${minigameId}`, {
-        headers: { Authorization: `Bearer ${user?.token}` },
+        headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
         setMinigameData(res.data.message);
@@ -168,7 +168,7 @@ const StorycaseBook = () => {
         setLoadingReport(true);
         axios
           .post('http://167.71.207.1/api/submit/quiz', _payload, {
-            headers: { Authorization: `Bearer ${user?.token}` },
+            headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
           })
           .then((res) => {
             // console.log(res);
