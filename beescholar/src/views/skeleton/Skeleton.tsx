@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ISkeletonProps} from './Skeleton.interface';
+import { ISkeletonProps } from './Skeleton.interface';
 import { dummyStudent } from './Skeleton.constants';
 import Navbar from '../../components/navbar/Navbar';
 import { IStudent } from '../../constants/global.interfaces';
@@ -18,7 +18,16 @@ const Skeleton = (props: ISkeletonProps) => {
           isShown={true}
         />
       </div>
-      {screenWidth > screenHeight ? <Outlet /> : (<div> Sorry for your inconvenience. Please use Landscape orientation for best experience. If you're already on Landscape orientation and still see this page, please refresh the page. </div>)}
+      {screenWidth > screenHeight ? (
+        <Outlet />
+      ) : (
+        <div>
+          {' '}
+          Sorry for your inconvenience. Please use Landscape orientation for
+          best experience. If you're already on Landscape orientation and still
+          see this page, please refresh the page.{' '}
+        </div>
+      )}
       {/* <Outlet />  added orientation validation*/}
     </div>
   );

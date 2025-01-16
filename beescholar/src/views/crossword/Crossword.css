@@ -4,11 +4,11 @@
 
 @layer components{
     .crossword-background{
-        @apply h-screen w-full items-center flex justify-center bg-[#014769];
+        @apply h-screen w-full items-center flex justify-center bg-[#81C7E9];
     }
 
     .clues-class{
-        @apply bg-white p-5 rounded shadow-lg shadow-black mb-10 ml-5 text-black font-semibold text-xl;
+        @apply bg-white p-5 rounded drop-shadow-lg shadow-sm shadow-black mb-10 ml-5 text-black font-semibold text-xl;
     }
     
     .modal-background{

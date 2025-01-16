@@ -3,6 +3,9 @@ import './Map_Book.css';
 import '../../constants/global.css';
 import { Modal, Popover } from '@mui/material';
 import {
+  IActivityData,
+  IActivityHeader,
+  ICampusRoom,
   IInteractibles,
   INPCInteraction,
   ITask,
@@ -15,8 +18,12 @@ import {
   DummyTasksList,
 } from '../../constants/dummy.constants';
 import { useNavigate } from 'react-router-dom';
+import '../../constants/global.css';
 import Speech from '../speech/Speech';
 import Character from '../dialogue/Character';
+import axios from 'axios';
+import { useAuth } from '../../config/Context';
+import { IUnlockCampus } from '../../constants/global.interfaces';
 
 const MapBook = () => {
   const [activeLocation, setActiveLocation] = useState<string>('KMG');
@@ -28,33 +35,146 @@ const MapBook = () => {
   const [openInteraction, setOpenInteraction] = useState<boolean>(false);
   const [noInteractibleModalOpen, setNoInteractibleModalOpen] =
     useState<boolean>(false);
+  const [unlockedCampus, setUnlockedCampus] = useState<IUnlockCampus[]>([]);
+  const [room, setRoom] = useState<ICampusRoom[]>([]);
+  const [activity, setActivity] = useState<IActivityHeader[]>([]);
+  const [isLoadingActivity, setIsLoadingActivity] = useState<boolean>(false);
+  const [currentActivityData, setCurrentActivityData] =
+    useState<IActivityData>();
+
+  const [currentActivityHeader, setCurrentActivityHeader] =
+    useState<IActivityHeader>();
+  const [isFailed, setIsFailed] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [popoverLocation, setPopoverLocation] = useState<string>();
   const [interactionData, setInteractionData] = useState<INPCInteraction[]>([]);
   const [interactionCount, setInteractionCount] = useState<number>(0);
   const [element, setElement] = useState<any>();
   const [interactibles, setInteractibles] = useState<IInteractibles[]>([]);
   const navigate = useNavigate();
+  const Auth = useAuth();
 
   useEffect(() => {
-    setTaskList(DummyTasksList);
+    getData();
+    // setTaskList(DummyTasksList);
     setInteractionData(DummyNPCInteraction);
     setInteractionCount(0);
-    setInteractibles(DummyInteractibles);
   }, []);
+
+  useEffect(() => {
+    // fetch campus rooms
+    if (unlockedCampus.length > 0) {
+      axios
+        .get(`http://167.71.207.1/api/room/${unlockedCampus[0].id}`, {
+          headers: { Authorization: `Bearer ${Auth.user?.token}` },
+        })
+        .then((res) => {
+          var tempRoomData: ICampusRoom[] = [];
+          res.data.data.map((data: any) => {
+            tempRoomData.push({
+              id: data.id,
+              roomName: data.room_name,
+              type: data.type,
+              background: data.background,
+            });
+          });
+          setRoom(tempRoomData);
+        })
+        .catch((error) => {
+          setIsFailed(true);
+          console.log(error);
+        });
+    }
+  }, [unlockedCampus]);
+
+  useEffect(() => {}, [activeLocation]);
 
   useEffect(() => {
     if (element !== undefined) {
       setOpenPopover(true);
+      if (room.length > 0) {
+        setIsLoadingActivity(true);
+        // console.log(
+        //   'room: ',
+        //   _room?.roomName,
+        //   'popover: ',
+        //   translateKMGMapId(popoverLocation || '')
+        // );
+        getActivityData();
+      }
     }
   }, [popoverLocation]);
+
+  const getData = async () => {
+    setIsLoading(true);
+    // fetch unlock campus
+    const user = Auth.user;
+    await axios
+      .get(`http://167.71.207.1/api/campus`, {
+        headers: { Authorization: `Bearer ${Auth.user?.token}` },
+      })
+      .then((res) => {
+        setUnlockedCampus(res.data.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsFailed(true);
+        console.log(error);
+      });
+  };
+
+  const getActivityData = async () => {
+    const _room = room.find(
+      (r) => r.roomName === translateKMGMapId(popoverLocation || '')
+    );
+    if (_room) {
+      var tempInteractibles: IActivityHeader[] = [];
+      await axios
+        .get(`http://167.71.207.1/api/activity/${_room.id}`, {
+          headers: { Authorization: `Bearer ${Auth.user?.token}` },
+        })
+        .then((res) => {
+          tempInteractibles.push(...res.data.data);
+        })
+        .catch((error) => {
+          setIsFailed(true);
+          console.log(error);
+        });
+      console.log(tempInteractibles);
+      setActivity(tempInteractibles);
+    }
+    setTimeout(() => {
+      setIsLoadingActivity(false);
+    }, 500);
+  };
+
+  const translateCampusCodetoName = (name: string) => {
+    switch (name) {
+      case 'KMG':
+        return 'Kemanggisan';
+      case 'BDG':
+        return 'Bandung';
+      case 'MLG':
+        return 'Malang';
+      case 'BKS':
+        return 'Bekasi';
+      case 'ALS':
+        return 'Alam Sutera';
+      case 'SMG':
+        return 'Semarang';
+    }
+  };
 
   const handleNewActiveLocation = (location: string) => {
     setActiveLocation(location);
   };
 
-  const handleInteractibleColor = (type: string) => {
+  const handleInteractibleColor = (type: string, isCompleted: boolean) => {
+    if (isCompleted === true) {
+      return 'bg-[#88d34e]';
+    }
     switch (type) {
-      case 'Main Quest':
+      case 'Story Quest':
         return 'bg-[#67BBE7]';
       default:
         return 'bg-[#F3931B]';
@@ -63,14 +183,17 @@ const MapBook = () => {
 
   const handleInteractibleTextColor = (type: string) => {
     switch (type) {
-      case 'Main Quest':
+      case 'Story Quest':
         return 'text-[#67BBE7]';
       default:
         return 'text-[#F3931B]';
     }
   };
 
-  const handleInteractibleIcon = (type: string) => {
+  const handleInteractibleIcon = (type: string, isCompleted: boolean) => {
+    if (isCompleted === true) {
+      return '✔';
+    }
     switch (type) {
       case 'Interaction':
         return '!';
@@ -79,50 +202,58 @@ const MapBook = () => {
     }
   };
 
-  const handleSelectTrivialTask = () => {
-    if (popoverLocation)
-      setTaskModalData(
-        taskList?.tasks.find(
-          (task) => task.location === translateKMGMapId(popoverLocation)
-        )
-      );
-    setTimeout(() => {
-      setOpenTaskModal(true);
-    }, 500);
-  };
-
   const handleNavigateTrivialTask = () => {
-    if (taskModalData?.type === 'Follow the Drum') {
-      return navigate('/game/followthedrum', { replace: true });
-    } else {
-      return navigate('/game/storycase', { replace: true });
-    }
+    return navigate(`/game/story/${currentActivityHeader?.startSceneId}`, {
+      replace: true,
+    });
   };
 
   const handleNavigateStory = () => {
-      return navigate('/game/stage', {replace: true});    
-  }
+    return navigate(`/game/story/${currentActivityData?.startSceneId}`, {
+      replace: true,
+    });
+  };
 
   const handleInteractibleAction = () => {
-    if (popoverLocation !== undefined) {
-      const trigger = interactibles.find(
-        (i) => i.location === translateKMGMapId(popoverLocation)
+    const _incompletedActivity = activity.filter(
+      (act) => act.isCompleted !== undefined && act.isCompleted === false
+    );
+    if (popoverLocation !== undefined && _incompletedActivity.length === 0) {
+      const trigger = activity.filter((act) => act.activities !== undefined);
+      const _selectedQuest = trigger.findLast((a) =>
+        a.activities.find((act) => act.isCompleted === false)
       );
-      if (trigger) {
-        switch (trigger.type) {
-          case 'Trivial Task':
-            handleSelectTrivialTask();
-            return;
-          case 'Interaction':
-            setOpenInteraction(true);
-            return;
-          case 'Main Quest':
+      const _selectedActivity = _selectedQuest?.activities.findLast(
+        (act) => act.isCompleted === false
+      );
+      if (trigger !== undefined) {
+        switch (_selectedActivity?.type) {
+          case 'Story Quest':
+            setCurrentActivityData(_selectedActivity);
             setOpenMainQuestModal(true);
             return;
           default:
             setNoInteractibleModalOpen(true);
             return;
         }
+      } else {
+        setNoInteractibleModalOpen(true);
+      }
+    } else {
+      const _selectedActivity = _incompletedActivity.find(
+        (a) => a.isRepeatable === false
+      );
+      switch (_selectedActivity?.type) {
+        case 'Trivial Task':
+          setCurrentActivityHeader(_selectedActivity);
+          setOpenTaskModal(true);
+          return;
+        case 'Interaction':
+          setOpenInteraction(true);
+          return;
+        default:
+          setNoInteractibleModalOpen(true);
+          return;
       }
     }
   };
@@ -157,7 +288,7 @@ const MapBook = () => {
         className='w-11/12 h-5/6 flex flex-col'>
         <div
           id='to-do-container'
-          className='h-1/2 w-full bg-[#A95E01] relative flex flex-col rounded-lg'>
+          className='h-1/2 w-full bg-[#A95E01] relative flex flex-col rounded-lg drop-shadow-md inner-shadow'>
           <div
             id='todo-header'
             className='h-1/3'>
@@ -165,36 +296,84 @@ const MapBook = () => {
               TO-DO
             </h3>
           </div>
-          <div
-            id='todo-interactibles-list'
-            className='w-full h-2/3 overflow-y-auto text-wrap flex flex-col items-center no-scrollbar'>
-            {interactibles.map((i) => (
-              <div
-                id={`${i.id}-container`}
-                className={`${handleInteractibleColor(
-                  i.type
-                )} w-11/12 rounded-lg h-max flex flex-row relative mb-3 justify-evenly p-1`}>
-                <div
-                  id={`${i.id}-icon-container`}
-                  className='flex justify-center items-center'>
-                  <div
-                    id={`${i.id}-icon`}
-                    className={`bg-white w-5 h-5 rounded-full flex justify-center items-center ${handleInteractibleTextColor(
-                      i.type
-                    )}`}>
-                    {handleInteractibleIcon(i.type)}
-                  </div>
-                </div>
-                <div
-                  id={`${i.id}-description-container`}
-                  className='w-10/12 h-full'>
-                  <h5 className='text-wrap text-lg font-medium text-white'>
-                    {i.description}
-                  </h5>
-                </div>
-              </div>
-            ))}
-          </div>
+          {!isLoadingActivity && (
+            <div
+              id='todo-interactibles-list'
+              className='w-full h-2/3 overflow-y-auto text-wrap flex flex-col items-center no-scrollbar '>
+              {activity.length > 0 &&
+                activity.map((i) => (
+                  <>
+                    {i.activities !== undefined &&
+                      i.activities.map((activity) => (
+                        <div
+                          id={`${activity.id}-container`}
+                          className={`${handleInteractibleColor(
+                            activity.type,
+                            activity.isCompleted
+                          )} w-11/12 rounded-lg h-max flex flex-row relative mb-3 justify-evenly p-1`}>
+                          <div
+                            id={`${activity.id}-icon-container`}
+                            className='flex justify-center items-center'>
+                            <div
+                              id={`${activity.id}-icon`}
+                              className={`bg-white w-5 h-5 rounded-full flex justify-center items-center ${handleInteractibleTextColor(
+                                activity.type
+                              )}`}>
+                              {handleInteractibleIcon(activity.type, activity.isCompleted)}
+                            </div>
+                          </div>
+                          <div
+                            id={`${activity.id}-description-container`}
+                            className='w-10/12 h-full'>
+                            <h5 className='text-wrap text-lg font-medium text-white'>
+                              {activity.description}
+                            </h5>
+                          </div>
+                        </div>
+                      ))}
+                    {i.type !== undefined && (
+                      <div
+                        id={`${i.id}-container`}
+                        className={`${handleInteractibleColor(
+                          i.type,
+                          i.isCompleted || false
+                        )} w-11/12 rounded-lg h-max flex flex-row relative mb-3 justify-evenly p-1`}>
+                        <div
+                          id={`${i.id}-icon-container`}
+                          className='flex justify-center items-center'>
+                          <div
+                            id={`${i.id}-icon`}
+                            className={`bg-white w-5 h-5 rounded-full flex justify-center items-center ${handleInteractibleTextColor(
+                              i.type
+                            )}`}>
+                            {handleInteractibleIcon(i.type, i.isCompleted||false)}
+                          </div>
+                        </div>
+                        <div
+                          id={`${i.id}-description-container`}
+                          className='w-10/12 h-full'>
+                          <h5 className='text-wrap text-lg font-medium text-white'>
+                            {i.description}
+                          </h5>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ))}
+              {activity.length === 0 && (
+                <p className='text-white font-semibold text-xl'>
+                  There is nothing to do here...
+                </p>
+              )}
+            </div>
+          )}
+          {!!isLoadingActivity && (
+            <div
+              id='todo-interactibles-list'
+              className='w-full h-2/3 overflow-y-auto text-wrap flex flex-col items-center no-scrollbar text-center text-xl text-white font-semibold '>
+              fetching to-do data...
+            </div>
+          )}
         </div>
         <div
           id='flex-container-description'
@@ -204,7 +383,7 @@ const MapBook = () => {
             className='w-2/5 h-5/6 flex flex-col'>
             <div
               id='tutorial-box'
-              className='bg-[#014769] text-white flex flex-col p-3 mt-5 rounded-lg'>
+              className='bg-[#014769] text-white flex flex-col p-3 mt-5 rounded-lg drop-shadow-lg shadow-md'>
               <div
                 id='tutorial-text-container'
                 className='h-1/3 w-full'>
@@ -225,7 +404,7 @@ const MapBook = () => {
             className='w-2/5 h-5/6 flex flex-col'>
             <div
               id='active-location-box'
-              className='bg-[#014769] text-white flex flex-col p-3 mt-5 rounded-lg justify-between'>
+              className='bg-[#014769] text-white flex flex-col p-3 mt-5 rounded-lg justify-between drop-shadow-lg shadow-md'>
               <div
                 id='active-location-text-container'
                 className='h-1/3 w-full text-center'>
@@ -248,7 +427,7 @@ const MapBook = () => {
           className='flex justify-center items-center w-full pt-10'>
           <button
             id='navigate-button'
-            className='bg-[#C06C00] text-lg font-bold rounded-2xl text-white w-1/2 hover:bg-[#F18700] duration-300 motion-reduce:transition disabled:bg-[#E0E0E0]'
+            className='beescholar-button text-lg font-bold rounded-2xl w-1/2 drop-shadow-md shadow-md'
             disabled={!popoverLocation}
             onClick={handleInteractibleAction}>
             NAVIGATE
@@ -261,51 +440,93 @@ const MapBook = () => {
   const renderBookmark = () => (
     <div
       id='bookmark'
-      className='h-full w-14 flex-col justify-items-end '>
+      className='h-full w-14 flex-col justify-items-end'>
       <button
         id='KMG'
+        disabled={
+          unlockedCampus.find(
+            (c) => c.campusName !== translateCampusCodetoName('KMG')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'KMG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'KMG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('KMG')}>
         <h5 className='bookmark-text'>K M G</h5>
       </button>
       <button
         id='BDG'
+        disabled={
+          unlockedCampus.find(
+            (c) => c.campusName !== translateCampusCodetoName('BDG')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'BDG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'BDG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('BDG')}>
         <h5 className='bookmark-text'>B D G</h5>
       </button>
       <button
         id='SMG'
+        disabled={
+          unlockedCampus.find(
+            (c) => c.campusName !== translateCampusCodetoName('SMG')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'SMG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'SMG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('SMG')}>
         <h5 className='bookmark-text'>S M G</h5>
       </button>
       <button
         id='BKS'
+        disabled={
+          unlockedCampus.find(
+            (c) => c.campusName !== translateCampusCodetoName('BKS')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'BKS' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'BKS' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('BKS')}>
         <h5 className='bookmark-text'>B K S</h5>
       </button>
       <button
         id='MLG'
+        disabled={
+          unlockedCampus.find(
+            (c) => c.campusName !== translateCampusCodetoName('MLG')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'MLG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'MLG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('MLG')}>
         <h5 className='bookmark-text'>M L G</h5>
       </button>
       <button
         id='ALS'
+        disabled={
+          unlockedCampus.find(
+            (c) => c.campusName !== translateCampusCodetoName('ALS')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'ALS' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'ALS' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('ALS')}>
         <h5 className='bookmark-text'>A L S</h5>
@@ -539,7 +760,7 @@ const MapBook = () => {
     <Popover
       id={`popover`}
       container={() => document.getElementById('campus-map-container')}
-      open={openPopover}
+      open={false}
       hideBackdrop={true}
       onClose={() => setOpenPopover(false)}
       className='z-30 w-1/2 h-1/4 rounded-lg'
@@ -586,83 +807,83 @@ const MapBook = () => {
 
   const renderMainQuestModal = () => (
     <Modal
-    open={openMainQuestModal}
-    className='w-full h-full flex justify-center items-center'
-    disableScrollLock={true}>
-    <div
-      id='task-modal-container'
-      className='w-11/12 h-3/4 bg-[#0171A9] flex flex-col rounded-xl border-black border-4'>
+      open={openMainQuestModal}
+      className='w-full h-full flex justify-center items-center'
+      disableScrollLock={true}>
       <div
-        id='task-modal-title-container'
-        className='flex justify-center items-center w-full h-1/4 relative'>
+        id='task-modal-container'
+        className='w-11/12 h-3/4 bg-[#0171A9] flex flex-col rounded-xl border-black border-4'>
         <div
-          id='task-modal-title-box'
-          className='bg-[#81C7E9] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
-          <h4 className='text-white font-semibold tracking-widest text-2xl'>
-            STORY CONTINUATION
-          </h4>
-        </div>
-        <button
-          id='close-modal-button'
-          className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
-          onClick={() => setOpenMainQuestModal(false)}>
-          ❌
-        </button>
-      </div>
-      <div
-        id='task-modal-body-container'
-        className='w-full h-1/2 flex flex-row justify-evenly items-center'>
-        <div
-          id='profiles-picture'
-          className=' w-1/4 h-full flex justify-center items-center relative'>
+          id='task-modal-title-container'
+          className='flex justify-center items-center w-full h-1/4 relative'>
           <div
-            id='profiles-squareframe'
-            className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
-          />
-          <img
-            src={'/characters/aset merch BINUS Support 3 - bahagia copy.png'}
-            className='absolute w-full'
-          />
+            id='task-modal-title-box'
+            className='bg-[#4EB0E1] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
+            <h4 className='text-white font-semibold tracking-widest text-2xl'>
+              {translateKMGMapId(popoverLocation || '').toUpperCase()}
+            </h4>
+          </div>
+          <button
+            id='close-modal-button'
+            className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
+            onClick={() => setOpenMainQuestModal(false)}>
+            ❌
+          </button>
         </div>
         <div
-          id='task-modal-descriptions-container'
-          className='w-1/2 h-full flex flex-col justify-evenly relative'>
+          id='task-modal-body-container'
+          className='w-full h-1/2 flex flex-row justify-evenly items-center'>
           <div
-            id='task-modal-descriptions'
-            className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+            id='profiles-picture'
+            className=' w-1/4 h-full flex justify-center items-center relative'>
             <div
-              id='task-modal-description-header'
-              className='w-full h-1/4 text-center '>
-              <h5 className='text-white bg-[#81C7E9] font-semibold tracking-wider text-xl p-2 '>
-                STORY DESCRIPTION
-              </h5>
-            </div>
-            <div
-              id='task-modal-description-body'
-              className='w-full h-3/4 pt-3 flex justify-between flex-col'>
-              <p className='text-black font-medium tracking-wide text-lg'>
-                You will face your first ever Stage
-              </p>
-              <p className='text-black font-medium tracking-wide text-lg'>
-                Topic: Enrichment
-              </p>
-            </div>
+              id='profiles-squareframe'
+              className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
+            />
+            <img
+              src={'/characters/aset merch BINUS Support 3 - bahagia copy.png'}
+              className='absolute w-full'
+            />
           </div>
           <div
-            id='button-container'
-            className='w-full h-max flex justify-end flex-row'>
-            <button
-              id='go-button'
-              className='bg-[#76B743] hover:border-2 rounded-lg p-3 text-white font-bold text-lg tracking-wider hover:bg-[#609636] hover:border-black'
-              onClick={() => handleNavigateStory()}>
-              LETS GO
-            </button>
+            id='task-modal-descriptions-container'
+            className='w-1/2 h-full flex flex-col justify-evenly relative'>
+            <div
+              id='task-modal-descriptions'
+              className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+              <div
+                id='task-modal-description-header'
+                className='w-full h-1/4 text-center '>
+                <h5 className='text-white bg-[#4EB0E1] font-semibold tracking-wider text-xl p-2 '>
+                  {'STORY CONTINUATION'}
+                </h5>
+              </div>
+              <div
+                id='task-modal-description-body'
+                className='w-full h-3/4 pt-3 flex justify-between flex-col'>
+                <p className='text-black font-medium tracking-wide text-lg'>
+                  {currentActivityData?.description}
+                </p>
+                <p className='text-black font-medium tracking-wide text-lg'>
+                  {}
+                </p>
+              </div>
+            </div>
+            <div
+              id='button-container'
+              className='w-full h-max flex justify-end flex-row'>
+              <button
+                id='go-button'
+                className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
+                onClick={() => handleNavigateStory()}>
+                LETS GO
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </Modal>
-  )
+    </Modal>
+  );
 
   const renderTaskModal = () => (
     <Modal
@@ -679,7 +900,7 @@ const MapBook = () => {
             id='task-modal-title-box'
             className='bg-[#F3931B] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
             <h4 className='text-white font-semibold tracking-widest text-2xl'>
-              TRIVIAL TASK
+              {translateKMGMapId(popoverLocation || '').toUpperCase()}
             </h4>
           </div>
           <button
@@ -714,17 +935,17 @@ const MapBook = () => {
                 id='task-modal-description-header'
                 className='w-full h-1/4 text-center '>
                 <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>
-                  TASK DESCRIPTION
+                  TRIVIAL TASK
                 </h5>
               </div>
               <div
                 id='task-modal-description-body'
                 className='w-full h-3/4 pt-3 flex justify-between flex-col'>
                 <p className='text-black font-medium tracking-wide text-lg'>
-                  {taskModalData?.description}
+                  {currentActivityHeader?.description}
                 </p>
                 <p className='text-black font-medium tracking-wide text-lg'>
-                  Minigame: {taskModalData?.type}
+                  Minigame Name: {currentActivityHeader?.name}
                 </p>
               </div>
             </div>
@@ -733,7 +954,7 @@ const MapBook = () => {
               className='w-full h-max flex justify-end flex-row'>
               <button
                 id='go-button'
-                className='bg-[#76B743] hover:border-2 rounded-lg p-3 text-white font-bold text-lg tracking-wider hover:bg-[#609636] hover:border-black'
+                className='beescholar-success-button border-2 border-black hover:border-2 rounded-lg p-3 font-bold text-lg tracking-wider  hover:border-black'
                 onClick={() => handleNavigateTrivialTask()}>
                 LETS GO
               </button>
@@ -747,15 +968,71 @@ const MapBook = () => {
   const renderNoInteractibleModal = () => (
     <Modal
       open={noInteractibleModalOpen}
+      disableScrollLock={true}
       onClose={() => setNoInteractibleModalOpen(false)}
       className='w-full h-full flex justify-center items-center'>
       <div
-        id='modal-container'
+        id='task-modal-container'
         className='w-11/12 h-3/4 bg-[#C06C00] flex flex-col rounded-xl border-black border-4'>
-        {' '}
-        <h2 className='font-semibold tracking-widest text-2xl'>
-          There is nothing to do here...
-        </h2>
+        <div
+          id='task-modal-title-container'
+          className='flex justify-center items-center w-full h-1/4 relative'>
+          <div
+            id='task-modal-title-box'
+            className='bg-[#F3931B] w-1/2 h-min p-3 rounded-md shadow-xl border-black border-2 absolute -top-10 text-center'>
+            <h4 className='text-white font-semibold tracking-widest text-2xl'>
+              {translateKMGMapId(popoverLocation || '').toUpperCase()}
+            </h4>
+          </div>
+          <button
+            id='close-modal-button'
+            className='absolute right-5 top-5 text-4xl text-black bg-white w-20 h-20 2 hover:outline-2 hover:outline hover:outline-black rounded-full'
+            onClick={() => setNoInteractibleModalOpen(false)}>
+            ❌
+          </button>
+        </div>
+        <div
+          id='task-modal-body-container'
+          className='w-full h-1/2 flex flex-row justify-evenly items-center'>
+          <div
+            id='profiles-picture'
+            className=' w-1/4 h-full flex justify-center items-center relative'>
+            <div
+              id='profiles-squareframe'
+              className='bg-white h-5/6 w-1/2 rounded-md border-black border-2 shadow-xl'
+            />
+            <img
+              src={'/characters/aset merch BINUS Support 4 - pusing copy.png'}
+              className='absolute w-full'
+            />
+          </div>
+          <div
+            id='task-modal-descriptions-container'
+            className='w-1/2 h-full flex flex-col justify-evenly relative'>
+            <div
+              id='task-modal-descriptions'
+              className='w-full h-3/4 bg-white rounded-t-xl shadow-xl border-black border-2 flex-col p-2 '>
+              <div
+                id='task-modal-description-header'
+                className='w-full h-1/4 text-center '>
+                <h5 className='text-white bg-[#F3931B] font-semibold tracking-wider text-xl p-2 '>
+                  NO ACTIVITY FOUND
+                </h5>
+              </div>
+              <div
+                id='task-modal-description-body'
+                className='w-full h-3/4 pt-3 flex justify-between flex-col'>
+                <p className='text-black font-medium tracking-wide text-lg'>
+                  There is nothing to do here... you have completed the current
+                  available activities / quests here.
+                </p>
+                <p className='text-black font-medium tracking-wide text-lg'>
+                  Hint: Search other rooms to find new activities and quests.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </Modal>
   );
@@ -768,7 +1045,7 @@ const MapBook = () => {
         return false;
       }
       return true;
-    }
+    };
 
     const handleNextDialogue = () => {
       handleCheckDialogue() && setInteractionCount(interactionCount + 1);
@@ -805,9 +1082,11 @@ const MapBook = () => {
                 {_interactionData.line}
               </div>
               <button
-                className='absolute h-1/4 top-4 right-2 bg-[#014769] p-2 rounded-xl'
+                className='absolute h-1/4 top-4 right-2 beescholar-button p-2 rounded-xl'
                 onClick={handleNextDialogue}>
-                <p className='font-bold text-white text-3xl '>{handleCheckDialogue()?"Next":"Finish"}</p>
+                <p className='font-bold text-white text-3xl '>
+                  {handleCheckDialogue() ? 'Next' : 'Finish'}
+                </p>
               </button>
             </div>
           </div>
@@ -836,21 +1115,21 @@ const MapBook = () => {
 
   const renderBook = () => (
     <>
-      <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center'>
+      <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center '>
         {renderBookmark()}
         <div
           id='book-page-left'
-          className='bg-[#81C7E9] w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden '>
+          className='bg-[#4EB0E1] w-1/2 h-full overflow-auto overflow-x-hidden drop-shadow-lg shadow-md shadow-black'>
           {renderCampusMap()}
         </div>
         <div className='w-1/6 h-full absolute flex justify-center ml-12'>
-          <div className='justify-center items-center flex z-0 absolute h-full w-min ml-1'>
+          <div className='justify-center items-center flex z-10 absolute h-full w-min ml-1 drop-shadow-lg shadow-md shadow-black'>
             {renderMiddlePart()}
           </div>
         </div>
         <div
           id='book-page-right'
-          className='bg-white h-full w-1/2'>
+          className='bg-white h-full w-1/2 drop-shadow-lg shadow-md shadow-black'>
           {renderMapInteractibles()}
         </div>
       </div>

@@ -20,7 +20,7 @@
     }
 
     .bookmark-button{
-        @apply w-1/2 flex justify-center items-center rounded-s-2xl pt-1 pb-1 mb-2 bg-white;
+        @apply w-1/2 flex justify-center items-center rounded-s-2xl pt-1 pb-1 mb-2 bg-white disabled:bg-[#E0E0E0] disabled:text-[#3f3f3f];
     }
 
     .bookmark-text{

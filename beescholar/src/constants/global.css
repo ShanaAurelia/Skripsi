@@ -6,3 +6,21 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .beescholar-button{
+        @apply bg-[#F3931B] rounded-2xl text-white hover:bg-[#F39F33] hover:text-black transition duration-300 motion-reduce:transition disabled:bg-[#E0E0E0];
+    }
+
+    .beescholar-error-button{
+        @apply bg-[#9e3333] rounded-2xl text-white hover:bg-[#D73930] hover:text-black transition duration-300 motion-reduce:transition disabled:bg-[#E0E0E0]
+    }
+
+    .beescholar-success-button{
+        @apply bg-[#76B743] rounded-2xl text-white hover:bg-[#88d34e] hover:text-black transition duration-300 motion-reduce:transition disabled:bg-[#E0E0E0]
+    }
+}

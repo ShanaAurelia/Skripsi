@@ -1,234 +1,262 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  IAnswer,
   IMultipleChoice,
   IReordering,
   IStageData,
   IYesOrNo,
 } from './Stageboard.interface';
 import { DummyStage } from '../../constants/dummy.constants';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import '../../constants/global.css';
+import {
+  IMinigameHeader,
+  IQuizChoiceAnswers,
+  IQuizQuestion,
+  IQuizSteps,
+  IStepChoiceAnswers,
+} from '../../constants/global.interfaces';
+import axios from 'axios';
+import { Modal } from '@mui/material';
+import { StageTutorialData } from '../../constants/Tutorial.constants';
+import { ITutorialData } from '../tutorial/Tutorial.interface';
+import { useAuth } from '../../config/Context';
 
 const Stageboard = () => {
   // for stage
-  const [stageData, setStageData] = useState<IStageData>();
-  const [activeNumber, setActiveNumber] = useState<number>(-1);
+  const [minigameData, setMinigameData] = useState<IMinigameHeader>();
+  const [openTutorialModal, setOpenTutorialModal] = useState<boolean>(true);
+  const [stageData, setStageData] = useState<IQuizQuestion[]>([]);
+  const [activeNumber, setActiveNumber] = useState<number>(0);
   const [answeredNumber, setAnsweredNumber] = useState<number[]>([]);
-  const [answers, setAnswers] = useState<IAnswer[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [nonstepAnswers, setNonstepAnswers] = useState<IQuizChoiceAnswers[]>(
+    []
+  );
+  const [stepAnswers, setStepAnswers] = useState<IStepChoiceAnswers[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
   const [tryRefresh, setTryRefresh] = useState<boolean>(false);
   const [allAnswered, setAllAnswered] = useState<boolean>(false);
   // for multiple-choice
-  const [multipleChoice, setMultipleChoice] = useState<any>();
   const [mcanswerKey, setmcAnswerKey] = useState<number>();
   // for re-ordering
-  const [reordering, setReordering] = useState<any>();
-  const [draggedData, setDraggedData] = useState<string>();
-  const [draggedDataLocation, setDraggedDataLocation] = useState<number>();
-  const [order, setOrders] = useState<string[]>([]); // ex: A B C
-  const [reorders, setReorders] = useState<string[]>([]); // ex: answer1 answer2 answer3
-  const [isLoadingOrder, setIsLoadingOrder] = useState<boolean>(false);
+  const [reorders, setReorders] = useState<IQuizSteps[]>([]); // ex: answer1 answer2 answer3
+  const [stepNumber, setStepNumbers] = useState<string[]>([]);
   const [rrasnwerKey, setrrAnswerKey] = useState<number>();
   // for yes-or-no
-  const [yesOrNo, setYesOrNo] = useState<any>();
   const [ynanswerKey, setynAnswerKey] = useState<number>();
   // for report
   const [openReport, setOpenReport] = useState<boolean>();
+  const [loadingReport, setLoadingReport] = useState<boolean>(false);
+  const [totalCorrect, setTotalCorrect] = useState<number>();
+  const [totalIncorrect, setTotalIncorrect] = useState<number>();
+  const [totalPoint, setTotalPoint] = useState<number>();
+  const [status, setStatus] = useState<string>();
+  const { minigameId, nextSceneId } = useParams();
+  // for tutorial
+  const [activeTutorialData, setActiveTutorialData] = useState<ITutorialData>(
+    StageTutorialData[0]
+  );
+  const tutorialData = StageTutorialData;
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setStageData(DummyStage);
-    handleAnswerByType();
-  }, []);
+  const user = useAuth().user;
 
   useEffect(() => {
     setIsLoading(true);
-    handleReinitializeAnswer();
-    handleReinitializeReordering();
-    setTimeout(() => {
-      handleAnswerByType();
-    }, 500);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    setTimeout(() => {
-      if (isLoading || isLoadingOrder) {
-        setTryRefresh(true);
+    getData();
+  }, []);
+
+  useEffect(() => {
+    if (stageData !== undefined && !isLoadingQuestions) {
+      setStepNumbers([]);
+      if (stageData[activeNumber].questionType === 'Reorder Steps') {
+        let _savedAnswer = stepAnswers.findIndex(
+          (ans) => ans.questionOrder === activeNumber + 1
+        );
+        if (_savedAnswer !== -1) {
+          // setStepNumbers([]);
+          setStepNumbers(stepAnswers[_savedAnswer].stepIds);
+        }
       }
-    }, 5000);
+    }
   }, [activeNumber]);
 
   useEffect(() => {
-    if (answers.length === stageData?.question.length) {
+    if (stageData !== undefined && !isLoadingQuestions) {
+      if (stageData[activeNumber].questionType === 'Reorder Steps') {
+        if (stepNumber.length === stageData[activeNumber].steps.length) {
+          handleSaveReorder();
+        }
+      }
+    }
+  }, [stepNumber]);
+
+  useEffect(() => {
+    if (stageData !== undefined) {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+    }
+  }, [stageData]);
+
+  useEffect(() => {
+    if (openTutorialModal === false) {
+      setIsLoadingQuestions(false);
+    }
+  }, [openTutorialModal]);
+
+  useEffect(() => {
+    if (
+      nonstepAnswers.length + stepAnswers.length === stageData?.length &&
+      !isLoadingQuestions
+    ) {
       setAllAnswered(true);
     } else {
       setAllAnswered(false);
     }
-  }, [answers]);
+    handleSaveNumber();
+  }, [nonstepAnswers, stepAnswers]);
 
-  const handlemcAnswerKey = () => {
-    setmcAnswerKey(Math.random());
-  };
-
-  const handlerrAnswerKey = () => {
-    setrrAnswerKey(Math.random());
-  };
-  const handleynAnswerKey = () => {
-    setynAnswerKey(Math.random());
-  };
-
-  const draggedItem = useRef();
-  const draggedLocation = useRef();
-
-  const handleDragStart = (e: any, position: any, value: string) => {
-    draggedItem.current = position;
-    // console.log(e.target.innerHTML, value, position);
-    setDraggedData(value);
-    setDraggedDataLocation(position);
-  };
-
-  const handleDragEnd = (e: any, position: any, value: string) => {
-    draggedLocation.current = position;
-    setIsLoadingOrder(true);
-    // console.log(e.target.innerHTML, value, position);
-    let _orders = order;
-    let _reorder = reorders;
-    if (draggedData) {
-      // update order
-      _orders[position] = draggedData;
-      setOrders(_orders);
-    }
-    // if (draggedDataLocation !== undefined) {
-    //   _reorder[draggedDataLocation] = value;
-    //   setReorders(_reorder);
-    // }
-    handlerrAnswerKey();
-    setIsLoadingOrder(false);
+  const getData = async () => {
+    await axios
+      .get(`http://167.71.207.1/api/minigame/${minigameId}`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
+      .then((res) => {
+        setMinigameData(res.data.message);
+        setStageData(res.data.message.quizQuestions);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsError(true);
+      });
   };
 
   const handleRenderByType = (type: string) => {
-    if (type === 'MC') return renderMultipleChoice();
-    if (type === 'RR') return renderReordering();
-    if (type === 'YN') return renderYesOrNo();
+    if (type === 'Multiple Choice') return renderMultipleChoice();
+    if (type === 'Reorder Steps') return renderReordering();
+    if (type === 'Yes or No') return renderYesOrNo();
     if (type === 'null') return renderAnswerError();
   };
 
-  const handleIntializeReodering = () => {
-    const _answerIndex = answers.findIndex(
-      (ans) => ans.number === activeNumber
+  const handleSaveReorder = () => {
+    let _savedAnswer = stepAnswers.findIndex(
+      (ans) => ans.questionOrder === activeNumber + 1
     );
-    if (_answerIndex === -1) {
-      // if no saved answer found
-      setIsLoadingOrder(true);
-      const _reorder = stageData?.question[activeNumber].answer;
-      setReordering(_reorder);
-      const _newReorder = _reorder.orderables;
-      if (order.length === 0 && reorders.length === 0) {
-        for (let index = 0; index < _newReorder.length; index++) {
-          const _orderBox = handleChoiceByIndex(index);
-          setOrders((curr) => {
-            if (!order.find((o) => o === _orderBox)) {
-              return [...curr, _orderBox];
-            }
-            return curr;
-          });
-          setReorders((curr) => {
-            if (!reorders.find((o) => o === _newReorder[index])) {
-              return [...curr, _newReorder[index]];
-            }
-            return curr;
-          });
-        }
+    if (stepNumber.length === stageData[activeNumber].steps.length) {
+      const _stepAnswer: IStepChoiceAnswers = {
+        questionId: stageData[activeNumber].questionId,
+        questionOrder: activeNumber + 1,
+        stepIds: stepNumber,
+      };
+      if (stepAnswers.length === 0 && _savedAnswer === -1) {
+        setStepAnswers([_stepAnswer]);
+      } else if (_savedAnswer === -1) {
+        setStepAnswers([...stepAnswers, _stepAnswer]);
+      } else {
+        let _currentStepAnswers = stepAnswers;
+        _currentStepAnswers[_savedAnswer] = _stepAnswer;
+        setStepAnswers(_currentStepAnswers);
       }
-      if (order.length === 0 && reorders.length === 0) {
-        setIsLoadingOrder(false);
-      }
-    } else {
-      // if saved answer found
-      // still need set reorder data loop to change answers
-      const _reorder = stageData?.question[activeNumber].answer;
-      setReordering(_reorder);
-      const _newReorder = _reorder.orderables;
-      for (let index = 0; index < _newReorder.length; index++) {
-        setReorders((curr) => {
-          if (!reorders.find((o) => o === _newReorder[index])) {
-            return [...curr, _newReorder[index]];
-          }
-          return curr;
-        });
-      }
-      // set saved order data answer to orders
-      setOrders(handleSavedReordering(_answerIndex));
     }
-    if (!!tryRefresh || (order.length > 0 && reorders.length > 0)) {
-      setTryRefresh(false);
-      setIsLoadingOrder(false);
+    if (_savedAnswer !== -1) {
+      setStepNumbers(stepAnswers[_savedAnswer].stepIds);
     }
-  };
-
-  const handleAnswerByType = () => {
-    const type = stageData?.question[activeNumber].type;
-    if (type === 'MC')
-      return setMultipleChoice(stageData?.question[activeNumber].answer);
-    if (type === 'RR') {
-      handleIntializeReodering();
-    }
-    if (type === 'YN')
-      return setYesOrNo(stageData?.question[activeNumber].answer);
-  };
-
-  const handleReinitializeAnswer = () => {
-    setMultipleChoice(undefined);
-    setReordering(undefined);
-    setYesOrNo(undefined);
-  };
-
-  const handleReinitializeReordering = () => {
-    setOrders([]);
-    setReorders([]);
-    setDraggedData(undefined);
-    setDraggedDataLocation(undefined);
-  };
-
-  const handleSavedReordering = (answerIndex: number) => {
-    const savedAnswer = answers[answerIndex].answer;
-    return savedAnswer.split(/->+/);
   };
 
   const handleChoiceByIndex = (idx: number) => {
     return String.fromCharCode(idx + 65).toString();
   };
 
-  const handleAnswer = (answer: string) => {
-    const _answer: IAnswer = {
-      answer: answer,
-      number: activeNumber,
-    };
-    let answerIndex = answers.findIndex((ans) => ans.number === activeNumber);
-    if (answerIndex === -1) {
-      setAnswers([...answers, _answer]);
-      setAnsweredNumber([...answeredNumber, activeNumber]);
-    } else {
-      let newAnswer = answers;
-      newAnswer[answerIndex] = _answer;
-      setAnswers(newAnswer);
-    }
-    handlemcAnswerKey();
-    handlerrAnswerKey();
-    handleynAnswerKey();
+  const handleAnswerKeys = () => {
+    setmcAnswerKey(Math.random);
+    // setrrAnswerKey(Math.random);
+    setynAnswerKey(Math.random);
   };
 
-  const handleReorderingAnswer = () => {
-    let _answer = '';
-    order.map((o, idx) => {
-      if (idx === order.length - 1) {
-        _answer = _answer + o;
-      } else {
-        _answer = _answer + (o + '->');
-      }
-    });
-    return handleAnswer(_answer);
+  const handleStepNumber = (step: IQuizSteps) => {
+    const _stepExisted = stepNumber.findIndex((st) => st === step.stepId);
+    if (stepNumber.length === 0 && _stepExisted === -1) {
+      setStepNumbers([step.stepId]);
+    } else if (_stepExisted === -1) {
+      setStepNumbers([...stepNumber, step.stepId]);
+    } else {
+      let _tempStepNumber = stepNumber;
+      const toBePop = stepNumber[_stepExisted];
+      _tempStepNumber = _tempStepNumber.filter((s) => s !== toBePop);
+      setStepNumbers(_tempStepNumber);
+    }
+  };
+
+  const handleGetNumber = (stepId: string) => {
+    const _stepExisted = stepNumber.findIndex((st) => st === stepId);
+    if (_stepExisted === -1) {
+      return '';
+    } else {
+      return _stepExisted + 1;
+    }
+  };
+
+  const handleQuizAnswer = (answer: IMultipleChoice) => {
+    let _savedAnswer = nonstepAnswers.findIndex(
+      (ans) => ans.questionOrder === activeNumber + 1
+    );
+    if (_savedAnswer === -1) {
+      const _newAnswer: IQuizChoiceAnswers = {
+        questionOrder: activeNumber + 1,
+        choiceId: answer.choiceId,
+        questionId: stageData[activeNumber].questionId,
+      };
+      setNonstepAnswers([...nonstepAnswers, _newAnswer]);
+    } else {
+      const _newAnswer: IQuizChoiceAnswers = {
+        questionOrder: activeNumber + 1,
+        choiceId: answer.choiceId,
+        questionId: stageData[activeNumber].questionId,
+      };
+      let _currentAnswers = nonstepAnswers;
+      _currentAnswers[_savedAnswer] = _newAnswer;
+      setNonstepAnswers(_currentAnswers);
+    }
+    handleAnswerKeys();
+  };
+
+  const handleSaveNumber = () => {
+    let _savedNumber = answeredNumber.findIndex(
+      (num) => num === activeNumber + 1
+    );
+    if (_savedNumber === -1 && answeredNumber.length === 0) {
+      setAnsweredNumber([activeNumber + 1]);
+    } else if (_savedNumber === -1) {
+      setAnsweredNumber([...answeredNumber, activeNumber + 1]);
+    }
+  };
+
+  const handleFinishStage = async () => {
+    const _payload = {
+      minigameId: minigameId,
+      quizChoiceAnswers: nonstepAnswers,
+      quizStepAnswers: stepAnswers,
+    };
+    await axios
+      .post('http://167.71.207.1/api/submit/quiz', _payload, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
+      .then((res) => {
+        setLoadingReport(true);
+        setOpenReport(true);
+        const _data = res.data.data;
+        setTotalCorrect(_data.totalCorrect);
+        setTotalIncorrect(_data.totalIncorrect);
+        setStatus(_data.status);
+        setTotalPoint(_data.totalPoint);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsError(true);
+      });
+    setLoadingReport(false);
   };
 
   const LoadingSvg = () => (
@@ -253,8 +281,8 @@ const Stageboard = () => {
       key={'mc-' + activeNumber + '-' + mcanswerKey}
       id='multiple-choice-container'
       className='w-5/6 h-3/4 flex flex-col'>
-      {multipleChoice !== undefined &&
-        multipleChoice.choice?.map((mc: any, idx: any) => (
+      {stageData !== undefined &&
+        stageData[activeNumber].choices.map((mc, idx: any) => (
           <>
             <div
               id={'mc-' + idx + '-container'}
@@ -262,12 +290,14 @@ const Stageboard = () => {
               <button
                 id={'choice-' + idx}
                 onClick={() => {
-                  handleAnswer(mc);
+                  handleQuizAnswer(mc);
                 }}
                 className={
                   'border-2 p-2 text-center border-black w-10 h-10 flex justify-center items-center rounded-full hover:border-[#F39F33] hover:text-[#F39F33] ' +
-                  (answers.find(
-                    (ans) => ans.answer === mc && ans.number === activeNumber
+                  (nonstepAnswers.find(
+                    (ans) =>
+                      ans.choiceId === mc.choiceId &&
+                      ans.questionOrder === activeNumber + 1
                   )
                     ? 'bg-[#76BF43]'
                     : '')
@@ -277,7 +307,7 @@ const Stageboard = () => {
               <div
                 id={'choice-text-' + idx}
                 className='w-3/4 h-full flex items-center'>
-                <p className='font-semibold text-lg ml-5'>{mc}</p>
+                <p className='font-semibold text-lg ml-5'>{mc.choiceText}</p>
               </div>
             </div>
           </>
@@ -303,7 +333,7 @@ const Stageboard = () => {
       key={'yn-' + activeNumber + '-' + ynanswerKey}
       id='yes-or-no-container'
       className='w-5/6 h-3/4 flex flex-col'>
-      {yesOrNo !== undefined && (
+      {stageData !== undefined && (
         <>
           <div
             id={'mc-yes-container'}
@@ -311,14 +341,15 @@ const Stageboard = () => {
             <button
               id={'choice-yes'}
               onClick={() => {
-                handleAnswer(yesOrNo.yesText);
+                handleQuizAnswer(stageData[activeNumber].choices[0]);
               }}
               className={
                 'border-2 p-2 text-center border-black w-10 h-10 flex justify-center items-center rounded-full hover:border-[#F39F33] hover:text-[#F39F33] ' +
-                (answers.find(
+                (nonstepAnswers.find(
                   (ans) =>
-                    ans.answer === yesOrNo.yesText &&
-                    ans.number === activeNumber
+                    ans.choiceId ===
+                      stageData[activeNumber].choices[0].choiceId &&
+                    ans.questionOrder === activeNumber + 1
                 )
                   ? 'bg-[#76BF43]'
                   : '')
@@ -328,7 +359,9 @@ const Stageboard = () => {
             <div
               id={'choice-text-yes'}
               className='w-3/4 h-full flex items-center'>
-              <p className='font-semibold text-lg ml-5'>{yesOrNo.yesText}</p>
+              <p className='font-semibold text-lg ml-5'>
+                {stageData[activeNumber].choices[0].choiceText}
+              </p>
             </div>
           </div>
           <div
@@ -337,13 +370,15 @@ const Stageboard = () => {
             <button
               id={'choice-no'}
               onClick={() => {
-                handleAnswer(yesOrNo.noText);
+                handleQuizAnswer(stageData[activeNumber].choices[1]);
               }}
               className={
                 'border-2 p-2 text-center border-black w-10 h-10 flex justify-center items-center rounded-full hover:border-[#F39F33] hover:text-[#F39F33] ' +
-                (answers.find(
+                (nonstepAnswers.find(
                   (ans) =>
-                    ans.answer === yesOrNo.noText && ans.number === activeNumber
+                    ans.choiceId ===
+                      stageData[activeNumber].choices[1].choiceId &&
+                    ans.questionOrder === activeNumber + 1
                 )
                   ? 'bg-[#76BF43]'
                   : '')
@@ -353,7 +388,9 @@ const Stageboard = () => {
             <div
               id={'choice-text-no'}
               className='w-3/4 h-full flex items-center'>
-              <p className='font-semibold text-lg ml-5'>{yesOrNo.noText}</p>
+              <p className='font-semibold text-lg ml-5'>
+                {stageData[activeNumber].choices[1].choiceText}
+              </p>
             </div>
           </div>
         </>
@@ -365,75 +402,65 @@ const Stageboard = () => {
     <>
       <div
         key={'rr-' + activeNumber + '-' + rrasnwerKey}
-        id='reordering-container'
-        className='w-5/6 h-1/6 flex flex-row justify-evenly'>
-        {order !== undefined &&
-          !isLoadingOrder &&
-          order.map((char: any, idx: any) => (
+        id='reorder-container'
+        className='w-5/6 h-3/4 flex flex-col'>
+        {stageData !== undefined &&
+          stepAnswers.findIndex((s) => s.questionOrder === activeNumber + 1) ===
+            -1 &&
+          stageData[activeNumber].steps.map((rr, idx: any) => (
             <>
               <div
-                id={'rr-orderables' + idx}
-                key={'rr-orderables' + idx}
-                className='w-max h-max bg-[#E0E0E0] border-2 border-slate-500 ml-2 flex justify-center items-center rounded-lg pl-2 pr-2'
-                draggable
-                onDragEnter={(e) => handleDragEnd(e, idx, char)}>
-                <p className='text-black font-medium text-lg'>{char}</p>
-              </div>
-              {idx + 1 < order.length && (
+                id={'mc-' + idx + '-container'}
+                className='w-5/6 h-1/5 flex flex-row justify-center items-center'>
+                <button
+                  id={'choice-' + idx}
+                  onClick={() => {
+                    handleStepNumber(rr);
+                  }}
+                  className={
+                    'border-2 p-2 text-center border-black w-10 h-10 flex justify-center items-center rounded-full hover:border-[#F39F33] hover:text-[#F39F33] '
+                  }>
+                  <p className='font-bold text-2xl'>
+                    {handleGetNumber(rr.stepId)}
+                  </p>
+                </button>
                 <div
-                  id='arrow'
-                  className='text-2xl'>
-                  ➡️
+                  id={'choice-text-' + idx}
+                  className='w-3/4 h-full flex items-center'>
+                  <p className='font-semibold text-lg ml-5'>{rr.stepText}</p>
                 </div>
-              )}
-            </>
-          ))}
-        {isLoadingOrder && renderLazyLoading()}
-      </div>
-      <div
-        key={'rr' + activeNumber + '-' + rrasnwerKey}
-        id='reordering-answers'
-        className='w-5/6 h-1/4 flex flex-row justify-evenly'>
-        {reorders !== undefined &&
-          !isLoadingOrder &&
-          reorders.map((choice: any, idx: any) => (
-            <>
-              <div
-                id={'rr-orderables-answer' + idx}
-                draggable
-                onDragStart={(e) => handleDragStart(e, idx, choice)}
-                className='w-max h-max bg-[#E0E0E0] border-2 border-slate-500 ml-2 flex justify-center items-center rounded-lg pl-2 pr-2'>
-                <p className='text-black font-medium text-lg'>{choice}</p>
               </div>
             </>
           ))}
-        {isLoadingOrder && renderLazyLoading()}
+        {stageData !== undefined &&
+          stepAnswers.findIndex((s) => s.questionOrder === activeNumber + 1) !==
+            -1 &&
+          stageData[activeNumber].steps.map((rr, idx: any) => (
+            <>
+              <div
+                id={'mc-' + idx + '-container'}
+                className='w-5/6 h-1/5 flex flex-row justify-center items-center'>
+                <button
+                  id={'choice-' + idx}
+                  onClick={() => {
+                    handleStepNumber(rr);
+                  }}
+                  className={
+                    'border-2 p-2 text-center border-black w-10 h-10 flex justify-center items-center rounded-full hover:border-[#F39F33] hover:text-[#F39F33] '
+                  }>
+                  <p className='font-bold text-2xl'>
+                    {handleGetNumber(rr.stepId)}
+                  </p>
+                </button>
+                <div
+                  id={'choice-text-' + idx}
+                  className='w-3/4 h-full flex items-center'>
+                  <p className='font-semibold text-lg ml-5'>{rr.stepText}</p>
+                </div>
+              </div>
+            </>
+          ))}
       </div>
-      {!tryRefresh && !isLoadingOrder && (
-        <button
-          className='bg-[#F3931B] rounded-md pl-2 pr-2 pt-1 pb-1 text-white font-bold tracking-widest disabled:cursor-wait'
-          disabled={isLoadingOrder}
-          onClick={() => {
-            handleReorderingAnswer();
-          }}>
-          Save Answer
-        </button>
-      )}
-      {
-        <div className='flex flex-col justify-center items-center'>
-          <button
-            className='bg-[#67BBE7] w-max h-max rounded-md pl-2 pr-2 pt-1 pb-1 text-white font-bold tracking-widest mt-5 '
-            onClick={() => {
-              handleIntializeReodering();
-            }}>
-            Refresh Question
-          </button>
-          <p className='text-slate-500 font-normal text-sm'>
-            If reorder boxes is loading too long or not showing, please try
-            Refresh Question
-          </p>
-        </div>
-      }
     </>
   );
 
@@ -445,36 +472,25 @@ const Stageboard = () => {
     <div
       id='whiteboard-container'
       className='w-5/6 h-3/4 flex bg-white shadow-inner shadow-black justify-center place-items-center flex-col'>
-      {!isLoading && activeNumber > -1 && (
+      {!isLoadingQuestions && stageData !== undefined && (
         <>
           <div
             id='question-container'
             className='w-3/4 h-1/4 flex justify-start items-center'>
             <h3 className='font-bold text-black text-2xl'>
-              {stageData?.question[activeNumber].text}
+              {stageData[activeNumber].questionTitle}
             </h3>
           </div>
-          {handleRenderByType(stageData?.question[activeNumber].type || 'null')}
+          {handleRenderByType(stageData[activeNumber].questionType || 'null')}
         </>
       )}
-      {isLoading && renderLazyLoading()}
-      {activeNumber === -1 && (
-        <>
-          <div
-            id='question-container'
-            className='w-3/4 h-1/4 flex justify-start items-center'>
-            <h3 className='font-bold text-black text-2xl'>
-              Select a question to start answering. Best of luck for you!
-            </h3>
-          </div>
-        </>
-      )}
+      {isLoadingQuestions && renderLazyLoading()}
       {allAnswered && (
         <>
           <button
-            className='bg-[#76B743] pt-1 pb-1 pl-2 pr-2 text-2xl font-semibold text-black rounded-md mb-3'
+            className='beescholar-success-button pt-1 pb-1 pl-2 pr-2 text-2xl font-semibold  rounded-md mb-3'
             onClick={() => {
-              setOpenReport(true);
+              handleFinishStage();
             }}>
             Finish Stage
           </button>
@@ -483,11 +499,31 @@ const Stageboard = () => {
     </div>
   );
 
+  const renderLoadingWhiteboard = () => (
+    <div
+      id='whiteboard-container'
+      className='w-5/6 h-3/4 flex bg-white shadow-inner shadow-black justify-center place-items-center flex-col animate-pulse'>
+      {!isLoadingQuestions && activeNumber > -1 && (
+        <>
+          <div
+            id='question-container'
+            className='w-3/4 h-1/4 flex justify-start items-center bg-slate-300'>
+            <h3 className='font-bold text-black text-2xl'>
+              {/* {stageData[activeNumber].questionTitle} */}
+            </h3>
+          </div>
+          {/* {handleRenderByType(stageData[activeNumber].questionType || 'null')} */}
+        </>
+      )}
+      {isLoadingQuestions && renderLazyLoading()}
+    </div>
+  );
+
   const renderNumberBoard = () => (
     <div
       id='number-whiteboard'
       className='w-3/4 h-1/6 grid grid-cols-10 justify-center gap-2 bg-white shadow-black rounded-lg shadow-inner drop-shadow-md'>
-      {stageData?.question.map((data, idx) => (
+      {stageData.map((data, idx) => (
         <div
           id='grid-container'
           className='flex justify-center items-center'>
@@ -498,7 +534,7 @@ const Stageboard = () => {
               'w-12 h-16 border-4 border-black flex justify-center items-center text-black hover:border-[#F39F33] hover:text-[#F39F33] transition-colors delay-150 ' +
               (activeNumber === idx
                 ? 'bg-yellow-200'
-                : answeredNumber.find((n) => n === idx) !== undefined
+                : answeredNumber.find((n) => n === idx + 1) !== undefined
                 ? 'bg-[#76B743]'
                 : '')
             }>
@@ -507,6 +543,12 @@ const Stageboard = () => {
         </div>
       ))}
     </div>
+  );
+
+  const renderLoadingNumberBoard = () => (
+    <div
+      id='number-whiteboard'
+      className='w-3/4 h-1/6 grid grid-cols-10 justify-center gap-2 bg-slate-300 shadow-black rounded-lg shadow-inner drop-shadow-md animate-pulse'></div>
   );
 
   const renderReportBoard = () => (
@@ -528,13 +570,10 @@ const Stageboard = () => {
             id='report-details'
             className='w-full h-1/2 flex flex-col justify-evenly items-start '>
             <h5 className='text-xl font-semibold tracking-wide'>
-              {8} Correct Answers
+              {totalCorrect} Correct Answers
             </h5>
             <h5 className='text-xl font-semibold tracking-wide'>
-              {2} Incorrect Answers
-            </h5>
-            <h5 className='text-xl font-semibold tracking-wide'>
-              {1} Guide used
+              {totalIncorrect} Incorrect Answers
             </h5>
           </div>
         </div>
@@ -545,7 +584,9 @@ const Stageboard = () => {
             id='beescholar-notes'
             className='border-dashed border-2 border-black w-3/4 h-max flex justify-center items-center self-end pl-2 pr-2 pt-1 pb-1'>
             <p className='text-xl font-medium tracking-widest'>
-              You have done well. Keep up the good work.
+              {status === 'Completed'
+                ? 'You have done well. Keep up the good work.'
+                : 'Practice more to get the best results!'}
             </p>
           </div>
           <div
@@ -557,28 +598,92 @@ const Stageboard = () => {
             <div
               id='score-point-container'
               className='border-black border-4 pt-2 pb-2 pl-3 pr-3 flex justify-center items-center'>
-              <h5 className='text-2xl font-black tracking-wide'>750</h5>
+              <h5 className='text-2xl font-black tracking-wide'>
+                {totalPoint}
+              </h5>
               <p className='text-md font-semibold mt-2'>pts</p>
             </div>
           </div>
         </div>
       </div>
-      <button
-        className='bg-white pl-2 pr-2 pt-1 pb-1 text-black rounded-lg border-4 border-black hover:bg-[#81C7E9] hover:border-white text-lg font-semibold tracking-wide hover:text-white delay-150 transition'
-        onClick={() => navigate('/game/', { replace: true })}>
-        back to homepage
-      </button>
+      {status === 'Completed' && (
+        <button
+          className='beescholar-button pl-2 pr-2 pt-1 pb-1  rounded-lg b text-lg font-semibold tracking-wide drop-shadow-lg shadow-sm shadow-black'
+          onClick={() =>
+            navigate(`/game/story/${nextSceneId}`, { replace: true })
+          }>
+          Continue
+        </button>
+      )}
+      {status === 'Failed' && (
+        <button
+          className='beescholar-button pl-2 pr-2 pt-1 pb-1  rounded-lg b text-lg font-semibold tracking-wide drop-shadow-lg shadow-sm shadow-black'
+          onClick={() => navigate(`/game/`, { replace: true })}>
+          Back to Homepage
+        </button>
+      )}
     </>
+  );
+
+  const renderTutorialModal = () => (
+    <Modal
+      open={openTutorialModal}
+      onClose={() => setOpenTutorialModal(false)}
+      disableScrollLock={true}
+      className='w-full h-full flex justify-center items-center'>
+      <div
+        id='tutorial-container'
+        className='w-10/12 h-5/6 grid grid-cols-4 grid-flow-row gap-2 bg-[#C06C00] rounded-xl relative'>
+        <div
+          id='tutorial-title'
+          className=' h-full col-span-1 bg-[#C06C00] border-r-2 border-black justify-center items-center rounded-xl overflow-y-auto overflow-x-hidden'>
+          {tutorialData.map((data) => (
+            <div className='w-full h-min flex justify-center items-center m-5'>
+              <button
+                className={
+                  'p-5 text-xl text-white bg-[#d38621] shadow-lg shadow-black rounded-lg font-bold ' +
+                  (activeTutorialData?.title === data.title
+                    ? 'border-white border-2'
+                    : '')
+                }
+                onClick={() => setActiveTutorialData(data)}>
+                {data.title}
+              </button>
+            </div>
+          ))}
+        </div>
+        <div
+          id='tutorial-information'
+          className='h-3/4 col-span-3 grid grid-rows-2 m-7 rounded-xl'>
+          {' '}
+          <img
+            src={activeTutorialData?.image}
+            className='row-span-1'
+          />
+          <p className='text-2xl text-white font-semibold row-span-1'>
+            {activeTutorialData?.description}
+          </p>
+        </div>
+      </div>
+    </Modal>
   );
 
   return (
     <>
-      {!openReport && (
+      {!openReport && !isLoading && !isLoadingQuestions && (
         <div
           id='board-container'
           className='w-full h-full flex flex-col justify-evenly items-center'>
           {renderWhiteboard()}
           {renderNumberBoard()}
+        </div>
+      )}
+      {!openReport && isLoading && (
+        <div
+          id='board-container'
+          className='w-full h-full flex flex-col justify-evenly items-center'>
+          {renderLoadingWhiteboard()}
+          {renderLoadingNumberBoard()}
         </div>
       )}
       {openReport && (
@@ -588,6 +693,7 @@ const Stageboard = () => {
           {renderReportBoard()}
         </div>
       )}
+      {openTutorialModal && renderTutorialModal()}
     </>
   );
 };

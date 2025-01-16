@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { KMGCharacters } from '../../constants/dummy.constants';
 import './Profiles_Book.css';
-import { ICharacter } from '../../constants/global.interfaces';
+import '../../constants/global.css';
+import { ICharacter, IUnlockCampus } from '../../constants/global.interfaces';
+import axios from 'axios';
+import { useAuth } from '../../config/Context';
 
 const ProfilesBook = () => {
   const [activeLocation, setActiveLocation] = useState<string>('KMG');
+  const [campusUnlocked, setCampusUnlocked] = useState<IUnlockCampus[]>([]);
   const [activeProfile, setActiveProfile] = useState<ICharacter>();
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [activeClub, setActiveClub] = useState<string>();
   const [students, setStudents] = useState<ICharacter[]>([]);
+  const [isError, setIsError] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>();
 
   useEffect(() => {
-    setStudents(KMGCharacters);
-    setActiveProfile(KMGCharacters[0]);
+    // setStudents(KMGCharacters);
+    setIsLoading(true);
+    getData();
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   }, []);
 
   useEffect(() => {
@@ -26,30 +36,103 @@ const ProfilesBook = () => {
 
   useEffect(() => {
     // when changing location, change active character to first character index
-    setActiveProfile(KMGCharacters[0]);
+    setActiveProfile(students[0]);
+    getStudentData();
   }, [activeLocation]);
+
+  useEffect(() => {
+    getStudentData();
+  }, [campusUnlocked]);
+
+  useEffect(() => {
+    setActiveProfile(students[0]);
+  }, [students]);
+
+  const user = useAuth().user;
+
+  const getData = () => {
+    axios
+      .get(`http://167.71.207.1/api/campus`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      })
+      .then((res) => {
+        setCampusUnlocked(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsError(true);
+      });
+  };
+
+  const getStudentData = () => {
+    if (campusUnlocked.length > 0) {
+      const _campus = campusUnlocked.find(
+        (c) => c.campusName === translateCampusCodetoName(activeLocation)
+      );
+      if (_campus) {
+        axios
+          .get(`http://167.71.207.1/api/characters/${_campus.campusName}`, {
+            headers: { Authorization: `Bearer ${user?.token}` },
+          })
+          .then((res) => {
+            setStudents(res.data.data);
+          })
+          .catch((error) => {
+            console.log(error);
+            setIsError(true);
+          });
+      }
+    }
+  };
 
   const handleNewActiveLocation = (location: string) => {
     setActiveLocation(location);
+  };
+
+  const handleTranslateGender = (gender: string | undefined) => {
+    if (gender !== undefined) {
+      if (gender === 'M') {
+        return 'boy';
+      } else {
+        return 'girl';
+      }
+    }
   };
 
   const handleProfileSelect = (profile: ICharacter) => {
     setActiveProfile(profile);
   };
 
-  const handleTranslateCampusLLocationId = (locationId: string) => {
+  const translateCampusCodetoName = (name: string) => {
+    switch (name) {
+      case 'KMG':
+        return 'Kemanggisan';
+      case 'BDG':
+        return 'Bandung';
+      case 'MLG':
+        return 'Malang';
+      case 'BKS':
+        return 'Bekasi';
+      case 'ALS':
+        return 'Alam Sutera';
+      case 'SMG':
+        return 'Semarang';
+    }
+  };
+
+  const handleTranslateCampusLocationId = (locationId: string) => {
     switch (locationId) {
-      case '01':
+      case 'KMG':
         return '@Kemanggisan';
-      case '02':
+      case 'BDG':
         return '@Bandung';
-      case '03':
+      case 'SMG':
         return '@Semarang';
-      case '04':
+      case 'BKS':
         return '@Bekasi';
-      case '05':
+      case 'MLG':
         return '@Malang';
-      case '06':
+      case 'ALS':
         return '@AlamSutera';
       default:
         return '@Binus';
@@ -62,12 +145,14 @@ const ProfilesBook = () => {
 
   const handleCreateTags = () => {
     // student role, campus location, and club position counts as a 'tag'
-    if (activeProfile !== undefined) {
-      const locationTag = handleTranslateCampusLLocationId(
-        activeProfile.campusId
-      );
-      const roleTag = handleSeperateRole(activeProfile.role);
-      setActiveTags([...roleTag, locationTag]);
+    const locationTag = handleTranslateCampusLocationId(activeLocation);
+    if (activeProfile !== undefined && locationTag !== undefined) {
+      var tempRoleTag: string[] = [];
+      activeProfile.roles.forEach((role) => {
+        const roleTag = handleSeperateRole(role);
+        tempRoleTag.push(roleTag[0]);
+      });
+      setActiveTags([...tempRoleTag, locationTag]);
     }
   };
 
@@ -77,7 +162,7 @@ const ProfilesBook = () => {
         return 'bg-[#F39F33]';
       case 'student':
         return 'bg-[#81C7E9]';
-      case 'lecturer':
+      case 'teacher':
         return 'bg-[#34A4DC]';
       default:
         return 'bg-[#014769] text-white';
@@ -86,7 +171,7 @@ const ProfilesBook = () => {
 
   const handleClubMembership = () => {
     activeTags.forEach((tag) => {
-      const match = tag.match(/^(.*?\bClub\b)/i); // Extracts up to 'Club'
+      const match = tag.match(/(\w+)\s+Club/i); // Extracts up to 'Club'
       if (match !== null) {
         setActiveClub(match[0]);
         return;
@@ -97,51 +182,93 @@ const ProfilesBook = () => {
   const renderBookmark = () => (
     <div
       id='bookmark'
-      className='h-full w-14 flex-col justify-items-end '>
+      className='h-full w-14 flex-col justify-items-end'>
       <button
         id='KMG'
+        disabled={
+          campusUnlocked.find(
+            (c) => c.campusName !== translateCampusCodetoName('KMG')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'KMG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'KMG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('KMG')}>
         <h5 className='bookmark-text'>K M G</h5>
       </button>
       <button
         id='BDG'
+        disabled={
+          campusUnlocked.find(
+            (c) => c.campusName !== translateCampusCodetoName('BDG')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'BDG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'BDG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('BDG')}>
         <h5 className='bookmark-text'>B D G</h5>
       </button>
       <button
         id='SMG'
+        disabled={
+          campusUnlocked.find(
+            (c) => c.campusName !== translateCampusCodetoName('SMG')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'SMG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'SMG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('SMG')}>
         <h5 className='bookmark-text'>S M G</h5>
       </button>
       <button
         id='BKS'
+        disabled={
+          campusUnlocked.find(
+            (c) => c.campusName !== translateCampusCodetoName('BKS')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'BKS' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'BKS' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('BKS')}>
         <h5 className='bookmark-text'>B K S</h5>
       </button>
       <button
         id='MLG'
+        disabled={
+          campusUnlocked.find(
+            (c) => c.campusName !== translateCampusCodetoName('MLG')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'MLG' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'MLG' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('MLG')}>
         <h5 className='bookmark-text'>M L G</h5>
       </button>
       <button
         id='ALS'
+        disabled={
+          campusUnlocked.find(
+            (c) => c.campusName !== translateCampusCodetoName('ALS')
+          )
+            ? true
+            : false
+        }
         className={
-          (activeLocation === 'ALS' ? 'bg-[#81C7E9] ' : '') + 'bookmark-button'
+          (activeLocation === 'ALS' ? 'bg-[#4EB0E1] ' : '') + 'bookmark-button'
         }
         onClick={() => handleNewActiveLocation('ALS')}>
         <h5 className='bookmark-text'>A L S</h5>
@@ -238,9 +365,35 @@ const ProfilesBook = () => {
             }
             onClick={() => handleProfileSelect(student)}>
             <img
-              src={student.picture}
-              className='object-fill w-3/4 h-3/4'
+              src={
+                student.image
+                  ? student.image
+                  : `https://avatar.iran.liara.run/public/${handleTranslateGender(
+                      student.gender
+                    )}`
+              }
+              className='object-fill w-3/4 h-3/4 rounded-full'
             />
+          </button>
+        </>
+      ))}
+    </div>
+  );
+
+  const loadingRenderProfileList = () => (
+    <div className='grid grid-cols-3 gap-3 gap-y-6 m-10 z-30 animate-pulse'>
+      {students.map((student) => (
+        <>
+          <button
+            id={student.id}
+            className={
+              'list-profile ' +
+              (student.id === activeProfile?.id
+                ? ' border-[#ff4545] border-4'
+                : '')
+            }
+            onClick={() => handleProfileSelect(student)}>
+            <div className='object-fill w-3/4 h-3/4 bg-slate-300 rounded-full' />
           </button>
         </>
       ))}
@@ -294,7 +447,13 @@ const ProfilesBook = () => {
             className='bg-[#E0E0E0] h-3/4 w-2/3 border-[#F39F33] border-8'
           />
           <img
-            src={activeProfile?.picture}
+            src={
+              activeProfile?.image
+                ? activeProfile.image
+                : `https://avatar.iran.liara.run/public/${handleTranslateGender(
+                    activeProfile?.gender
+                  )}`
+            }
             className='absolute w-3/4'
           />
         </div>
@@ -315,12 +474,12 @@ const ProfilesBook = () => {
         className=' h-1/2 w-full relative flex flex-col'>
         <div
           id='profile-tags'
-          className='h-1/4 w-full flex flex-row overflow-x-auto overflow-y-hidden'>
+          className='h-max w-max flex flex-row overflow-x-auto justify-center items-center'>
           {activeTags.map((tag) => (
             <>
               <div
                 className={
-                  'h-min w-max pl-3 pr-3 m-2 md:pt-1 md:pb-1 sm:pt-0 sm:pb-1 ' +
+                  'h-min w-min whitespace-nowrap pl-1 pr-1 m-2 md:pt-1 md:pb-1 sm:pt-0 sm:pb-1 ' +
                   handleTagColor(tag) +
                   ' flex justify-center items-center rounded-xl'
                 }>
@@ -380,7 +539,12 @@ const ProfilesBook = () => {
                   id='likes-container'
                   className='w-3/4 h-max'>
                   <h5 className='md:font-semibold md:text-base sm:font-light sm:text-xs'>
-                    {activeProfile?.name} likes {activeProfile?.likes}
+                    {activeProfile?.name + ' likes '}
+                    {activeProfile?.likes.map((like, idx) => (
+                      <>
+                        {like + (idx < activeProfile.likes.length ? ', ' : '')}
+                      </>
+                    ))}
                   </h5>
                 </div>
               </div>
@@ -399,7 +563,13 @@ const ProfilesBook = () => {
                   id='dislikes-container'
                   className='w-3/4 h-max'>
                   <h5 className='md:font-semibold md:text-base sm:font-light sm:text-xs'>
-                    {activeProfile?.name} dislikes {activeProfile?.dislikes}
+                    {activeProfile?.name + ' dislikes '}
+                    {activeProfile?.dislikes.map((dislike, idx) => (
+                      <>
+                        {dislike +
+                          (idx < activeProfile.dislikes.length ? ', ' : '')}
+                      </>
+                    ))}
                   </h5>
                 </div>
               </div>
@@ -410,23 +580,79 @@ const ProfilesBook = () => {
     </div>
   );
 
+  const loadingRenderProfileDescription = () => (
+    <div
+      id='proile'
+      className='flex flex-col justify-evenly w-full h-full z-30 animate-pulse'>
+      <div
+        id='profile-top'
+        className='flex flex-row w-full h-1/2 bg-slate-300'>
+        <div
+          id='descipriton-container'
+          className='flex flex-col relative w-1/2'>
+          <div
+            id='character-description'
+            className='flex flex-row mb-auto mt-auto justify-center items-center overflow-auto'>
+            <div
+              id='left-quote-description'
+              className='relative md:-left-5 sm:-left-2'>
+              <h1 className='font-bold md:text-4xl absolute bottom-0 sm:text-xl'></h1>
+            </div>
+            <div
+              id='description-character'
+              className='w-1/2 ml-3 mr-3 mt-5 bg-slate-300'>
+              <h5 className='font-medium md:text-lg sm:text-sm'></h5>
+              <h5 className='text-start font-medium text-xs'></h5>
+            </div>
+            <div
+              id='right-quote-description'
+              className='relative'>
+              <h1 className='font-bold md:text-4xl absolute top-0 sm:text-xl '>
+                "
+              </h1>
+            </div>
+          </div>
+        </div>
+        <div
+          id='profiles-picture'
+          className=' w-1/2 h-full flex justify-center items-center relative'>
+          <div
+            id='profiles-squareframe'
+            className='bg-slate-300 h-3/4 w-2/3 border-[#F39F33] border-8'
+          />
+        </div>
+      </div>
+      <div
+        id='profile-middle'
+        className=' h-5 w-full flex flex-row relative bg-slate-300'>
+        <h1 className='font-extrabold md:text-4xl sm:text-base absolute md:right-10 sm:right-3 md:-top-7 sm:-top-3 drop-shadow-md'></h1>
+        <div
+          id='middle-line'
+          className='h-1 w-full bg-[#E0E0E0] absolute bottom-0'
+        />
+      </div>
+    </div>
+  );
+
   const renderBook = () => (
     <div className=' w-5/6 h-5/6 flex flex-row relative justify-center items-center'>
       {renderBookmark()}
       <div
         id='book-page-left'
-        className='bg-[#81C7E9] w-1/2 h-full shadow-[1px_0_1px_0_black_inset] overflow-auto overflow-x-hidden'>
-        {renderProfileList()}
+        className='bg-[#4EB0E1] w-1/2 h-full drop-shadow-lg shadow-md shadow-black overflow-auto overflow-x-hidden'>
+        {isLoading ? loadingRenderProfileList() : renderProfileList()}
       </div>
       <div className='w-1/6 h-full absolute flex justify-center ml-12'>
-      <div className='justify-center items-center flex z-0 absolute h-full w-min ml-1'>
-      {renderMiddlePart()}
-      </div>
+        <div className='justify-center items-center flex z-10 absolute h-full w-min ml-1 drop-shadow-lg shadow-md shadow-black'>
+          {renderMiddlePart()}
+        </div>
       </div>
       <div
         id='book-page-right'
-        className='bg-white h-full w-1/2'>
-        {renderProfileDescription()}
+        className='bg-white h-full w-1/2 drop-shadow-lg shadow-md shadow-black'>
+        {isLoading
+          ? loadingRenderProfileDescription()
+          : renderProfileDescription()}
       </div>
     </div>
   );
