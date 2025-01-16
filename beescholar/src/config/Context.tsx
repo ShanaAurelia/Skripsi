@@ -80,7 +80,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
     let userId;
     let bearerToken: string = '';
     await axios
-      .post('http://127.0.0.1:8000/api/login', payload)
+      .post('http://167.71.207.1/api/login', payload)
       .then(function (response) {
         // console.log(response.data);
         userId = response.data.user.id;
@@ -90,7 +90,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
         alert('Your credentials did not match our database!');
       });
     await axios
-      .get(`http://127.0.0.1:8000/api/user`, {
+      .get(`http://167.71.207.1/api/user`, {
         headers: { Authorization: `Bearer ${bearerToken}` },
       })
       .then((res) => {
@@ -111,7 +111,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
   async function logout() {
     console.log(user?.token);
     await axios
-      .post('http://127.0.0.1:8000/api/logout', '', {
+      .post('http://167.71.207.1/api/logout', '', {
         headers: { Authorization: `Bearer ${user?.token}` },
       })
       .then((res) => {
@@ -134,7 +134,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
 
   async function updateUserData() {
     await axios
-      .get(`http://127.0.0.1:8000/api/user/`, {
+      .get(`http://167.71.207.1/api/user/`, {
         headers: { Authorization: `Bearer ${user?.token}` },
       })
       .then((res) => {

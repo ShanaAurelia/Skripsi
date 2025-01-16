@@ -64,7 +64,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
   const getData = async () => {
     setIsLoading(true);
     await axios
-      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`, {
+      .get(`http://167.71.207.1/api/minigame/${minigameId}`, {
         headers: { Authorization: `Bearer ${user?.token}` },
       })
       .then((res) => {
@@ -86,7 +86,7 @@ const CrosswordPage = (props: ICrosswordProps) => {
       const _payload = { minigameId: minigameId, wordAnswers: _wordAnswers };
 
       await axios
-        .post('http://127.0.0.1:8000/api/submit/crossword', _payload, {
+        .post('http://167.71.207.1/api/submit/crossword', _payload, {
           headers: { Authorization: `Bearer ${user?.token}` },
         })
         .then((res) => {

@@ -90,7 +90,7 @@ const Drum = () => {
 
   const getData = async () => {
     await axios
-      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`, {
+      .get(`http://167.71.207.1/api/minigame/${minigameId}`, {
         headers: { Authorization: `Bearer ${user?.token}` },
       })
       .then((res) => {
@@ -156,7 +156,7 @@ const Drum = () => {
       patternAnswer: JSON.stringify({ hit: drumPattern }),
     };
     axios
-      .post(`http://127.0.0.1:8000/api/submit/drum_puzzle`, _payload, {
+      .post(`http://167.71.207.1/api/submit/drum_puzzle`, _payload, {
         headers: { Authorization: `Bearer ${user?.token}` },
       })
       .then((res) => {

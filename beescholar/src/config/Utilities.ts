@@ -49,13 +49,13 @@ export function HandleIsChangeMusic(){
   if(_href.includes('/story/')){
     return true
   }
-  if(_href.includes('/followthedrum') || _href.includes('/storycase') || _href.includes('/crossword')){
+  else if(_href.includes('/followthedrum') || _href.includes('/storycase') || _href.includes('/crossword')){
     return true
   }
-  if(_href.includes('/stage')){
+  else if(_href.includes('/stage')){
     return true
   }
-  if(_href === "localhost:3000/game/" || _href === "localhost:3000/beescholar"){
+  else if(_href === "/game/" || _href === "/beescholar"){
     return true
   }
   else{
