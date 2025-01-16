@@ -26,15 +26,21 @@ const Navbar = (props: INavbarProps) => {
   const [password, setPassword] = useState<string>('');
   const [playMusic, setPlayMusic] = useState<boolean>(false);
   const [currentMusic, setCurrentMusic] = useState<string>(HandleMusicType());
-  const [play, {stop}] = useSound(HandleMusicType(), {volume: 0.1})
+  const [play, {stop, pause}] = useSound(HandleMusicType(), {volume: 0.1})
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     setEmail('');
     setPassword('');
     setIsOpenModal(false);
-    play();
+    stop();
   }, []);
+
+  useEffect(() => {
+    if(playMusic === false){
+      stop();
+    }
+  }, [playMusic])
 
   // useEffect(() => {
   //   if (audioRef.current !== null && HandleIsChangeMusic()) {
@@ -82,7 +88,7 @@ const Navbar = (props: INavbarProps) => {
 
   const handleToggleMusic = () => {
     if(playMusic === true){
-      stop()
+      pause()
       setPlayMusic(!playMusic)
     }else{
       play()
