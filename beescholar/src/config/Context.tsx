@@ -112,7 +112,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
     console.log(user?.token);
     await axios
       .post('http://167.71.207.1/api/logout', '', {
-        headers: { Authorization: `Bearer ${user?.token}` },
+        headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
         alert(res.data.message);
@@ -135,7 +135,7 @@ function AuthProvider({ children }: IAuthProviderProps) {
   async function updateUserData() {
     await axios
       .get(`http://167.71.207.1/api/user/`, {
-        headers: { Authorization: `Bearer ${user?.token}` },
+        headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
         dispatch({ type: 'update', payload: { ...res.data.data, token: user?.token } });

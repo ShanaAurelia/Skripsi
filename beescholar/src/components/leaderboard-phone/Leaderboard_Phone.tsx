@@ -44,7 +44,7 @@ const Phoneboard = () => {
   const getPlayerStats = () => {
     axios
       .get(`http://167.71.207.1/api/leaderboard/stats`, {
-        headers: { Authorization: `Bearer ${user?.token}` },
+        headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
         setPlayerStats(res.data.data);
@@ -80,7 +80,7 @@ const Phoneboard = () => {
       case 'Clear Time':
         await axios
           .get(`http://167.71.207.1/api/leaderboard/clear_time`, {
-            headers: { Authorization: `Bearer ${user?.token}` },
+            headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
           })
           .then((res) => {
             setStoryLeaderboard(res.data.data.topUsers);
@@ -97,7 +97,7 @@ const Phoneboard = () => {
       case 'Total Points':
         await axios
           .get(`http://167.71.207.1/api/leaderboard/point`, {
-            headers: { Authorization: `Bearer ${user?.token}` },
+            headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
           })
           .then((res) => {
             setPointLeaderboard(res.data.data.topUsers);

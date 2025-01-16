@@ -74,7 +74,7 @@ const Scene = (props: IDialogueProps) => {
   const getDialogue = async (nextSceneId2: string) => {
     await axios
       .get(`http://167.71.207.1/api/scene/${nextSceneId2}`, {
-        headers: { Authorization: `Bearer ${user?.token}` },
+        headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
         const _data = res.data.message;
@@ -84,7 +84,7 @@ const Scene = (props: IDialogueProps) => {
               .post(
                 `http://167.71.207.1/api/process_scene/${_data.sceneId}`,
                 '',
-                { headers: { Authorization: `Bearer ${user?.token}` } }
+                { headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" } }
               )
               .then((res) => {
                 if (res.data.success === true) {
@@ -125,7 +125,7 @@ const Scene = (props: IDialogueProps) => {
       .post(
         `http://167.71.207.1/api/process_scene/${dialogue?.sceneId}`,
         '',
-        { headers: { Authorization: `Bearer ${user?.token}` } }
+        { headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" } }
       )
       .then((res) => {
         if (res.data.success === true && dialogue?.isEndScene) {
@@ -143,7 +143,7 @@ const Scene = (props: IDialogueProps) => {
   const handleProcessMinigame = (minigameId: string) => {
     axios
       .get(`http://167.71.207.1/api/minigame/${minigameId}`, {
-        headers: { Authorization: `Bearer ${user?.token}` },
+        headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
         setMinigameData(res.data.message);
