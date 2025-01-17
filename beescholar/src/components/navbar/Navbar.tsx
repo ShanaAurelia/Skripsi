@@ -19,6 +19,7 @@ import {
 } from '../../config/Utilities';
 import { Modal } from '@mui/material';
 import useSound from 'use-sound';
+import axios from 'axios';
 
 const Navbar = (props: INavbarProps) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
@@ -26,7 +27,7 @@ const Navbar = (props: INavbarProps) => {
   const [password, setPassword] = useState<string>('');
   const [playMusic, setPlayMusic] = useState<boolean>(false);
   const [currentMusic, setCurrentMusic] = useState<string>(HandleMusicType());
-  const [play, {stop, pause}] = useSound(HandleMusicType(), {volume: 0.1})
+  const [play, { stop, pause }] = useSound(HandleMusicType(), { volume: 0.1 });
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -37,10 +38,10 @@ const Navbar = (props: INavbarProps) => {
   }, []);
 
   useEffect(() => {
-    if(playMusic === false){
+    if (playMusic === false) {
       stop();
     }
-  }, [playMusic])
+  }, [playMusic]);
 
   // useEffect(() => {
   //   if (audioRef.current !== null && HandleIsChangeMusic()) {
@@ -86,13 +87,25 @@ const Navbar = (props: INavbarProps) => {
     setPassword(input);
   };
 
+  const handleResetUser = () => {
+    axios
+      .post(`http://167.71.207.1/api/reset_user`, '', {
+        headers: { Authorization: `Bearer ${auth.user?.token}` },
+      })
+      .then((res) => contextData.logout())
+      .catch((error) => {
+        console.log(error);
+        alert(error);
+      });
+  };
+
   const handleToggleMusic = () => {
-    if(playMusic === true){
-      pause()
-      setPlayMusic(!playMusic)
-    }else{
-      play()
-      setPlayMusic(!playMusic)
+    if (playMusic === true) {
+      pause();
+      setPlayMusic(!playMusic);
+    } else {
+      play();
+      setPlayMusic(!playMusic);
     }
   };
 
@@ -165,6 +178,12 @@ const Navbar = (props: INavbarProps) => {
               <h3 className='nav-log-button-text'>HOME</h3>
             </button>
           )}
+          <button
+            id='logout-button-background'
+            className='nav-log-button-background mr-5'
+            onClick={() => handleResetUser()}>
+            <h3 className='nav-log-button-text'>RESET DATA</h3>
+          </button>
           <button
             id='logout-button-background'
             className='nav-log-button-background mr-5'
