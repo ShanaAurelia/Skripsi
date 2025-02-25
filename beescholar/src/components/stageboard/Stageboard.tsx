@@ -120,7 +120,7 @@ const Stageboard = () => {
 
   const getData = async () => {
     await axios
-      .get(`http://167.71.207.1/api/minigame/${minigameId}`, {
+      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`, {
         headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
@@ -240,7 +240,7 @@ const Stageboard = () => {
       quizStepAnswers: stepAnswers,
     };
     await axios
-      .post('http://167.71.207.1/api/submit/quiz', _payload, {
+      .post('http://127.0.0.1:8000/api/submit/quiz', _payload, {
         headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {

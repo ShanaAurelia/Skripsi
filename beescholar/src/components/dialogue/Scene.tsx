@@ -56,6 +56,7 @@ const Scene = (props: IDialogueProps) => {
   }, []);
 
   window.onbeforeunload = function () {
+    console.log("a");
     if (!savedScene) {
       updateSavedSceneId(dialogue?.sceneId || '');
       handleProcessDialogue();
@@ -73,7 +74,7 @@ const Scene = (props: IDialogueProps) => {
 
   const getDialogue = async (nextSceneId2: string) => {
     await axios
-      .get(`http://167.71.207.1/api/scene/${nextSceneId2}`, {
+      .get(`http://127.0.0.1:8000/api/scene/${nextSceneId2}`, {
         headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
@@ -82,7 +83,7 @@ const Scene = (props: IDialogueProps) => {
           if (_data.sceneType === 'Minigame' && _data.isEndScene === true) {
             axios
               .post(
-                `http://167.71.207.1/api/process_scene/${_data.sceneId}`,
+                `http://127.0.0.1:8000/api/process_scene/${_data.sceneId}`,
                 '',
                 { headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" } }
               )
@@ -103,6 +104,7 @@ const Scene = (props: IDialogueProps) => {
             handleProcessDialogue();
           }
         } else {
+          updateSavedSceneId(_data.sceneId || '');
           if (_data.eventId !== undefined) {
             getDialogue(_data.nextSceneId);
           }
@@ -123,7 +125,7 @@ const Scene = (props: IDialogueProps) => {
   const handleProcessDialogue = () => {
     axios
       .post(
-        `http://167.71.207.1/api/process_scene/${dialogue?.sceneId}`,
+        `http://127.0.0.1:8000/api/process_scene/${dialogue?.sceneId}`,
         '',
         { headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" } }
       )
@@ -142,7 +144,7 @@ const Scene = (props: IDialogueProps) => {
 
   const handleProcessMinigame = (minigameId: string) => {
     axios
-      .get(`http://167.71.207.1/api/minigame/${minigameId}`, {
+      .get(`http://127.0.0.1:8000/api/minigame/${minigameId}`, {
         headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
@@ -320,7 +322,7 @@ const Scene = (props: IDialogueProps) => {
                     <p className='text-black font-medium tracking-wide text-lg'>
                       {minigameData?.minigameType === 'Drum Puzzle'
                         ? 'Required Hit: ' + minigameData.totalHit
-                        : 'Hint: ' + minigameData?.hint}
+                        : 'Hint: ' + (minigameData?.hint ?? "None")}
                     </p>
                   </div>
                 </div>

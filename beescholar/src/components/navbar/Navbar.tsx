@@ -89,7 +89,7 @@ const Navbar = (props: INavbarProps) => {
 
   const handleResetUser = () => {
     axios
-      .post(`http://167.71.207.1/api/reset_user`, '', {
+      .post(`http://127.0.0.1:8000/api/reset_user`, '', {
         headers: { Authorization: `Bearer ${auth.user?.token}` },
       })
       .then((res) => contextData.logout())
