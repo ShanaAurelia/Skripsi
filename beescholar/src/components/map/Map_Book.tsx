@@ -65,7 +65,7 @@ const MapBook = () => {
     // fetch campus rooms
     if (unlockedCampus.length > 0) {
       axios
-        .get(`http://167.71.207.1/api/room/${unlockedCampus[0].id}`, {
+        .get(`http://127.0.0.1:8000/api/room/${unlockedCampus[0].id}`, {
           headers: { Authorization: `Bearer ${Auth.user?.token}` },
         })
         .then((res) => {
@@ -110,7 +110,7 @@ const MapBook = () => {
     // fetch unlock campus
     const user = Auth.user;
     await axios
-      .get(`http://167.71.207.1/api/campus`, {
+      .get(`http://127.0.0.1:8000/api/campus`, {
         headers: { Authorization: `Bearer ${Auth.user?.token}` },
       })
       .then((res) => {
@@ -130,7 +130,7 @@ const MapBook = () => {
     if (_room) {
       var tempInteractibles: IActivityHeader[] = [];
       await axios
-        .get(`http://167.71.207.1/api/activity/${_room.id}`, {
+        .get(`http://127.0.0.1:8000/api/activity/${_room.id}`, {
           headers: { Authorization: `Bearer ${Auth.user?.token}` },
         })
         .then((res) => {

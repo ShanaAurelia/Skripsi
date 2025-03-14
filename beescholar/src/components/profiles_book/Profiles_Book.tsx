@@ -52,7 +52,7 @@ const ProfilesBook = () => {
 
   const getData = () => {
     axios
-      .get(`http://167.71.207.1/api/campus`, {
+      .get(`http://127.0.0.1:8000/api/campus`, {
         headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
       })
       .then((res) => {
@@ -71,7 +71,7 @@ const ProfilesBook = () => {
       );
       if (_campus) {
         axios
-          .get(`http://167.71.207.1/api/characters/${_campus.campusName}`, {
+          .get(`http://127.0.0.1:8000/api/characters/${_campus.campusName}`, {
             headers: { Authorization: `Bearer ${user?.token}`, mode: "no-cors" },
           })
           .then((res) => {
@@ -135,7 +135,7 @@ const ProfilesBook = () => {
       case 'ALS':
         return '@AlamSutera';
       default:
-        return '@Binus';
+        return '@XYZ';
     }
   };
 

@@ -26,7 +26,7 @@ const MapBook = () => {
       case '06':
         return '@AlamSutera';
       default:
-        return '@Binus';
+        return '@XYZ';
     }
   };
 
